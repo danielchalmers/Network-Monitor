@@ -11,12 +11,12 @@ namespace Network_Monitor
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        private long _download;
+        private string _download;
         private long _lastDownload;
         private long _lastLatency = -1;
         private long _lastUpload = -1;
         private long _latency = -1;
-        private long _upload;
+        private string _upload;
 
         public MainWindowViewModel()
         {
@@ -29,13 +29,13 @@ namespace Network_Monitor
             private set { Set(ref _latency, value); }
         }
 
-        public long Download
+        public string Download
         {
             get { return _download; }
             private set { Set(ref _download, value); }
         }
 
-        public long Upload
+        public string Upload
         {
             get { return _upload; }
             private set { Set(ref _upload, value); }
@@ -87,8 +87,8 @@ namespace Network_Monitor
                                 new Action(() =>
                                 {
                                     Latency = latency;
-                                    Download = downloadDifference;
-                                    Upload = uploadDifference;
+                                    Download = ByteHelper.BytesToString(downloadDifference);
+                                    Upload = ByteHelper.BytesToString(uploadDifference);
                                 }));
                         }
                     }
