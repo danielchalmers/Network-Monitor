@@ -8,9 +8,18 @@ namespace Network_Monitor
     {
         public static PingReply GetLatency(this Ping ping)
         {
-            return string.IsNullOrWhiteSpace(Settings.Default.PingHost)
-                ? null
-                : ping.Send(Settings.Default.PingHost, 5000);
+            if (string.IsNullOrWhiteSpace(Settings.Default.PingHost))
+            {
+                return null;
+            }
+            try
+            {
+                return ping.Send(Settings.Default.PingHost, 5000);
+            }
+            catch (PingException)
+            {
+                return null;
+            }
         }
 
         public static long GetDownloadedBytes()
