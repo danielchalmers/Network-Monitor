@@ -46,5 +46,17 @@ namespace Network_Monitor.Properties {
                 this["MainWindowTop"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool MustUpgrade {
+            get {
+                return ((bool)(this["MustUpgrade"]));
+            }
+            set {
+                this["MustUpgrade"] = value;
+            }
+        }
     }
 }

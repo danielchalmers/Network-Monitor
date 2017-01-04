@@ -11,6 +11,7 @@
         Top="{Binding MainWindowTop, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"
         SizeToContent="WidthAndHeight"
         ResizeMode="CanMinimize"
-        Topmost="True">
+        Topmost="True"
+        Closing="MainWindow_OnClosing">
     <Grid />
 </Window>
