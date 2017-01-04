@@ -17,6 +17,7 @@ namespace Network_Monitor
         private long _lastLatency = -1;
         private long _lastUpload = -1;
         private string _latency;
+        private IPStatus _latencyStatus;
         private string _upload;
 
         public MainWindowViewModel()
@@ -28,6 +29,12 @@ namespace Network_Monitor
         {
             get { return _latency; }
             private set { Set(ref _latency, value); }
+        }
+
+        public IPStatus LatencyStatus
+        {
+            get { return _latencyStatus; }
+            private set { Set(ref _latencyStatus, value); }
         }
 
         public string Download
@@ -89,6 +96,7 @@ namespace Network_Monitor
                                 new Action(() =>
                                 {
                                     Latency = status == IPStatus.Success ? latency.ToString() : "Error";
+                                    LatencyStatus = status;
                                     Download = ByteHelper.BytesToString(downloadDifference);
                                     Upload = ByteHelper.BytesToString(uploadDifference);
                                 }));

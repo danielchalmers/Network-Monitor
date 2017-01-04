@@ -30,7 +30,8 @@
             <RowDefinition Height="5" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0">
+        <TextBlock Grid.Row="0"
+                   ToolTip="{Binding LatencyStatus}">
             <TextBlock.Text>
                 <MultiBinding StringFormat="{}⟳{0}">
                     <Binding Path="Latency" />
