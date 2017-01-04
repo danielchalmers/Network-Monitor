@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows;
+using System.Windows.Input;
 using Network_Monitor.Properties;
 
 namespace Network_Monitor
@@ -28,6 +29,14 @@ namespace Network_Monitor
         private void MenuItemExit_OnClick(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void MainWindow_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                DragMove();
+            }
         }
     }
 }

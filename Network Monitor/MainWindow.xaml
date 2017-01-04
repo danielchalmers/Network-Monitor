@@ -15,7 +15,8 @@
         Topmost="True"
         AllowsTransparency="True"
         Background="Transparent"
-        Closing="MainWindow_OnClosing">
+        Closing="MainWindow_OnClosing"
+        MouseDown="MainWindow_OnMouseDown">
     <Window.DataContext>
         <local:MainWindowViewModel />
     </Window.DataContext>
