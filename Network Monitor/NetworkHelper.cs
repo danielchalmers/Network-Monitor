@@ -14,7 +14,7 @@ namespace Network_Monitor
             }
             try
             {
-                return ping.Send(Settings.Default.PingHost, 5000);
+                return ping.Send(Settings.Default.PingHost, 4000);
             }
             catch (PingException)
             {
