@@ -33,6 +33,7 @@
                     <Setter Property="FontFamily" Value="Courier New" />
                     <Setter Property="FontSize" Value="16" />
                     <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="HorizontalAlignment" Value="Center" />
                 </Style>
             </Grid.Resources>
             <Grid.ColumnDefinitions>
@@ -55,8 +56,7 @@
             <TextBlock Grid.Column="0"
                        Grid.Row="0"
                        Text="⟳"
-                       ToolTip="Latency"
-                       HorizontalAlignment="Center" />
+                       ToolTip="Latency" />
             <TextBlock Grid.Column="2"
                        Grid.Row="0"
                        Text="{Binding Latency}"
@@ -64,8 +64,7 @@
             <TextBlock Grid.Column="0"
                        Grid.Row="2"
                        Text="↓"
-                       ToolTip="Download"
-                       HorizontalAlignment="Center" />
+                       ToolTip="Download" />
             <TextBlock Grid.Column="2"
                        Grid.Row="2"
                        Text="{Binding Download}"
@@ -73,8 +72,7 @@
             <TextBlock Grid.Column="0"
                        Grid.Row="4"
                        Text="↑"
-                       ToolTip="Upload"
-                       HorizontalAlignment="Center" />
+                       ToolTip="Upload" />
             <TextBlock Grid.Column="2"
                        Grid.Row="4"
                        Text="{Binding Upload}"
