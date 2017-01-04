@@ -13,5 +13,43 @@
         ResizeMode="CanMinimize"
         Topmost="True"
         Closing="MainWindow_OnClosing">
-    <Grid />
+    <Window.DataContext>
+        <local:MainWindowViewModel />
+    </Window.DataContext>
+    <Grid Margin="5">
+        <Grid.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Courier New" />
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="5" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="5" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0">
+            <TextBlock.Text>
+                <MultiBinding StringFormat="{}⟳{0}">
+                    <Binding Path="Latency" />
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>
+        <TextBlock Grid.Row="2">
+            <TextBlock.Text>
+                <MultiBinding StringFormat="{}↓{0}">
+                    <Binding Path="Download" />
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>
+        <TextBlock Grid.Row="4">
+            <TextBlock.Text>
+                <MultiBinding StringFormat="{}↑{0}">
+                    <Binding Path="Upload" />
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>
+    </Grid>
 </Window>

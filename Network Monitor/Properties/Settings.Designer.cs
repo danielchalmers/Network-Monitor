@@ -58,5 +58,29 @@ namespace Network_Monitor.Properties {
                 this["MustUpgrade"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("8.8.8.8")]
+        public string PingHost {
+            get {
+                return ((string)(this["PingHost"]));
+            }
+            set {
+                this["PingHost"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("00:00:01")]
+        public global::System.TimeSpan Interval {
+            get {
+                return ((global::System.TimeSpan)(this["Interval"]));
+            }
+            set {
+                this["Interval"] = value;
+            }
+        }
     }
 }
