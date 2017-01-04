@@ -87,38 +87,41 @@ namespace Network_Monitor
             new Thread(() =>
             {
                 Thread.CurrentThread.IsBackground = true;
-                while (true)
+                using (var ping = new Ping())
                 {
-                    var reply = NetworkHelper.GetLatency();
-                    if (reply != null)
+                    while (true)
                     {
-                        var isFirstCheck = _lastLatency == -1;
-
-                        var status = reply.Status;
-                        var latency = reply.RoundtripTime;
-                        var downloadedBytes = NetworkHelper.GetDownloadedBytes();
-                        var uploadedBytes = NetworkHelper.GetUploadedBytes();
-                        var downloadDifference = downloadedBytes - _lastDownload;
-                        var uploadDifference = uploadedBytes - _lastUpload;
-                        _lastLatency = latency;
-                        _lastDownload = downloadedBytes;
-                        _lastUpload = uploadedBytes;
-                        if (!isFirstCheck)
+                        var reply = ping.GetLatency();
+                        if (reply != null)
                         {
-                            Application.Current.Dispatcher.BeginInvoke(
-                                DispatcherPriority.Background,
-                                new Action(() =>
-                                {
-                                    Latency = status == IPStatus.Success ? latency.ToString() : "Error";
-                                    LatencyStatus = status;
-                                    Download = ByteHelper.BytesToString(downloadDifference);
-                                    Upload = ByteHelper.BytesToString(uploadDifference);
-                                    DownloadBytes = downloadDifference;
-                                    UploadBytes = uploadDifference;
-                                }));
+                            var isFirstCheck = _lastLatency == -1;
+
+                            var status = reply.Status;
+                            var latency = reply.RoundtripTime;
+                            var downloadedBytes = NetworkHelper.GetDownloadedBytes();
+                            var uploadedBytes = NetworkHelper.GetUploadedBytes();
+                            var downloadDifference = downloadedBytes - _lastDownload;
+                            var uploadDifference = uploadedBytes - _lastUpload;
+                            _lastLatency = latency;
+                            _lastDownload = downloadedBytes;
+                            _lastUpload = uploadedBytes;
+                            if (!isFirstCheck)
+                            {
+                                Application.Current.Dispatcher.BeginInvoke(
+                                    DispatcherPriority.Background,
+                                    new Action(() =>
+                                    {
+                                        Latency = status == IPStatus.Success ? latency.ToString() : "Error";
+                                        LatencyStatus = status;
+                                        Download = ByteHelper.BytesToString(downloadDifference);
+                                        Upload = ByteHelper.BytesToString(uploadDifference);
+                                        DownloadBytes = downloadDifference;
+                                        UploadBytes = uploadDifference;
+                                    }));
+                            }
                         }
+                        Thread.Sleep(Settings.Default.Interval);
                     }
-                    Thread.Sleep(Settings.Default.Interval);
                 }
             }).Start();
         }

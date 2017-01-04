@@ -6,15 +6,11 @@ namespace Network_Monitor
 {
     public static class NetworkHelper
     {
-        public static PingReply GetLatency()
+        public static PingReply GetLatency(this Ping ping)
         {
-            if (string.IsNullOrWhiteSpace(Settings.Default.PingHost))
-            {
-                return null;
-            }
-            var ping = new Ping();
-            var reply = ping.Send(Settings.Default.PingHost, 5000);
-            return reply;
+            return string.IsNullOrWhiteSpace(Settings.Default.PingHost)
+                ? null
+                : ping.Send(Settings.Default.PingHost, 5000);
         }
 
         public static long GetDownloadedBytes()
