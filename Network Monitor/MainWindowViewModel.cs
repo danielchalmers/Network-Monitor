@@ -13,12 +13,14 @@ namespace Network_Monitor
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         private string _download;
+        private long _downloadBytes;
         private long _lastDownload;
         private long _lastLatency = -1;
         private long _lastUpload = -1;
         private string _latency;
         private IPStatus _latencyStatus;
         private string _upload;
+        private long _uploadBytes;
 
         public MainWindowViewModel()
         {
@@ -47,6 +49,18 @@ namespace Network_Monitor
         {
             get { return _upload; }
             private set { Set(ref _upload, value); }
+        }
+
+        public long DownloadBytes
+        {
+            get { return _downloadBytes; }
+            private set { Set(ref _downloadBytes, value); }
+        }
+
+        public long UploadBytes
+        {
+            get { return _uploadBytes; }
+            private set { Set(ref _uploadBytes, value); }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -99,6 +113,8 @@ namespace Network_Monitor
                                     LatencyStatus = status;
                                     Download = ByteHelper.BytesToString(downloadDifference);
                                     Upload = ByteHelper.BytesToString(uploadDifference);
+                                    DownloadBytes = downloadDifference;
+                                    UploadBytes = uploadDifference;
                                 }));
                         }
                     }

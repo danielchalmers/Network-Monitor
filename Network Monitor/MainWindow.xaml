@@ -68,7 +68,8 @@
                        HorizontalAlignment="Center" />
             <TextBlock Grid.Column="2"
                        Grid.Row="2"
-                       Text="{Binding Download}" />
+                       Text="{Binding Download}"
+                       ToolTip="{Binding DownloadBytes}" />
             <TextBlock Grid.Column="0"
                        Grid.Row="4"
                        Text="↑"
@@ -76,7 +77,8 @@
                        HorizontalAlignment="Center" />
             <TextBlock Grid.Column="2"
                        Grid.Row="4"
-                       Text="{Binding Upload}" />
+                       Text="{Binding Upload}"
+                       ToolTip="{Binding UploadBytes}" />
         </Grid>
     </Border>
 </Window>
