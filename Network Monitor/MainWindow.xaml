@@ -26,7 +26,9 @@
         </ContextMenu>
     </Window.ContextMenu>
     <Border Background="White"
-            CornerRadius="5">
+            CornerRadius="5"
+            BorderBrush="Gray"
+            BorderThickness="1">
         <Grid Margin="5">
             <Grid.Resources>
                 <Style TargetType="TextBlock">
