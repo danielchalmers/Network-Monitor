@@ -12,7 +12,7 @@
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
         WindowStyle="None"
-        Topmost="True"
+        Topmost="{Binding Topmost, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"
         AllowsTransparency="True"
         Background="Transparent"
         Closing="MainWindow_OnClosing"
@@ -22,6 +22,10 @@
     </Window.DataContext>
     <Window.ContextMenu>
         <ContextMenu>
+            <MenuItem Header="_Topmost"
+                      IsCheckable="True"
+                      IsChecked="{Binding Topmost, Source={x:Static properties:Settings.Default}, Mode=TwoWay}" />
+            <Separator />
             <MenuItem Header="E_xit" Click="MenuItemExit_OnClick" />
         </ContextMenu>
     </Window.ContextMenu>
