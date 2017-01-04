@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
@@ -15,7 +16,7 @@ namespace Network_Monitor
         private long _lastDownload;
         private long _lastLatency = -1;
         private long _lastUpload = -1;
-        private long _latency = -1;
+        private string _latency;
         private string _upload;
 
         public MainWindowViewModel()
@@ -23,7 +24,7 @@ namespace Network_Monitor
             StartLatencyReader();
         }
 
-        public long Latency
+        public string Latency
         {
             get { return _latency; }
             private set { Set(ref _latency, value); }
@@ -72,6 +73,7 @@ namespace Network_Monitor
                     {
                         var isFirstCheck = _lastLatency == -1;
 
+                        var status = reply.Status;
                         var latency = reply.RoundtripTime;
                         var downloadedBytes = NetworkHelper.GetDownloadedBytes();
                         var uploadedBytes = NetworkHelper.GetUploadedBytes();
@@ -86,7 +88,7 @@ namespace Network_Monitor
                                 DispatcherPriority.Background,
                                 new Action(() =>
                                 {
-                                    Latency = latency;
+                                    Latency = status == IPStatus.Success ? latency.ToString() : "Error";
                                     Download = ByteHelper.BytesToString(downloadDifference);
                                     Upload = ByteHelper.BytesToString(uploadDifference);
                                 }));
