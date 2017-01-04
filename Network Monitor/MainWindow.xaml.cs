@@ -24,5 +24,10 @@ namespace Network_Monitor
         {
             Settings.Default.Save();
         }
+
+        private void MenuItemExit_OnClick(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }

@@ -19,6 +19,11 @@
     <Window.DataContext>
         <local:MainWindowViewModel />
     </Window.DataContext>
+    <Window.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="E_xit" Click="MenuItemExit_OnClick" />
+        </ContextMenu>
+    </Window.ContextMenu>
     <Border Margin="5"
             Background="White"
             CornerRadius="5">
