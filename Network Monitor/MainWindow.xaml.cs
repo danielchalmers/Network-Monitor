@@ -21,8 +21,17 @@ namespace Network_Monitor
             }
         }
 
+        private void MainWindow_SourceInitialized(object sender, System.EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(Settings.Default.MainWindowPlacement))
+            {
+                this.SetPlacement(Settings.Default.MainWindowPlacement);
+            }
+        }
+
         private void MainWindow_OnClosing(object sender, CancelEventArgs e)
         {
+            Settings.Default.MainWindowPlacement = this.GetPlacement();
             Settings.Default.Save();
         }
 

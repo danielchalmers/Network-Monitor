@@ -7,14 +7,13 @@
         xmlns:properties="clr-namespace:Network_Monitor.Properties"
         mc:Ignorable="d"
         Title="{x:Static properties:Resources.AppName}"
-        Left="{Binding MainWindowLeft, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"
-        Top="{Binding MainWindowTop, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
         WindowStyle="None"
         Topmost="{Binding Topmost, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"
         AllowsTransparency="True"
         Background="Transparent"
+        SourceInitialized="MainWindow_SourceInitialized"
         Closing="MainWindow_OnClosing"
         MouseDown="MainWindow_OnMouseDown">
     <Window.DataContext>

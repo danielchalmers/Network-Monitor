@@ -1,15 +1,7 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)"
-              GeneratedClassNamespace="Network_Monitor.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Network_Monitor.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="MainWindowLeft" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">NaN</Value>
-    </Setting>
-    <Setting Name="MainWindowTop" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">NaN</Value>
-    </Setting>
     <Setting Name="MustUpgrade" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -21,6 +13,9 @@
     </Setting>
     <Setting Name="Topmost" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="MainWindowPlacement" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>
