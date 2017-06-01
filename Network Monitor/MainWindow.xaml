@@ -26,7 +26,8 @@
                       IsCheckable="True"
                       IsChecked="{Binding Topmost, Source={x:Static properties:Settings.Default}, Mode=TwoWay}" />
             <Separator />
-            <MenuItem Header="E_xit" Click="MenuItemExit_OnClick" />
+            <MenuItem Header="E_xit"
+                      Click="MenuItemExit_OnClick" />
         </ContextMenu>
     </Window.ContextMenu>
     <Border Background="White"
@@ -36,10 +37,14 @@
         <Grid Margin="5">
             <Grid.Resources>
                 <Style TargetType="TextBlock">
-                    <Setter Property="FontFamily" Value="Courier New" />
-                    <Setter Property="FontSize" Value="18" />
-                    <Setter Property="VerticalAlignment" Value="Center" />
-                    <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="FontFamily"
+                            Value="Courier New" />
+                    <Setter Property="FontSize"
+                            Value="18" />
+                    <Setter Property="VerticalAlignment"
+                            Value="Center" />
+                    <Setter Property="HorizontalAlignment"
+                            Value="Center" />
                 </Style>
             </Grid.Resources>
             <Grid.ColumnDefinitions>
@@ -48,11 +53,14 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" SharedSizeGroup="Item" />
+                <RowDefinition Height="Auto"
+                               SharedSizeGroup="Item" />
                 <RowDefinition Height="5" />
-                <RowDefinition Height="Auto" SharedSizeGroup="Item" />
+                <RowDefinition Height="Auto"
+                               SharedSizeGroup="Item" />
                 <RowDefinition Height="5" />
-                <RowDefinition Height="Auto" SharedSizeGroup="Item" />
+                <RowDefinition Height="Auto"
+                               SharedSizeGroup="Item" />
             </Grid.RowDefinitions>
             <!--Preserve width-->
             <TextBlock Grid.Column="2"
