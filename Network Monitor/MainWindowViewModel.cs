@@ -97,7 +97,7 @@ namespace Network_Monitor
                         if (reply == null)
                         {
                             status = IPStatus.Unknown;
-                            latency = -1;
+                            latency = 0;
                         }
                         else
                         {
