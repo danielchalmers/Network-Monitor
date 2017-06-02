@@ -37,7 +37,7 @@
             <Grid.Resources>
                 <Style TargetType="TextBlock">
                     <Setter Property="FontFamily"
-                            Value="Courier New" />
+                            Value="Consolas" />
                     <Setter Property="FontSize"
                             Value="18" />
                     <Setter Property="VerticalAlignment"
