@@ -79,7 +79,7 @@ namespace Network_Monitor.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("18")]
+        [global::System.Configuration.DefaultSettingValueAttribute("24")]
         public int FontSize {
             get {
                 return ((int)(this["FontSize"]));
