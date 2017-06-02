@@ -15,7 +15,7 @@ namespace Network_Monitor
             }
             var bytes = Math.Abs(byteCount);
             var place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
-            var num = Math.Round(bytes / Math.Pow(1024, place), 1);
+            var num = Math.Round(bytes / Math.Pow(1024, place));
             return Math.Sign(byteCount) * num + suffix[place];
         }
     }

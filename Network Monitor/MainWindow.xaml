@@ -83,7 +83,7 @@
             <!--Preserve width-->
             <TextBlock Grid.Column="2"
                        Grid.Row="0"
-                       Text="100.00K"
+                       Text="1000K"
                        Visibility="Hidden" />
             <TextBlock Grid.Column="0"
                        Grid.Row="0"
