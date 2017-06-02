@@ -7,6 +7,8 @@
         xmlns:properties="clr-namespace:Network_Monitor.Properties"
         mc:Ignorable="d"
         Title="{x:Static properties:Resources.AppName}"
+        Width="0"
+        Height="0"
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
         WindowStyle="None"
