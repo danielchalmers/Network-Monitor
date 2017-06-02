@@ -17,7 +17,7 @@ namespace Network_Monitor
         private long _lastDownload;
         private long _lastLatency = -1;
         private long _lastUpload = -1;
-        private string _latency = "Loading";
+        private string _latency;
         private IPStatus _latencyStatus;
         private string _upload;
         private long _uploadBytes;
