@@ -27,7 +27,7 @@
             <MenuItem Header="Stay on _top"
                       IsCheckable="True"
                       IsChecked="{Binding Topmost, Source={x:Static properties:Settings.Default}, Mode=TwoWay}" />
-            <MenuItem Header="_Show in Taskbar"
+            <MenuItem Header="_Show in taskbar"
                       IsCheckable="True"
                       IsChecked="{Binding ShowInTaskbar, Source={x:Static properties:Settings.Default}, Mode=TwoWay}" />
             <MenuItem>
