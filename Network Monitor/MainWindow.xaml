@@ -33,7 +33,7 @@
             <MenuItem>
                 <MenuItem.Header>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Scale: " />
+                        <TextBlock Text="Size: " />
                         <Slider Width="60"
                                 Value="{Binding FontSize, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"
                                 Minimum="8"
