@@ -51,7 +51,8 @@
     </Window.ContextMenu>
     <Border Background="White"
             CornerRadius="5"
-            BorderThickness="1">
+            BorderThickness="1"
+            Opacity="0.9">
         <Border.BorderBrush>
             <SolidColorBrush Color="Gray"
                              Opacity="0.25" />
