@@ -52,7 +52,7 @@
             <SolidColorBrush Color="Gray"
                              Opacity="0.25" />
         </Border.BorderBrush>
-        <Grid Margin="5">
+        <Grid Margin="2">
             <Grid.Resources>
                 <Style TargetType="TextBlock">
                     <Setter Property="FontFamily"
