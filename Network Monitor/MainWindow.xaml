@@ -24,7 +24,7 @@
     </Window.DataContext>
     <Window.ContextMenu>
         <ContextMenu>
-            <MenuItem Header="_Topmost"
+            <MenuItem Header="Stay on _top"
                       IsCheckable="True"
                       IsChecked="{Binding Topmost, Source={x:Static properties:Settings.Default}, Mode=TwoWay}" />
             <MenuItem Header="_Show in Taskbar"
