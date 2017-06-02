@@ -13,6 +13,7 @@
         ResizeMode="NoResize"
         WindowStyle="None"
         Topmost="{Binding Topmost, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"
+        ShowInTaskbar="{Binding ShowInTaskbar, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"
         AllowsTransparency="True"
         Background="Transparent"
         SourceInitialized="MainWindow_SourceInitialized"
@@ -26,6 +27,9 @@
             <MenuItem Header="_Topmost"
                       IsCheckable="True"
                       IsChecked="{Binding Topmost, Source={x:Static properties:Settings.Default}, Mode=TwoWay}" />
+            <MenuItem Header="_Show in Taskbar"
+                      IsCheckable="True"
+                      IsChecked="{Binding ShowInTaskbar, Source={x:Static properties:Settings.Default}, Mode=TwoWay}" />
             <MenuItem>
                 <MenuItem.Header>
                     <StackPanel Orientation="Horizontal">
