@@ -52,7 +52,7 @@
     <Border Background="White"
             CornerRadius="5"
             BorderThickness="1"
-            Opacity="0.9">
+            Opacity="0.95">
         <Border.BorderBrush>
             <SolidColorBrush Color="Gray"
                              Opacity="0.25" />
@@ -71,7 +71,7 @@
                 <BeginStoryboard>
                     <Storyboard>
                         <DoubleAnimation Duration="0:0:1"
-                                         To="0.9"
+                                         To="0.95"
                                          Storyboard.TargetProperty="Opacity">
                             <DoubleAnimation.EasingFunction>
                                 <CubicEase EasingMode="EaseOut" />
