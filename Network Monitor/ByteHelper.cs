@@ -8,7 +8,7 @@ namespace Network_Monitor
         public static string BytesToString(long byteCount)
         {
             // Longs run out around EB.
-            string[] suffix = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+            string[] suffix = { "B", "K", "M", "G", "T", "P", "E" };
             if (byteCount == 0)
             {
                 return "0" + suffix[0];
