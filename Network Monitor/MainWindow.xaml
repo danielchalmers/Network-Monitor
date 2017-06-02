@@ -24,6 +24,20 @@
             <MenuItem Header="_Topmost"
                       IsCheckable="True"
                       IsChecked="{Binding Topmost, Source={x:Static properties:Settings.Default}, Mode=TwoWay}" />
+            <MenuItem>
+                <MenuItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Scale: " />
+                        <Slider Width="80"
+                                Value="{Binding FontSize, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"
+                                Minimum="8"
+                                Maximum="80"
+                                TickFrequency="2"
+                                IsSnapToTickEnabled="True"
+                                AutoToolTipPlacement="TopLeft" />
+                    </StackPanel>
+                </MenuItem.Header>
+            </MenuItem>
             <Separator />
             <MenuItem Header="E_xit"
                       Click="MenuItemExit_OnClick" />
@@ -39,7 +53,7 @@
                     <Setter Property="FontFamily"
                             Value="Consolas" />
                     <Setter Property="FontSize"
-                            Value="18" />
+                            Value="{Binding FontSize, Source={x:Static properties:Settings.Default}, Mode=OneWay}" />
                     <Setter Property="VerticalAlignment"
                             Value="Center" />
                     <Setter Property="HorizontalAlignment"
