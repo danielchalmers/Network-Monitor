@@ -57,6 +57,30 @@
             <SolidColorBrush Color="Gray"
                              Opacity="0.25" />
         </Border.BorderBrush>
+        <Border.Triggers>
+            <EventTrigger RoutedEvent="Control.MouseEnter">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Duration="0:0:0.1"
+                                         To="0.4"
+                                         Storyboard.TargetProperty="Opacity" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="Control.MouseLeave">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Duration="0:0:1"
+                                         To="0.9"
+                                         Storyboard.TargetProperty="Opacity">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut" />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Border.Triggers>
         <Grid Margin="2">
             <Grid.Resources>
                 <Style TargetType="TextBlock">
