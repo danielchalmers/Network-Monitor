@@ -120,8 +120,8 @@ namespace Network_Monitor
                                 {
                                     Latency = status == IPStatus.Success ? latency.ToString() : "Error";
                                     LatencyStatus = status;
-                                    Download = ByteHelper.BytesToString(downloadDifference);
-                                    Upload = ByteHelper.BytesToString(uploadDifference);
+                                    Download = ByteHelper.BytesToReadableString(downloadDifference);
+                                    Upload = ByteHelper.BytesToReadableString(uploadDifference);
                                     DownloadBytes = downloadDifference;
                                     UploadBytes = uploadDifference;
                                 }));
