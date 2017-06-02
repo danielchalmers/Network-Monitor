@@ -62,7 +62,7 @@
                 <BeginStoryboard>
                     <Storyboard>
                         <DoubleAnimation Duration="0:0:0.1"
-                                         To="0.4"
+                                         To="0.6"
                                          Storyboard.TargetProperty="Opacity" />
                     </Storyboard>
                 </BeginStoryboard>
