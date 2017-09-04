@@ -9,7 +9,7 @@ using System.Windows;
 [assembly: AssemblyTitle("Network Monitor")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Daniel Chalmers Software")]
+[assembly: AssemblyCompany("Daniel Chalmers")]
 [assembly: AssemblyProduct("Network Monitor")]
 [assembly: AssemblyCopyright("© Daniel Chalmers 2017")]
 [assembly: AssemblyTrademark("")]
