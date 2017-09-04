@@ -36,8 +36,8 @@
                         <TextBlock Text="Size: " />
                         <Slider Width="60"
                                 Value="{Binding FontSize, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"
-                                Minimum="8"
-                                Maximum="80"
+                                Minimum="10"
+                                Maximum="100"
                                 TickFrequency="2"
                                 IsSnapToTickEnabled="True"
                                 AutoToolTipPlacement="TopLeft" />
