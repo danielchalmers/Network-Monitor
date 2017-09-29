@@ -54,7 +54,7 @@
     </Window.ContextMenu>
     <Viewbox Width="{Binding Size, Source={x:Static properties:Settings.Default}, Mode=OneWay}">
         <Border Background="White"
-                CornerRadius="5"
+                CornerRadius="2"
                 BorderThickness="1"
                 Opacity="0.95">
             <Border.BorderBrush>
