@@ -55,12 +55,7 @@
     <Viewbox Width="{Binding Size, Source={x:Static properties:Settings.Default}, Mode=OneWay}">
         <Border Background="White"
                 CornerRadius="2"
-                BorderThickness="1"
                 Opacity="0.95">
-            <Border.BorderBrush>
-                <SolidColorBrush Color="Gray"
-                                 Opacity="0.25" />
-            </Border.BorderBrush>
             <Grid Margin="2">
                 <Grid.Resources>
                     <Style TargetType="TextBlock">
