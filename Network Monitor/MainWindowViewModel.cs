@@ -29,38 +29,38 @@ namespace Network_Monitor
 
         public string Latency
         {
-            get { return _latency; }
-            private set { Set(ref _latency, value); }
+            get => _latency;
+            private set => Set(ref _latency, value);
         }
 
         public IPStatus LatencyStatus
         {
-            get { return _latencyStatus; }
-            private set { Set(ref _latencyStatus, value); }
+            get => _latencyStatus;
+            private set => Set(ref _latencyStatus, value);
         }
 
         public string Download
         {
-            get { return _download; }
-            private set { Set(ref _download, value); }
+            get => _download;
+            private set => Set(ref _download, value);
         }
 
         public string Upload
         {
-            get { return _upload; }
-            private set { Set(ref _upload, value); }
+            get => _upload;
+            private set => Set(ref _upload, value);
         }
 
         public long DownloadBytes
         {
-            get { return _downloadBytes; }
-            private set { Set(ref _downloadBytes, value); }
+            get => _downloadBytes;
+            private set => Set(ref _downloadBytes, value);
         }
 
         public long UploadBytes
         {
-            get { return _uploadBytes; }
-            private set { Set(ref _uploadBytes, value); }
+            get => _uploadBytes;
+            private set => Set(ref _uploadBytes, value);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
