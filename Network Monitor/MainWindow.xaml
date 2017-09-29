@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Network_Monitor"
         xmlns:properties="clr-namespace:Network_Monitor.Properties"
+        xmlns:wp="clr-namespace:Network_Monitor.Placement"
         mc:Ignorable="d"
         Title="{x:Static properties:Resources.AppName}"
         Width="0"
@@ -14,10 +15,11 @@
         WindowStyle="None"
         Topmost="{Binding Topmost, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"
         ShowInTaskbar="{Binding ShowInTaskbar, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"
+        wp:WindowPlacementProperties.Placement="{Binding Placement, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"
+        wp:WindowPlacementProperties.TrackPlacement="True"
         AllowsTransparency="True"
         Background="Transparent"
-        SourceInitialized="MainWindow_SourceInitialized"
-        Closing="MainWindow_OnClosing"
+        Closed="Window_OnClosed"
         MouseDown="MainWindow_OnMouseDown">
     <Window.DataContext>
         <local:MainWindowViewModel />

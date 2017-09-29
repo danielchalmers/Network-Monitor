@@ -67,18 +67,6 @@ namespace Network_Monitor.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string MainWindowPlacement {
-            get {
-                return ((string)(this["MainWindowPlacement"]));
-            }
-            set {
-                this["MainWindowPlacement"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("24")]
         public int FontSize {
             get {
@@ -98,6 +86,37 @@ namespace Network_Monitor.Properties {
             }
             set {
                 this["ShowInTaskbar"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<WindowPlacement xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <length>0</length>
+  <flags>0</flags>
+  <showCmd>0</showCmd>
+  <minPosition>
+    <X>0</X>
+    <Y>0</Y>
+  </minPosition>
+  <maxPosition>
+    <X>0</X>
+    <Y>0</Y>
+  </maxPosition>
+  <normalPosition>
+    <Left>0</Left>
+    <Top>0</Top>
+    <Right>0</Right>
+    <Bottom>0</Bottom>
+  </normalPosition>
+</WindowPlacement>")]
+        public global::Network_Monitor.Placement.WindowPlacement Placement {
+            get {
+                return ((global::Network_Monitor.Placement.WindowPlacement)(this["Placement"]));
+            }
+            set {
+                this["Placement"] = value;
             }
         }
     }

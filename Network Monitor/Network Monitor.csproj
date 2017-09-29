@@ -79,7 +79,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="WindowPlacementHelper.cs" />
+    <Compile Include="NativeMethods.cs" />
+    <Compile Include="Placement\Point.cs" />
+    <Compile Include="Placement\Rect.cs" />
+    <Compile Include="Placement\WindowPlacement.cs" />
+    <Compile Include="Placement\WindowPlacementFunctions.cs" />
+    <Compile Include="Placement\WindowPlacementProperties.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -117,6 +122,7 @@
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
