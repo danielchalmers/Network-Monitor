@@ -14,9 +14,6 @@
     <Setting Name="Topmost" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="FontSize" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">24</Value>
-    </Setting>
     <Setting Name="ShowInTaskbar" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -41,6 +38,9 @@
     &lt;Bottom&gt;0&lt;/Bottom&gt;
   &lt;/normalPosition&gt;
 &lt;/WindowPlacement&gt;</Value>
+    </Setting>
+    <Setting Name="Size" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">100</Value>
     </Setting>
   </Settings>
 </SettingsFile>

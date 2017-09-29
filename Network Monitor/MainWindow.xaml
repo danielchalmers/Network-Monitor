@@ -38,10 +38,10 @@
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Size: " />
                         <Slider Width="60"
-                                Value="{Binding FontSize, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"
-                                Minimum="10"
-                                Maximum="100"
-                                TickFrequency="2"
+                                Value="{Binding Size, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"
+                                Minimum="50"
+                                Maximum="500"
+                                TickFrequency="10"
                                 IsSnapToTickEnabled="True"
                                 AutoToolTipPlacement="TopLeft" />
                     </StackPanel>
@@ -52,65 +52,65 @@
                       Click="MenuItemExit_OnClick" />
         </ContextMenu>
     </Window.ContextMenu>
-    <Border Background="White"
-            CornerRadius="5"
-            BorderThickness="1"
-            Opacity="0.95">
-        <Border.BorderBrush>
-            <SolidColorBrush Color="Gray"
-                             Opacity="0.25" />
-        </Border.BorderBrush>
-        <Grid Margin="2">
-            <Grid.Resources>
-                <Style TargetType="TextBlock">
-                    <Setter Property="FontFamily"
-                            Value="Consolas" />
-                    <Setter Property="FontSize"
-                            Value="{Binding FontSize, Source={x:Static properties:Settings.Default}, Mode=OneWay}" />
-                    <Setter Property="VerticalAlignment"
-                            Value="Center" />
-                    <Setter Property="HorizontalAlignment"
-                            Value="Center" />
-                </Style>
-            </Grid.Resources>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="5" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="5" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <!--Preserve width-->
-            <TextBlock Grid.Column="2"
-                       Grid.Row="0"
-                       Text="1000K"
-                       Visibility="Hidden" />
-            <TextBlock Grid.Column="0"
-                       Grid.Row="0"
-                       Text="⟳"
-                       Foreground="DarkOrange" />
-            <TextBlock Grid.Column="2"
-                       Grid.Row="0"
-                       Text="{Binding Latency}" />
-            <TextBlock Grid.Column="0"
-                       Grid.Row="2"
-                       Text="↓"
-                       Foreground="Green" />
-            <TextBlock Grid.Column="2"
-                       Grid.Row="2"
-                       Text="{Binding Download}" />
-            <TextBlock Grid.Column="0"
-                       Grid.Row="4"
-                       Text="↑"
-                       Foreground="Blue" />
-            <TextBlock Grid.Column="2"
-                       Grid.Row="4"
-                       Text="{Binding Upload}" />
-        </Grid>
-    </Border>
+    <Viewbox Width="{Binding Size, Source={x:Static properties:Settings.Default}, Mode=OneWay}">
+        <Border Background="White"
+                CornerRadius="5"
+                BorderThickness="1"
+                Opacity="0.95">
+            <Border.BorderBrush>
+                <SolidColorBrush Color="Gray"
+                                 Opacity="0.25" />
+            </Border.BorderBrush>
+            <Grid Margin="2">
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="FontFamily"
+                                Value="Consolas" />
+                        <Setter Property="VerticalAlignment"
+                                Value="Center" />
+                        <Setter Property="HorizontalAlignment"
+                                Value="Center" />
+                    </Style>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <!--Preserve width-->
+                <TextBlock Grid.Column="2"
+                           Grid.Row="0"
+                           Text="1000K"
+                           Visibility="Hidden" />
+                <TextBlock Grid.Column="0"
+                           Grid.Row="0"
+                           Text="⟳"
+                           Foreground="DarkOrange" />
+                <TextBlock Grid.Column="2"
+                           Grid.Row="0"
+                           Text="{Binding Latency}" />
+                <TextBlock Grid.Column="0"
+                           Grid.Row="2"
+                           Text="↓"
+                           Foreground="Green" />
+                <TextBlock Grid.Column="2"
+                           Grid.Row="2"
+                           Text="{Binding Download}" />
+                <TextBlock Grid.Column="0"
+                           Grid.Row="4"
+                           Text="↑"
+                           Foreground="Blue" />
+                <TextBlock Grid.Column="2"
+                           Grid.Row="4"
+                           Text="{Binding Upload}" />
+            </Grid>
+        </Border>
+    </Viewbox>
 </Window>
