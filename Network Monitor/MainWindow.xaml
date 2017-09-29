@@ -56,7 +56,7 @@
         <Border Background="White"
                 CornerRadius="2"
                 Opacity="0.95">
-            <Grid Margin="2">
+            <Grid Margin="1">
                 <Grid.Resources>
                     <Style TargetType="TextBlock">
                         <Setter Property="FontFamily"
