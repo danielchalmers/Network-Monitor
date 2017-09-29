@@ -20,7 +20,8 @@
         AllowsTransparency="True"
         Background="Transparent"
         Closed="Window_OnClosed"
-        MouseDown="MainWindow_OnMouseDown">
+        MouseDown="MainWindow_OnMouseDown"
+        UseLayoutRounding="True">
     <Window.DataContext>
         <local:MainWindowViewModel />
     </Window.DataContext>
