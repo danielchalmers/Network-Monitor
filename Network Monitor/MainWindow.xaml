@@ -21,7 +21,8 @@
         Background="Transparent"
         Closed="Window_OnClosed"
         MouseDown="MainWindow_OnMouseDown"
-        UseLayoutRounding="True">
+        UseLayoutRounding="True"
+        FontFamily="Consolas">
     <Window.DataContext>
         <local:MainWindowViewModel />
     </Window.DataContext>
@@ -59,8 +60,6 @@
             <Grid Margin="1">
                 <Grid.Resources>
                     <Style TargetType="TextBlock">
-                        <Setter Property="FontFamily"
-                                Value="Consolas" />
                         <Setter Property="VerticalAlignment"
                                 Value="Center" />
                         <Setter Property="HorizontalAlignment"
