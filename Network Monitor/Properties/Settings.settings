@@ -18,7 +18,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="Size" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">100</Value>
+      <Value Profile="(Default)">96</Value>
     </Setting>
     <Setting Name="Placement" Type="Network_Monitor.Placement.WindowPlacement" Scope="User">
       <Value Profile="(Default)">

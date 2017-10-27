@@ -43,9 +43,9 @@
 
                         <Slider Width="60"
                                 Value="{Binding Size, Source={x:Static p:Settings.Default}, Mode=TwoWay}"
-                                Minimum="50"
-                                Maximum="500"
-                                TickFrequency="10"
+                                Minimum="48"
+                                Maximum="480"
+                                TickFrequency="8"
                                 IsSnapToTickEnabled="True"
                                 AutoToolTipPlacement="TopLeft" />
                     </StackPanel>
