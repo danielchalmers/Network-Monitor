@@ -67,9 +67,8 @@
         <Border Background="White"
                 CornerRadius="2"
                 Opacity="0.95">
-            <Grid>
-                <ItemsControl ItemsSource="{Binding Monitors}"
-                              Grid.IsSharedSizeScope="True">
+            <Grid Grid.IsSharedSizeScope="True">
+                <ItemsControl ItemsSource="{Binding Monitors}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <root:MonitorView Margin="1" />
