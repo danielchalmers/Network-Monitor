@@ -28,6 +28,10 @@
 
     <Window.ContextMenu>
         <ContextMenu>
+            <MenuItem Header="Measure in _bits"
+                      IsCheckable="True"
+                      IsChecked="{Binding Bits, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
+
             <MenuItem Header="Stay on _top"
                       IsCheckable="True"
                       IsChecked="{Binding Topmost, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />

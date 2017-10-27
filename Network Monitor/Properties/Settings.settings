@@ -43,5 +43,8 @@
           &lt;/WindowPlacement&gt;
         </Value>
     </Setting>
+    <Setting Name="Bits" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

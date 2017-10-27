@@ -22,6 +22,11 @@ namespace Network_Monitor.Monitors
         {
             var value = GetCurrentValue();
 
+            if (Properties.Settings.Default.Bits)
+            {
+                value *= 8;
+            }
+
             return ByteUtil.BytesToReadableString(value);
         }
 
