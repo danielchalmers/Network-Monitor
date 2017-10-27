@@ -91,10 +91,12 @@
     <Compile Include="NativeMethods.cs" />
     <Compile Include="ObservableObject.cs" />
     <Compile Include="Placement\Point.cs" />
-    <Compile Include="Placement\Rect.cs" />
+    <Compile Include="Placement\Rectangle.cs" />
     <Compile Include="Placement\WindowPlacement.cs" />
+    <Compile Include="Placement\WindowPlacementFlags.cs" />
     <Compile Include="Placement\WindowPlacementFunctions.cs" />
     <Compile Include="Placement\WindowPlacementProperties.cs" />
+    <Compile Include="Placement\WindowPlacementShowCommand.cs" />
     <Compile Include="Utils\ByteUtil.cs" />
     <Compile Include="Utils\NetworkUtil.cs" />
     <Page Include="MainWindow.xaml">
