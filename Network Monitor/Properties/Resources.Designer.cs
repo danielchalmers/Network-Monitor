@@ -59,14 +59,5 @@ namespace Network_Monitor.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Network Monitor.
-        /// </summary>
-        public static string AppName {
-            get {
-                return ResourceManager.GetString("AppName", resourceCulture);
-            }
-        }
     }
 }

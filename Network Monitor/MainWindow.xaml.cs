@@ -18,7 +18,13 @@ namespace Network_Monitor
                 Settings.Default.MustUpgrade = false;
                 Settings.Default.Save();
             }
+
+            ViewModel = new MainViewModel();
+
+            DataContext = ViewModel;
         }
+
+        public MainViewModel ViewModel { get; }
 
         private void Window_OnClosed(object sender, System.EventArgs e)
         {
@@ -36,6 +42,11 @@ namespace Network_Monitor
             {
                 DragMove();
             }
+        }
+
+        private async void Window_SourceInitialized(object sender, System.EventArgs e)
+        {
+            await ViewModel.StartMonitoring();
         }
     }
 }

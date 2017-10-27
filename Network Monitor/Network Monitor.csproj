@@ -80,12 +80,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Monitors\LatencyMonitor.cs" />
+    <Compile Include="Monitors\DummyMonitor.cs" />
+    <Compile Include="Monitors\UploadMonitor.cs" />
+    <Compile Include="Monitors\DownloadMonitor.cs" />
+    <Compile Include="Monitors\IMonitor.cs" />
+    <Compile Include="MonitorView.xaml.cs">
+      <DependentUpon>MonitorView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="NativeMethods.cs" />
+    <Compile Include="ObservableObject.cs" />
     <Compile Include="Placement\Point.cs" />
     <Compile Include="Placement\Rect.cs" />
     <Compile Include="Placement\WindowPlacement.cs" />
     <Compile Include="Placement\WindowPlacementFunctions.cs" />
     <Compile Include="Placement\WindowPlacementProperties.cs" />
+    <Compile Include="Utils\ByteUtil.cs" />
+    <Compile Include="Utils\NetworkUtil.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -94,15 +105,17 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ByteHelper.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="MonitorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MainWindowViewModel.cs" />
-    <Compile Include="NetworkHelper.cs" />
+    <Compile Include="MainViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

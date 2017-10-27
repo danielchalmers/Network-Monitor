@@ -1,6 +1,6 @@
-﻿namespace Network_Monitor
+﻿namespace Network_Monitor.Utils
 {
-    public static class ByteHelper
+    public static class ByteUtil
     {
         // Adapted from https://stackoverflow.com/a/11124118.
         public static string BytesToReadableString(long bytes)
@@ -49,6 +49,11 @@
             readable = (readable / 1024);
 
             return readable.ToString("0") + suffix;
+        }
+
+        public static long GetBits(long bytes)
+        {
+            return bytes * 8;
         }
     }
 }
