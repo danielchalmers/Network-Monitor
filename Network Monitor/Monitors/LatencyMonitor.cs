@@ -21,7 +21,7 @@ namespace Network_Monitor.Monitors
 
         public async Task<string> GetNewDisplayValueAsync()
         {
-            var reply = await _ping.SendPingAsync(Settings.Default.PingHost, 4000);
+            var reply = await _ping.SendPingAsync(Settings.Default.PingHost, (int)Settings.Default.Timeout.TotalMilliseconds);
             var latency = reply.RoundtripTime;
             var status = reply.Status;
 

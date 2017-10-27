@@ -132,5 +132,14 @@ namespace Network_Monitor.Properties {
                 this["Bits"] = value;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("00:00:04")]
+        public global::System.TimeSpan Timeout {
+            get {
+                return ((global::System.TimeSpan)(this["Timeout"]));
+            }
+        }
     }
 }
