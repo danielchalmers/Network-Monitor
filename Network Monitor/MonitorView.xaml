@@ -15,6 +15,7 @@
                    Text="{Binding Icon}"
                    Foreground="{Binding IconColor}"
                    FontWeight="DemiBold"
+                   ToolTip="{Binding IconToolTip}"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center" />
 

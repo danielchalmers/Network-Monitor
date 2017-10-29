@@ -18,6 +18,7 @@ namespace Network_Monitor.Monitors
 
         public string Icon { get; } = "⟳";
         public SolidColorBrush IconColor { get; } = Brushes.DarkOrange;
+        public string IconToolTip { get; } = "Latency";
 
         public async Task<string> GetNewDisplayValueAsync()
         {

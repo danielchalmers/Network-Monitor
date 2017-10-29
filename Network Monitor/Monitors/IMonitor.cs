@@ -8,6 +8,7 @@ namespace Network_Monitor.Monitors
         string DisplayValue { get; set; }
         string Icon { get; }
         SolidColorBrush IconColor { get; }
+        string IconToolTip { get; }
 
         Task<string> GetNewDisplayValueAsync();
     }

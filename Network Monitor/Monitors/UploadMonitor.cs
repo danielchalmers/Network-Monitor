@@ -17,6 +17,7 @@ namespace Network_Monitor.Monitors
 
         public string Icon { get; } = "↑";
         public SolidColorBrush IconColor { get; } = Brushes.Blue;
+        public string IconToolTip { get; } = "Upload";
 
         public async Task<string> GetNewDisplayValueAsync()
         {
