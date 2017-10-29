@@ -66,12 +66,13 @@
     <Viewbox Width="{Binding Size, Source={x:Static p:Settings.Default}, Mode=OneWay}">
         <Border Background="White"
                 CornerRadius="2"
-                Opacity="0.95">
+                Opacity="0.95"
+                Margin="1">
             <Grid Grid.IsSharedSizeScope="True">
                 <ItemsControl ItemsSource="{Binding Monitors}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <root:MonitorView Margin="1" />
+                            <root:MonitorView />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
