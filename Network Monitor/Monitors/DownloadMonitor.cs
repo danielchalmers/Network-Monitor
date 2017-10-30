@@ -25,7 +25,7 @@ namespace Network_Monitor.Monitors
 
             if (Properties.Settings.Default.Bits)
             {
-                value *= 8;
+                value = ByteUtil.GetBits(value);
             }
 
             return ByteUtil.BytesToReadableString(value);
