@@ -98,7 +98,6 @@
     <Compile Include="Placement\WindowPlacementProperties.cs" />
     <Compile Include="Placement\WindowPlacementShowCommand.cs" />
     <Compile Include="Utils\ByteUtil.cs" />
-    <Compile Include="Utils\NetworkUtil.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

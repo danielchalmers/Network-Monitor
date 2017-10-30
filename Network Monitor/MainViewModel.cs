@@ -26,7 +26,7 @@ namespace Network_Monitor
                 {
                     foreach (var monitor in Monitors)
                     {
-                        monitor.DisplayValue = await monitor.GetNewDisplayValueAsync();
+                        await monitor.UpdateDisplayValueAsync();
                     }
                 }
                 catch

@@ -10,7 +10,7 @@ namespace Network_Monitor.Monitors
         public string DisplayValue
         {
             get => _displayValue;
-            set => Set(ref _displayValue, value);
+            private set => Set(ref _displayValue, value);
         }
 
         public string Icon { get; } = "X";
@@ -21,5 +21,7 @@ namespace Network_Monitor.Monitors
         {
             return DisplayValue;
         }
+
+        public async Task UpdateDisplayValueAsync() => DisplayValue = await GetNewDisplayValueAsync();
     }
 }

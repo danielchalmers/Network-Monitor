@@ -13,7 +13,7 @@ namespace Network_Monitor.Monitors
         public string DisplayValue
         {
             get => _displayValue;
-            set => Set(ref _displayValue, value);
+            private set => Set(ref _displayValue, value);
         }
 
         public string Icon { get; } = "⟳";
@@ -28,5 +28,7 @@ namespace Network_Monitor.Monitors
 
             return status == IPStatus.Success ? latency.ToString() : "Error";
         }
+
+        public async Task UpdateDisplayValueAsync() => DisplayValue = await GetNewDisplayValueAsync();
     }
 }

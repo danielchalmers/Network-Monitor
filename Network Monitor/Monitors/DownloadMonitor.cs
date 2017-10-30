@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Net.NetworkInformation;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using Network_Monitor.Utils;
 
@@ -7,12 +9,12 @@ namespace Network_Monitor.Monitors
     public class DownloadMonitor : ObservableObject, IMonitor
     {
         private string _displayValue;
-        private long _lastValue = NetworkUtil.GetTotalBytesDownloaded();
+        private long _lastBytes;
 
         public string DisplayValue
         {
             get => _displayValue;
-            set => Set(ref _displayValue, value);
+            private set => Set(ref _displayValue, value);
         }
 
         public string Icon { get; } = "↓";
@@ -21,28 +23,39 @@ namespace Network_Monitor.Monitors
 
         public async Task<string> GetNewDisplayValueAsync()
         {
-            var value = GetCurrentValue();
+            var bytes = GetBytesDifferenceAndSetLast();
 
-            if (Properties.Settings.Default.Bits)
-            {
-                return ByteUtil.BytesToReadableString(ByteUtil.GetBits(value)).ToLower();
-            }
-
-            return ByteUtil.BytesToReadableString(value);
+            return Properties.Settings.Default.Bits
+                ? ByteUtil.BytesToReadableString(ByteUtil.GetBits(bytes)).ToLower()
+                : ByteUtil.BytesToReadableString(bytes);
         }
 
-        private long GetCurrentValue()
+        public async Task UpdateDisplayValueAsync() => DisplayValue = await GetNewDisplayValueAsync();
+
+        private long GetBytesDifferenceAndSetLast()
         {
-            var totalDownloadedBytes = NetworkUtil.GetTotalBytesDownloaded();
+            var bytes = GetTotalBytesDownloaded();
             try
             {
-                // Return bytes since last check.
-                return totalDownloadedBytes - _lastValue;
+                // If the last value hasn't been set or is naturally less than zero (due to interface disconnect, etc), just return 0.
+                if (_lastBytes <= 0)
+                {
+                    return 0;
+                }
+
+                // Return the difference in bytes since the last call.
+                return bytes - _lastBytes;
             }
             finally
             {
-                _lastValue = totalDownloadedBytes;
+                _lastBytes = bytes;
             }
         }
+
+        private long GetTotalBytesDownloaded() =>
+             NetworkInterface
+             .GetAllNetworkInterfaces()
+             .Select(x => x.GetIPStatistics().BytesReceived)
+             .Sum();
     }
 }
