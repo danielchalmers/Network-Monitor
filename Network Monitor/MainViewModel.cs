@@ -22,20 +22,17 @@ namespace Network_Monitor
         {
             while (true)
             {
-                try
+                foreach (var monitor in Monitors)
                 {
-                    foreach (var monitor in Monitors)
+                    try
                     {
                         await monitor.UpdateDisplayValueAsync();
                     }
+                    catch
+                    {
+                    }
                 }
-                catch
-                {
-                }
-                finally
-                {
-                    await Task.Delay(Settings.Default.Interval);
-                }
+                await Task.Delay(Settings.Default.Interval);
             }
         }
     }
