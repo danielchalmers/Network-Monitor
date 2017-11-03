@@ -45,7 +45,7 @@
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Size: " />
 
-                        <Slider Width="60"
+                        <Slider Width="64"
                                 Value="{Binding Size, Source={x:Static p:Settings.Default}, Mode=TwoWay}"
                                 Minimum="48"
                                 Maximum="480"
