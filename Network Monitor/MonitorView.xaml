@@ -16,12 +16,10 @@
                    Foreground="{Binding IconColor}"
                    FontWeight="DemiBold"
                    ToolTip="{Binding IconToolTip}"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center" />
+                   TextAlignment="Center" />
 
         <TextBlock Grid.Column="1"
                    Text="{Binding DisplayValue}"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center" />
+                   TextAlignment="Center" />
     </Grid>
 </UserControl>
