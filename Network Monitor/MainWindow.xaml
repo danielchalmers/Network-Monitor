@@ -79,8 +79,7 @@
                 </ItemsControl>
 
                 <!-- Hidden dummy monitor to preserve width -->
-                <root:MonitorView Margin="1"
-                                  Visibility="Hidden">
+                <root:MonitorView Visibility="Hidden">
                     <root:MonitorView.DataContext>
                         <monitors:DummyMonitor />
                     </root:MonitorView.DataContext>
