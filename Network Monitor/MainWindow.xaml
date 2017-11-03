@@ -49,7 +49,7 @@
                                 Value="{Binding Size, Source={x:Static p:Settings.Default}, Mode=TwoWay}"
                                 Minimum="48"
                                 Maximum="480"
-                                TickFrequency="8"
+                                TickFrequency="4"
                                 IsSnapToTickEnabled="True"
                                 AutoToolTipPlacement="TopLeft" />
                     </StackPanel>
