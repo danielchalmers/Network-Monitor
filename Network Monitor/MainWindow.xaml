@@ -64,10 +64,12 @@
     </Window.ContextMenu>
 
     <Viewbox Width="{Binding Size, Source={x:Static p:Settings.Default}, Mode=OneWay}">
-        <Border Background="White"
-                CornerRadius="2"
-                Opacity="0.95"
+        <Border CornerRadius="2"
                 Margin="1">
+            <Border.Background>
+                <SolidColorBrush Color="White"
+                                 Opacity="0.95" />
+            </Border.Background>
             <Grid Grid.IsSharedSizeScope="True">
                 <ItemsControl ItemsSource="{Binding Monitors}">
                     <ItemsControl.ItemTemplate>
