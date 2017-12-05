@@ -19,7 +19,8 @@
                    TextAlignment="Center" />
 
         <Viewbox Grid.Column="1"
-                 StretchDirection="DownOnly">
+                 StretchDirection="DownOnly"
+                 Margin="1,0,1,0">
             <TextBlock Text="{Binding DisplayValue}"
                        TextAlignment="Center" />
         </Viewbox>
