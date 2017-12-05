@@ -1,17 +1,20 @@
 ﻿using System.Threading.Tasks;
-using System.Windows.Media;
+using Network_Monitor.Monitors.Models;
 
 namespace Network_Monitor.Monitors
 {
     public interface IMonitor
     {
+        /// <summary>
+        /// User-friendly text to show in UI.
+        /// </summary>
         string DisplayValue { get; }
-        string Icon { get; }
-        SolidColorBrush IconColor { get; }
-        string IconToolTip { get; }
 
-        Task<string> GetNewDisplayValueAsync();
+        MonitorIcon Icon { get; }
 
-        Task UpdateDisplayValueAsync();
+        /// <summary>
+        /// Update <see cref="DisplayValue"/> with latest value.
+        /// </summary>
+        Task UpdateAsync();
     }
 }

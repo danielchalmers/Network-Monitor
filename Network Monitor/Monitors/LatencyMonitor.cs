@@ -1,10 +1,14 @@
 ﻿using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using Network_Monitor.Monitors.Models;
 using Network_Monitor.Properties;
 
 namespace Network_Monitor.Monitors
 {
+    /// <summary>
+    /// Monitor for ping latency.
+    /// </summary>
     public class LatencyMonitor : ObservableObject, IMonitor
     {
         private readonly Ping _ping = new Ping();
@@ -16,19 +20,19 @@ namespace Network_Monitor.Monitors
             private set => Set(ref _displayValue, value);
         }
 
-        public string Icon { get; } = "⟳";
-        public SolidColorBrush IconColor { get; } = Brushes.DarkOrange;
-        public string IconToolTip { get; } = "Latency";
+        public MonitorIcon Icon { get; } = new MonitorIcon("⟳", "Latency", Brushes.DarkOrange);
 
-        public async Task<string> GetNewDisplayValueAsync()
+        public async Task UpdateAsync()
         {
-            var reply = await _ping.SendPingAsync(Settings.Default.PingHost, (int)Settings.Default.Timeout.TotalMilliseconds);
-            var latency = reply.RoundtripTime;
-            var status = reply.Status;
+            async Task<string> GetUpdatedValue()
+            {
+                var reply = await _ping.SendPingAsync(Settings.Default.PingHost, (int)Settings.Default.Timeout.TotalMilliseconds);
+                var latency = reply.RoundtripTime;
+                var status = reply.Status;
 
-            return status == IPStatus.Success ? latency.ToString() : "Error";
+                return status == IPStatus.Success ? latency.ToString() : "Error";
+            }
+            DisplayValue = await GetUpdatedValue();
         }
-
-        public async Task UpdateDisplayValueAsync() => DisplayValue = await GetNewDisplayValueAsync();
     }
 }

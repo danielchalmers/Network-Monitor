@@ -26,7 +26,7 @@ namespace Network_Monitor
                 {
                     try
                     {
-                        await monitor.UpdateDisplayValueAsync();
+                        await monitor.UpdateAsync();
                     }
                     catch
                     {

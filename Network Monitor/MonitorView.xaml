@@ -12,10 +12,10 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Column="0"
-                   Text="{Binding Icon}"
-                   Foreground="{Binding IconColor}"
+                   Text="{Binding Icon.Text}"
+                   Foreground="{Binding Icon.Brush}"
+                   ToolTip="{Binding Icon.Name}"
                    FontWeight="DemiBold"
-                   ToolTip="{Binding IconToolTip}"
                    TextAlignment="Center" />
 
         <TextBlock Grid.Column="1"

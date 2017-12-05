@@ -80,6 +80,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Monitors\BandwidthMonitorBase.cs" />
+    <Compile Include="Monitors\Models\MonitorIcon.cs" />
     <Compile Include="Monitors\LatencyMonitor.cs" />
     <Compile Include="Monitors\DummyMonitor.cs" />
     <Compile Include="Monitors\UploadMonitor.cs" />
