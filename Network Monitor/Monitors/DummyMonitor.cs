@@ -10,7 +10,7 @@ namespace Network_Monitor.Monitors
     /// </summary>
     public class DummyMonitor : ObservableObject, IMonitor
     {
-        public string DisplayValue { get; } = "".PadLeft(5, ' ');
+        public string DisplayValue { get; } = "".PadLeft(4, ' ');
 
         public MonitorIcon Icon { get; } = new MonitorIcon("X", "You shouldn't see this!", Brushes.Black);
 

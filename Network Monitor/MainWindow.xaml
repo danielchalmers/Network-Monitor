@@ -72,13 +72,14 @@
                 <ItemsControl ItemsSource="{Binding Monitors}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <root:MonitorView />
+                            <root:MonitorView Width="{Binding ActualWidth, ElementName=DummyMonitor}" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
                 <!-- Hidden dummy monitor to preserve width -->
-                <root:MonitorView Visibility="Hidden">
+                <root:MonitorView x:Name="DummyMonitor"
+                                  Visibility="Hidden">
                     <root:MonitorView.DataContext>
                         <monitors:DummyMonitor />
                     </root:MonitorView.DataContext>

@@ -18,8 +18,10 @@
                    FontWeight="DemiBold"
                    TextAlignment="Center" />
 
-        <TextBlock Grid.Column="1"
-                   Text="{Binding DisplayValue}"
-                   TextAlignment="Center" />
+        <Viewbox Grid.Column="1"
+                 StretchDirection="DownOnly">
+            <TextBlock Text="{Binding DisplayValue}"
+                       TextAlignment="Center" />
+        </Viewbox>
     </Grid>
 </UserControl>
