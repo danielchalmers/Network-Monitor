@@ -61,7 +61,8 @@
         </ContextMenu>
     </Window.ContextMenu>
 
-    <Viewbox Width="{Binding Size, Source={x:Static p:Settings.Default}, Mode=OneWay}">
+    <Viewbox DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+             Width="{Binding Size, Source={x:Static p:Settings.Default}, Mode=OneWay}">
         <Border CornerRadius="2">
             <Border.Background>
                 <SolidColorBrush Color="White"

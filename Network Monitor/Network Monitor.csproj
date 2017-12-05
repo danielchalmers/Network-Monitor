@@ -118,7 +118,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MainViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

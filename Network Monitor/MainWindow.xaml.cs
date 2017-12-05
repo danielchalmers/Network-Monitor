@@ -1,5 +1,8 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
+using Network_Monitor.Monitors;
 using Network_Monitor.Properties;
 
 namespace Network_Monitor
@@ -19,21 +22,31 @@ namespace Network_Monitor
                 Settings.Default.Save();
             }
 
-            ViewModel = new MainViewModel();
-
-            DataContext = ViewModel;
+            Monitors = new List<IMonitor> {
+                new LatencyMonitor(),
+                new DownloadMonitor(),
+                new UploadMonitor()
+            };
         }
 
-        public MainViewModel ViewModel { get; }
+        public List<IMonitor> Monitors { get; }
 
-        private void Window_OnClosed(object sender, System.EventArgs e)
+        public async Task StartMonitoring()
         {
-            Settings.Default.Save();
-        }
-
-        private void MenuItemExit_OnClick(object sender, RoutedEventArgs e)
-        {
-            Close();
+            while (true)
+            {
+                foreach (var monitor in Monitors)
+                {
+                    try
+                    {
+                        await monitor.UpdateAsync();
+                    }
+                    catch
+                    {
+                    }
+                }
+                await Task.Delay(Settings.Default.Interval);
+            }
         }
 
         private void MainWindow_OnMouseDown(object sender, MouseButtonEventArgs e)
@@ -44,9 +57,19 @@ namespace Network_Monitor
             }
         }
 
+        private void MenuItemExit_OnClick(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void Window_OnClosed(object sender, System.EventArgs e)
+        {
+            Settings.Default.Save();
+        }
+
         private async void Window_SourceInitialized(object sender, System.EventArgs e)
         {
-            await ViewModel.StartMonitoring();
+            await StartMonitoring();
         }
     }
 }
