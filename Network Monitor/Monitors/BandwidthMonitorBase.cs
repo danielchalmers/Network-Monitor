@@ -28,8 +28,8 @@ namespace Network_Monitor.Monitors
                 var bytes = GetBytesDiffAndUpdateLast();
 
                 return Properties.Settings.Default.Bits
-                    ? ByteUtil.BytesToReadableString(ByteUtil.GetBits(bytes)).ToLower()
-                    : ByteUtil.BytesToReadableString(bytes);
+                    ? GetReadableByteString(ByteUtil.GetBits(bytes)).ToLower()
+                    : GetReadableByteString(bytes);
             }
             DisplayValue = GetUpdatedValue();
         }
@@ -57,6 +57,23 @@ namespace Network_Monitor.Monitors
             {
                 _lastBytes = bytes;
             }
+        }
+
+        /// <summary>
+        /// Return a user-friendly representation of a number of bytes.
+        /// </summary>
+        private string GetReadableByteString(long bytes)
+        {
+            if (bytes < 0)
+            {
+                return "<0B";
+            }
+            var readableBytes = ByteUtil.GetReadableBytes(bytes, out var suffix);
+            if (readableBytes < 10)
+            {
+                return readableBytes.ToString("0.0" + suffix);
+            }
+            return readableBytes.ToString("0" + suffix);
         }
     }
 }
