@@ -30,7 +30,7 @@ namespace Network_Monitor.Monitors
                 var latency = reply.RoundtripTime;
                 var status = reply.Status;
 
-                return status == IPStatus.Success ? latency.ToString() : "Error";
+                return status == IPStatus.Success ? latency.ToString() : "Fail";
             }
             DisplayValue = await GetUpdatedValue();
         }
