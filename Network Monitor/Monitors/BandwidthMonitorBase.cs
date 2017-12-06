@@ -69,11 +69,11 @@ namespace Network_Monitor.Monitors
                 return "<0B";
             }
             var readableBytes = ByteUtil.GetReadableBytes(bytes, out var suffix);
-            if (readableBytes < 10)
-            {
-                return readableBytes.ToString("0.0" + suffix);
-            }
-            return readableBytes.ToString("0" + suffix);
+            var readableBytesString = readableBytes.ToString("0.0");
+            var cappedReadableBytesString = readableBytesString.Length > 3
+                ? readableBytes.ToString("0")
+                : readableBytesString;
+            return cappedReadableBytesString + suffix;
         }
     }
 }
