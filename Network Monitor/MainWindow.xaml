@@ -63,28 +63,27 @@
 
     <Viewbox DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
              Width="{Binding Size, Source={x:Static p:Settings.Default}, Mode=OneWay}">
-        <Border CornerRadius="2">
-            <Border.Background>
+        <Grid Grid.IsSharedSizeScope="True">
+            <Grid.Background>
                 <SolidColorBrush Color="White"
                                  Opacity="0.85" />
-            </Border.Background>
-            <Grid Grid.IsSharedSizeScope="True">
-                <ItemsControl ItemsSource="{Binding Monitors}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <root:MonitorView Width="{Binding ActualWidth, ElementName=DummyMonitor}" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+            </Grid.Background>
 
-                <!-- Hidden dummy monitor to preserve width -->
-                <root:MonitorView x:Name="DummyMonitor"
-                                  Visibility="Hidden">
-                    <root:MonitorView.DataContext>
-                        <monitors:DummyMonitor />
-                    </root:MonitorView.DataContext>
-                </root:MonitorView>
-            </Grid>
-        </Border>
+            <ItemsControl ItemsSource="{Binding Monitors}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <root:MonitorView Width="{Binding ActualWidth, ElementName=DummyMonitor}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Hidden dummy monitor to preserve width -->
+            <root:MonitorView x:Name="DummyMonitor"
+                              Visibility="Hidden">
+                <root:MonitorView.DataContext>
+                    <monitors:DummyMonitor />
+                </root:MonitorView.DataContext>
+            </root:MonitorView>
+        </Grid>
     </Viewbox>
 </Window>
