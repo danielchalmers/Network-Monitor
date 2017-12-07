@@ -23,8 +23,7 @@
                  StretchDirection="DownOnly"
                  Margin="1,0,1,0">
             <TextBlock Text="{Binding DisplayValue}"
-                       TextAlignment="Center"
-                       VerticalAlignment="Center" />
+                       TextAlignment="Center" />
         </Viewbox>
     </Grid>
 </UserControl>
