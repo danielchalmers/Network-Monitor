@@ -8,7 +8,8 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"
                               SharedSizeGroup="Icon" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*"
+                              SharedSizeGroup="Value" />
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Column="0"

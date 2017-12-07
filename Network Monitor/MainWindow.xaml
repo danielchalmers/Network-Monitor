@@ -61,29 +61,40 @@
         </ContextMenu>
     </Window.ContextMenu>
 
-    <Viewbox DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
-             Width="{Binding Size, Source={x:Static p:Settings.Default}, Mode=OneWay}">
-        <Grid Grid.IsSharedSizeScope="True">
-            <Grid.Background>
-                <SolidColorBrush Color="White"
-                                 Opacity="0.85" />
-            </Grid.Background>
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+          Grid.IsSharedSizeScope="True">
+        <Grid.Background>
+            <SolidColorBrush Color="White"
+                             Opacity="0.85" />
+        </Grid.Background>
 
-            <ItemsControl ItemsSource="{Binding Monitors}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <root:MonitorView Width="{Binding ActualWidth, ElementName=DummyMonitor}" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+        <Grid.Resources>
+            <Style TargetType="root:MonitorView">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="root:MonitorView">
+                            <Viewbox Width="{Binding Size, Source={x:Static p:Settings.Default}, Mode=OneWay}">
+                                <ContentPresenter />
+                            </Viewbox>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Grid.Resources>
 
-            <!-- Hidden dummy monitor to preserve width -->
-            <root:MonitorView x:Name="DummyMonitor"
-                              Visibility="Hidden">
-                <root:MonitorView.DataContext>
-                    <monitors:DummyMonitor />
-                </root:MonitorView.DataContext>
-            </root:MonitorView>
-        </Grid>
-    </Viewbox>
+        <ItemsControl ItemsSource="{Binding Monitors}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <root:MonitorView Width="{Binding ActualWidth, ElementName=DummyMonitor}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Hidden dummy monitor to preserve width -->
+        <root:MonitorView Visibility="Hidden">
+            <root:MonitorView.DataContext>
+                <monitors:DummyMonitor />
+            </root:MonitorView.DataContext>
+        </root:MonitorView>
+    </Grid>
 </Window>
