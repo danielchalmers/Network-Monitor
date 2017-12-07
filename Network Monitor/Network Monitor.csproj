@@ -99,7 +99,6 @@
     <Compile Include="Placement\WindowPlacementFunctions.cs" />
     <Compile Include="Placement\WindowPlacementProperties.cs" />
     <Compile Include="Placement\WindowPlacementShowCommand.cs" />
-    <Compile Include="Utils\ByteUtil.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Network_Monitor.Monitors.Models;
-using Network_Monitor.Utils;
 
 namespace Network_Monitor.Monitors
 {
@@ -10,6 +9,7 @@ namespace Network_Monitor.Monitors
     /// </summary>
     public abstract class BandwidthMonitorBase : ObservableObject, IMonitor
     {
+        private readonly char[] ByteSuffixes = new char[] { 'B', 'K', 'M', 'G', 'T', 'P', 'E' };
         private string _displayValue;
         private long _lastBytes;
 
@@ -28,7 +28,7 @@ namespace Network_Monitor.Monitors
                 var bytes = GetBytesDiffAndUpdateLast();
 
                 return Properties.Settings.Default.Bits
-                    ? GetReadableByteString(ByteUtil.GetBits(bytes)).ToLower()
+                    ? GetReadableByteString(bytes * 8).ToLower()
                     : GetReadableByteString(bytes);
             }
             DisplayValue = GetUpdatedValue();
@@ -60,20 +60,31 @@ namespace Network_Monitor.Monitors
         }
 
         /// <summary>
-        /// Return a user-friendly representation of a number of bytes.
+        /// Return a user-friendly, 4 or less character representation of a number of bytes.
         /// </summary>
-        private string GetReadableByteString(long bytes)
+        private string GetReadableByteString(double bytes)
         {
+            // Not the fastest implementation, but it's only called twice a second at most.
+
             if (bytes < 0)
             {
                 return "<0B";
             }
-            var readableBytes = ByteUtil.GetReadableBytes(bytes, out var suffix);
-            var readableBytesString = readableBytes.ToString("0.0");
-            var cappedReadableBytesString = readableBytesString.Length > 3
-                ? readableBytes.ToString("0")
-                : readableBytesString;
-            return cappedReadableBytesString + suffix;
+
+            var suffixIndex = 0;
+            while (bytes >= 1000) // Keep at 3 or less digits.
+            {
+                bytes /= 1024;
+                suffixIndex++;
+            }
+
+            var readableBytesString = bytes.ToString("0.0");
+            if (readableBytesString.Length > 3)
+            {
+                readableBytesString = bytes.ToString("0");
+            }
+
+            return readableBytesString + ByteSuffixes[suffixIndex];
         }
     }
 }
