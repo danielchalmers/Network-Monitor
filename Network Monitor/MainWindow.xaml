@@ -38,6 +38,10 @@
                       IsCheckable="True"
                       IsChecked="{Binding ShowInTaskbar, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
 
+            <MenuItem Header="_Horizontal layout"
+                      IsCheckable="True"
+                      IsChecked="{Binding Horizontal, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
+
             <MenuItem>
                 <MenuItem.Header>
                     <StackPanel Orientation="Horizontal">
@@ -83,6 +87,26 @@
         </Grid.Resources>
 
         <ItemsControl ItemsSource="{Binding Monitors}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel>
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Orientation"
+                                        Value="Vertical" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Horizontal, Source={x:Static p:Settings.Default}, Mode=OneWay}"
+                                                 Value="True">
+                                        <Setter Property="Orientation"
+                                                Value="Horizontal" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                    </StackPanel>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <root:MonitorView Width="{Binding ActualWidth, ElementName=DummyMonitor}" />

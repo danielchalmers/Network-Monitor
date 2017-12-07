@@ -49,5 +49,8 @@
     <Setting Name="Timeout" Type="System.TimeSpan" Scope="Application">
       <Value Profile="(Default)">00:00:04</Value>
     </Setting>
+    <Setting Name="Horizontal" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

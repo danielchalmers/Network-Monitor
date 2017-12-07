@@ -141,5 +141,17 @@ namespace Network_Monitor.Properties {
                 return ((global::System.TimeSpan)(this["Timeout"]));
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Horizontal {
+            get {
+                return ((bool)(this["Horizontal"]));
+            }
+            set {
+                this["Horizontal"] = value;
+            }
+        }
     }
 }
