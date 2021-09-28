@@ -8,6 +8,6 @@ namespace Network_Monitor
     /// </summary>
     public partial class App : Application
     {
-        public static string Title { get; } = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyTitleAttribute>().Title;
+        public static string Title { get; } = Assembly.GetExecutingAssembly().GetName().Name;
     }
 }

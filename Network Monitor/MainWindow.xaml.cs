@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -45,6 +46,7 @@ namespace Network_Monitor
                     {
                     }
                 }
+
                 await Task.Delay(Settings.Default.Interval);
             }
         }
@@ -52,9 +54,7 @@ namespace Network_Monitor
         private void MainWindow_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
-            {
                 DragMove();
-            }
         }
 
         private void MenuItemExit_OnClick(object sender, RoutedEventArgs e)
@@ -62,14 +62,14 @@ namespace Network_Monitor
             Close();
         }
 
-        private void Window_OnClosed(object sender, System.EventArgs e)
-        {
-            Settings.Default.Save();
-        }
-
-        private async void Window_SourceInitialized(object sender, System.EventArgs e)
+        private async void Window_SourceInitialized(object sender, EventArgs e)
         {
             await StartMonitoring();
+        }
+
+        private void Window_OnClosed(object sender, EventArgs e)
+        {
+            Settings.Default.Save();
         }
     }
 }

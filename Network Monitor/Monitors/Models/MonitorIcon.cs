@@ -1,8 +1,8 @@
 ﻿using System.Windows.Media;
 
-namespace Network_Monitor.Monitors.Models
+namespace Network_Monitor.Monitors
 {
-    public struct MonitorIcon
+    public class MonitorIcon
     {
         public MonitorIcon(string text, string name, SolidColorBrush brush)
         {

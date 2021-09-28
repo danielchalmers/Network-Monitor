@@ -1,12 +1,10 @@
 ﻿using System.Threading.Tasks;
 using System.Windows.Media;
-using Network_Monitor.Monitors.Models;
 
 namespace Network_Monitor.Monitors
 {
     /// <summary>
     /// Dummy monitor for preserving auto-generated window width.
-    /// Display value is static and contains the max number of characters for any monitor.
     /// </summary>
     public class DummyMonitor : ObservableObject, IMonitor
     {

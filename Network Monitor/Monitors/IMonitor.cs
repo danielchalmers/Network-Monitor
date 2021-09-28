@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Network_Monitor.Monitors.Models;
 
 namespace Network_Monitor.Monitors
 {
@@ -10,10 +9,13 @@ namespace Network_Monitor.Monitors
         /// </summary>
         string DisplayValue { get; }
 
+        /// <summary>
+        /// Icon to show in UI.
+        /// </summary>
         MonitorIcon Icon { get; }
 
         /// <summary>
-        /// Update <see cref="DisplayValue"/> with latest value.
+        /// Updates <see cref="DisplayValue"/> with the latest value.
         /// </summary>
         Task UpdateAsync();
     }

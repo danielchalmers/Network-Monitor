@@ -1,11 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using Network_Monitor.Monitors.Models;
+﻿using System.Threading.Tasks;
 
 namespace Network_Monitor.Monitors
 {
     /// <summary>
-    /// Base class for bandwidth type monitors (i.e. upload and download).
+    /// Base for bandwidth type monitors (i.e. upload and download).
     /// </summary>
     public abstract class BandwidthMonitorBase : ObservableObject, IMonitor
     {
@@ -31,13 +29,11 @@ namespace Network_Monitor.Monitors
                     ? GetReadableByteString(bytes * 8).ToLower()
                     : GetReadableByteString(bytes);
             }
+
             DisplayValue = GetUpdatedValue();
         }
 
-        protected virtual long GetTotalBytes()
-        {
-            throw new NotImplementedException();
-        }
+        protected abstract long GetTotalBytes();
 
         private long GetBytesDiffAndUpdateLast()
         {
@@ -60,16 +56,14 @@ namespace Network_Monitor.Monitors
         }
 
         /// <summary>
-        /// Return a user-friendly, 4 or less character representation of a number of bytes.
+        /// Returns a short user-friendly representation of a number of bytes.
         /// </summary>
         private string GetReadableByteString(double bytes)
         {
             // Not the fastest implementation, but it's only called twice a second at most.
 
             if (bytes < 0)
-            {
                 return "<0B";
-            }
 
             var suffixIndex = 0;
             while (bytes >= 1000) // Keep at 3 or less digits.
@@ -79,10 +73,9 @@ namespace Network_Monitor.Monitors
             }
 
             var readableBytesString = bytes.ToString("0.0");
+
             if (readableBytesString.Length > 3)
-            {
                 readableBytesString = bytes.ToString("0");
-            }
 
             return readableBytesString + ByteSuffixes[suffixIndex];
         }

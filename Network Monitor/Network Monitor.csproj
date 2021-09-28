@@ -2,9 +2,10 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWPF>true</UseWPF>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <ApplicationIcon>Network Monitor.ico</ApplicationIcon>
+    <Copyright>© Daniel Chalmers 2021</Copyright>
+    <Version>2.2.0</Version>
+    <NoWarn>CS1998</NoWarn>
   </PropertyGroup>
 </Project>

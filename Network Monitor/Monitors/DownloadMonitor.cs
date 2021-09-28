@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Net.NetworkInformation;
 using System.Windows.Media;
-using Network_Monitor.Monitors.Models;
 
 namespace Network_Monitor.Monitors
 {

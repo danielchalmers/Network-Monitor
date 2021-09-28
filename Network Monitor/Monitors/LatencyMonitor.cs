@@ -1,7 +1,6 @@
 ﻿using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using Network_Monitor.Monitors.Models;
 using Network_Monitor.Properties;
 
 namespace Network_Monitor.Monitors
