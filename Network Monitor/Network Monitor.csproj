@@ -6,7 +6,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <ApplicationIcon>Network Monitor.ico</ApplicationIcon>
     <Copyright>© Daniel Chalmers 2021</Copyright>
-    <Version>2.2.0</Version>
+    <Version>2.2.1</Version>
     <NoWarn>CS1998</NoWarn>
   </PropertyGroup>
 </Project>
