@@ -60,6 +60,19 @@ public partial class MainWindow : Window
             DragMove();
     }
 
+    private void Window_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        if (Keyboard.Modifiers == ModifierKeys.Control)
+        {
+            var newSize = Settings.Default.Size + e.Delta;
+
+            newSize = Math.Max(newSize, 48);
+            newSize = Math.Min(newSize, 240);
+
+            Settings.Default.Size = newSize;
+        }
+    }
+
     private void MenuItemExit_OnClick(object sender, RoutedEventArgs e)
     {
         Close();
