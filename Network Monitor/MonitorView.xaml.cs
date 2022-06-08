@@ -1,15 +1,14 @@
 ﻿using System.Windows.Controls;
 
-namespace Network_Monitor
+namespace Network_Monitor;
+
+/// <summary>
+/// Interaction logic for MonitorView.xaml
+/// </summary>
+public partial class MonitorView : UserControl
 {
-    /// <summary>
-    /// Interaction logic for MonitorView.xaml
-    /// </summary>
-    public partial class MonitorView : UserControl
+    public MonitorView()
     {
-        public MonitorView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }
