@@ -10,7 +10,7 @@ namespace Network_Monitor.Monitors;
 /// </summary>
 public class LatencyMonitor : ObservableObject, IMonitor
 {
-    private readonly Ping _ping = new Ping();
+    private readonly Ping _ping = new();
     private string _displayValue;
 
     public string DisplayValue
@@ -31,6 +31,7 @@ public class LatencyMonitor : ObservableObject, IMonitor
 
             return status == IPStatus.Success ? latency.ToString() : "Fail";
         }
+
         DisplayValue = await GetUpdatedValue();
     }
 }

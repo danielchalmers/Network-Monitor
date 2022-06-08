@@ -22,102 +22,95 @@
         MouseDown="MainWindow_OnMouseDown"
         SourceInitialized="Window_SourceInitialized"
         Closed="Window_OnClosed">
+	<Window.ContextMenu>
+		<ContextMenu>
+			<MenuItem Header="Measure in _bits"
+			          IsCheckable="True"
+			          IsChecked="{Binding Bits, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
 
-    <Window.ContextMenu>
-        <ContextMenu>
-            <MenuItem Header="Measure in _bits"
-                      IsCheckable="True"
-                      IsChecked="{Binding Bits, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
+			<MenuItem Header="Stay on _top"
+			          IsCheckable="True"
+			          IsChecked="{Binding Topmost, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
 
-            <MenuItem Header="Stay on _top"
-                      IsCheckable="True"
-                      IsChecked="{Binding Topmost, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
+			<MenuItem Header="_Show in taskbar"
+			          IsCheckable="True"
+			          IsChecked="{Binding ShowInTaskbar, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
 
-            <MenuItem Header="_Show in taskbar"
-                      IsCheckable="True"
-                      IsChecked="{Binding ShowInTaskbar, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
+			<MenuItem Header="_Horizontal layout"
+			          IsCheckable="True"
+			          IsChecked="{Binding Horizontal, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
 
-            <MenuItem Header="_Horizontal layout"
-                      IsCheckable="True"
-                      IsChecked="{Binding Horizontal, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
+			<MenuItem>
+				<MenuItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="Size: " />
 
-            <MenuItem>
-                <MenuItem.Header>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Size: " />
+						<Slider Width="64"
+						        Value="{Binding Size, Source={x:Static p:Settings.Default}, Mode=TwoWay}"
+						        Minimum="48"
+						        Maximum="240"
+						        TickFrequency="4"
+						        IsSnapToTickEnabled="True"
+						        AutoToolTipPlacement="TopLeft" />
+					</StackPanel>
+				</MenuItem.Header>
+			</MenuItem>
 
-                        <Slider Width="64"
-                                Value="{Binding Size, Source={x:Static p:Settings.Default}, Mode=TwoWay}"
-                                Minimum="48"
-                                Maximum="240"
-                                TickFrequency="4"
-                                IsSnapToTickEnabled="True"
-                                AutoToolTipPlacement="TopLeft" />
-                    </StackPanel>
-                </MenuItem.Header>
-            </MenuItem>
+			<Separator />
 
-            <Separator />
+			<MenuItem Header="E_xit" Click="MenuItemExit_OnClick" />
+		</ContextMenu>
+	</Window.ContextMenu>
 
-            <MenuItem Header="E_xit"
-                      Click="MenuItemExit_OnClick" />
-        </ContextMenu>
-    </Window.ContextMenu>
+	<Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" Grid.IsSharedSizeScope="True">
+		<Grid.Background>
+			<SolidColorBrush Color="White" Opacity="0.85" />
+		</Grid.Background>
 
-    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
-          Grid.IsSharedSizeScope="True">
-        <Grid.Background>
-            <SolidColorBrush Color="White"
-                             Opacity="0.85" />
-        </Grid.Background>
+		<Grid.Resources>
+			<Style TargetType="root:MonitorView">
+				<Setter Property="Template">
+					<Setter.Value>
+						<ControlTemplate TargetType="root:MonitorView">
+							<Viewbox Width="{Binding Size, Source={x:Static p:Settings.Default}, Mode=OneWay}">
+								<ContentPresenter />
+							</Viewbox>
+						</ControlTemplate>
+					</Setter.Value>
+				</Setter>
+			</Style>
+		</Grid.Resources>
 
-        <Grid.Resources>
-            <Style TargetType="root:MonitorView">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="root:MonitorView">
-                            <Viewbox Width="{Binding Size, Source={x:Static p:Settings.Default}, Mode=OneWay}">
-                                <ContentPresenter />
-                            </Viewbox>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-        </Grid.Resources>
+		<ItemsControl ItemsSource="{Binding Monitors}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<StackPanel>
+						<StackPanel.Style>
+							<Style TargetType="StackPanel">
+								<Setter Property="Orientation" Value="Vertical" />
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding Horizontal, Source={x:Static p:Settings.Default}, Mode=OneWay}" Value="True">
+										<Setter Property="Orientation" Value="Horizontal" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</StackPanel.Style>
+					</StackPanel>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
 
-        <ItemsControl ItemsSource="{Binding Monitors}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel>
-                        <StackPanel.Style>
-                            <Style TargetType="StackPanel">
-                                <Setter Property="Orientation"
-                                        Value="Vertical" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Horizontal, Source={x:Static p:Settings.Default}, Mode=OneWay}"
-                                                 Value="True">
-                                        <Setter Property="Orientation"
-                                                Value="Horizontal" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StackPanel.Style>
-                    </StackPanel>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<root:MonitorView Width="{Binding ActualWidth, ElementName=DummyMonitor}" />
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
 
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <root:MonitorView Width="{Binding ActualWidth, ElementName=DummyMonitor}" />
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-
-        <!-- Hidden dummy monitor to preserve width -->
-        <root:MonitorView Visibility="Hidden">
-            <root:MonitorView.DataContext>
-                <monitors:DummyMonitor />
-            </root:MonitorView.DataContext>
-        </root:MonitorView>
-    </Grid>
+		<!--  Hidden dummy monitor to preserve width  -->
+		<root:MonitorView Visibility="Hidden">
+			<root:MonitorView.DataContext>
+				<monitors:DummyMonitor />
+			</root:MonitorView.DataContext>
+		</root:MonitorView>
+	</Grid>
 </Window>
