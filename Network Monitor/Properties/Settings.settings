@@ -20,7 +20,7 @@
     <Setting Name="Size" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">96</Value>
     </Setting>
-    <Setting Name="Placement" Type="Network_Monitor.Placement.WindowPlacement" Scope="User">
+    <Setting Name="Placement" Type="WpfWindowPlacement.WindowPlacement" Scope="User">
       <Value Profile="(Default)"></Value>
     </Setting>
     <Setting Name="Bits" Type="System.Boolean" Scope="User">

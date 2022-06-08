@@ -112,9 +112,9 @@ namespace Network_Monitor.Properties {
             </NormalBounds>
           </WindowPlacement>
         ")]
-        public global::Network_Monitor.Placement.WindowPlacement Placement {
+        public global::WpfWindowPlacement.WindowPlacement Placement {
             get {
-                return ((global::Network_Monitor.Placement.WindowPlacement)(this["Placement"]));
+                return ((global::WpfWindowPlacement.WindowPlacement)(this["Placement"]));
             }
             set {
                 this["Placement"] = value;
