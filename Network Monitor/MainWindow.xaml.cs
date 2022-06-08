@@ -35,6 +35,8 @@ public partial class MainWindow : Window
 
     public async Task StartMonitoring()
     {
+        var timer = new System.Threading.PeriodicTimer(Settings.Default.Interval);
+
         while (true)
         {
             foreach (var monitor in Monitors)
@@ -48,7 +50,7 @@ public partial class MainWindow : Window
                 }
             }
 
-            await Task.Delay(Settings.Default.Interval);
+            await timer.WaitForNextTickAsync();
         }
     }
 
