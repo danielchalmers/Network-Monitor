@@ -1,15 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <TargetFramework>net7.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <ApplicationIcon>Network Monitor.ico</ApplicationIcon>
-    <Copyright>© Daniel Chalmers 2021</Copyright>
+    <Copyright>© Daniel Chalmers</Copyright>
     <Version>2.2.1</Version>
-    <NoWarn>CS1998</NoWarn>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="WpfWindowPlacement" Version="4.0.2" />
   </ItemGroup>
+
 </Project>
