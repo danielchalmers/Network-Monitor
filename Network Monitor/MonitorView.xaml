@@ -11,9 +11,9 @@
 		</Grid.ColumnDefinitions>
 
 		<TextBlock Grid.Column="0"
-		           Text="{Binding Icon.Text}"
-		           Foreground="{Binding Icon.Brush}"
-		           ToolTip="{Binding Icon.Name}"
+		           Text="{Binding Icon}"
+		           Foreground="{Binding IconBrush}"
+		           ToolTip="{Binding Name}"
 		           FontWeight="DemiBold"
 		           TextAlignment="Center" />
 

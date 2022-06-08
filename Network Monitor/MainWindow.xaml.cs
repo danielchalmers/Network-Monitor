@@ -16,6 +16,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+
         if (Settings.Default.MustUpgrade)
         {
             Settings.Default.Upgrade();
@@ -23,14 +24,14 @@ public partial class MainWindow : Window
             Settings.Default.Save();
         }
 
-        Monitors = new List<IMonitor> {
+        Monitors = new List<Monitor> {
             new LatencyMonitor(),
             new DownloadMonitor(),
             new UploadMonitor()
         };
     }
 
-    public List<IMonitor> Monitors { get; }
+    public IReadOnlyList<Monitor> Monitors { get; }
 
     public async Task StartMonitoring()
     {

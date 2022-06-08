@@ -6,14 +6,17 @@ namespace Network_Monitor.Monitors;
 /// <summary>
 /// Dummy monitor for preserving auto-generated window width.
 /// </summary>
-public class DummyMonitor : ObservableObject, IMonitor
+public class DummyMonitor : Monitor
 {
-    public string DisplayValue { get; } = "".PadLeft(4, ' ');
-
-    public MonitorIcon Icon { get; } = new MonitorIcon("X", "You shouldn't see this!", Brushes.Black);
-
-    public async Task UpdateAsync()
+    public DummyMonitor()
     {
-        // Don't need to update anything.
+        Name = "You shouldn't be seeing this!";
+        Icon = 'X';
+        IconBrush = Brushes.Red;
+
+        DisplayValue = "".PadLeft(4, ' ');
     }
+
+    public override Task UpdateAsync() =>
+        Task.CompletedTask; // Don't need to update anything.
 }

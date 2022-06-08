@@ -7,11 +7,13 @@ namespace Network_Monitor.Monitors;
 /// <summary>
 /// Monitor for upload bandwidth usage.
 /// </summary>
-public class UploadMonitor : BandwidthMonitorBase
+public class UploadMonitor : BandwidthMonitor
 {
     public UploadMonitor()
     {
-        Icon = new MonitorIcon("↑", "Upload", Brushes.Blue);
+        Name = "Upload";
+        Icon = '↑';
+        IconBrush = Brushes.Blue;
     }
 
     protected override long GetTotalBytes() =>

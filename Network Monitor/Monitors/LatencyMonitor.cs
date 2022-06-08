@@ -8,30 +8,21 @@ namespace Network_Monitor.Monitors;
 /// <summary>
 /// Monitor for ping latency.
 /// </summary>
-public class LatencyMonitor : ObservableObject, IMonitor
+public class LatencyMonitor : Monitor
 {
     private readonly Ping _ping = new();
-    private string _displayValue;
 
-    public string DisplayValue
+    public LatencyMonitor()
     {
-        get => _displayValue;
-        private set => Set(ref _displayValue, value);
+        Name = "Latency";
+        Icon = '⟳';
+        IconBrush = Brushes.DarkOrange;
     }
 
-    public MonitorIcon Icon { get; } = new MonitorIcon("⟳", "Latency", Brushes.DarkOrange);
-
-    public async Task UpdateAsync()
+    public override async Task UpdateAsync()
     {
-        async Task<string> GetUpdatedValue()
-        {
-            var reply = await _ping.SendPingAsync(Settings.Default.PingHost, (int)Settings.Default.Timeout.TotalMilliseconds);
-            var latency = reply.RoundtripTime;
-            var status = reply.Status;
+        var reply = await _ping.SendPingAsync(Settings.Default.PingHost, (int)Settings.Default.Timeout.TotalMilliseconds);
 
-            return status == IPStatus.Success ? latency.ToString() : "Fail";
-        }
-
-        DisplayValue = await GetUpdatedValue();
+        DisplayValue = reply.Status == IPStatus.Success ? reply.RoundtripTime.ToString() : "Fail";
     }
 }

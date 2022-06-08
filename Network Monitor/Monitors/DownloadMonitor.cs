@@ -7,11 +7,13 @@ namespace Network_Monitor.Monitors;
 /// <summary>
 /// Monitor for download bandwidth usage.
 /// </summary>
-public class DownloadMonitor : BandwidthMonitorBase
+public class DownloadMonitor : BandwidthMonitor
 {
     public DownloadMonitor()
     {
-        Icon = new MonitorIcon("↓", "Download", Brushes.Green);
+        Name = "Download";
+        Icon = '↓';
+        IconBrush = Brushes.Green;
     }
 
     protected override long GetTotalBytes() =>
