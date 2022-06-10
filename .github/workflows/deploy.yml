@@ -16,11 +16,7 @@ jobs:
       - name: Build
         run: dotnet publish -o "publish" \
                             -c Release \
-                            -r win-x64 \
-                            --self-contained true \
-                            -p:PublishSingleFile=true \
-                            -p:IncludeNativeLibrariesForSelfExtract=true \
-                            -p:PublishReadyToRun=true
+                            -r win-x64
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1

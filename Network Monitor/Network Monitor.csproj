@@ -2,8 +2,9 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net462</TargetFramework>
     <UseWPF>true</UseWPF>
+    <LangVersion>latest</LangVersion>
     <ApplicationIcon>Network Monitor.ico</ApplicationIcon>
     <Copyright>© Daniel Chalmers</Copyright>
     <Version>2.2.1</Version>

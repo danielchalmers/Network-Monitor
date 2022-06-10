@@ -15,17 +15,17 @@ public abstract class Monitor : ObservableObject
     /// <summary>
     /// Name of the monitor.
     /// </summary>
-    public string Name { get; protected init; }
+    public string Name { get; protected set; }
 
     /// <summary>
     /// Icon to show in the UI.
     /// </summary>
-    public char Icon { get; protected init; }
+    public char Icon { get; protected set; }
 
     /// <summary>
     /// Icon color.
     /// </summary>
-    public Brush IconBrush { get; protected init; }
+    public Brush IconBrush { get; protected set; }
 
     /// <summary>
     /// User-friendly text to show in the UI.
