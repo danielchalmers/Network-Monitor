@@ -17,13 +17,33 @@
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
-		Foreground="#212121"
         UseLayoutRounding="True"
         FontFamily="Consolas"
         MouseDown="MainWindow_OnMouseDown"
 		PreviewMouseWheel="Window_PreviewMouseWheel"
         SourceInitialized="Window_SourceInitialized"
         Closed="Window_OnClosed">
+	<Window.Style>
+		<Style TargetType="Window">
+			<Setter Property="Foreground">
+				<Setter.Value>
+					<SolidColorBrush Color="#212121" />
+				</Setter.Value>
+			</Setter>
+
+			<Style.Triggers>
+				<DataTrigger Binding="{Binding Dark, Source={x:Static p:Settings.Default}, Mode=TwoWay}" Value="True">
+					<DataTrigger.Setters>
+						<Setter Property="Foreground">
+							<Setter.Value>
+								<SolidColorBrush Color="#FAFAFA" />
+							</Setter.Value>
+						</Setter>
+					</DataTrigger.Setters>
+				</DataTrigger>
+			</Style.Triggers>
+		</Style>
+	</Window.Style>
 	<Window.ContextMenu>
 		<ContextMenu>
 			<MenuItem Header="Measure in _bits"
@@ -41,6 +61,10 @@
 			<MenuItem Header="_Horizontal layout"
 			          IsCheckable="True"
 			          IsChecked="{Binding Horizontal, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
+
+			<MenuItem Header="_Dark mode"
+			          IsCheckable="True"
+			          IsChecked="{Binding Dark, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
 
 			<MenuItem>
 				<MenuItem.Header>
@@ -65,9 +89,27 @@
 	</Window.ContextMenu>
 
 	<Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" Grid.IsSharedSizeScope="True">
-		<Grid.Background>
-			<SolidColorBrush Color="#FAFAFA" Opacity="0.85" />
-		</Grid.Background>
+		<Grid.Style>
+			<Style TargetType="Grid">
+				<Setter Property="Background">
+					<Setter.Value>
+						<SolidColorBrush Color="#FAFAFA" Opacity="0.85" />
+					</Setter.Value>
+				</Setter>
+
+				<Style.Triggers>
+					<DataTrigger Binding="{Binding Dark, Source={x:Static p:Settings.Default}, Mode=TwoWay}" Value="True">
+						<DataTrigger.Setters>
+							<Setter Property="Background">
+								<Setter.Value>
+									<SolidColorBrush Color="#212121" Opacity="0.85" />
+								</Setter.Value>
+							</Setter>
+						</DataTrigger.Setters>
+					</DataTrigger>
+				</Style.Triggers>
+			</Style>
+		</Grid.Style>
 
 		<Grid.Resources>
 			<Style TargetType="root:MonitorView">

@@ -153,5 +153,17 @@ namespace Network_Monitor.Properties {
                 this["Horizontal"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Dark {
+            get {
+                return ((bool)(this["Dark"]));
+            }
+            set {
+                this["Dark"] = value;
+            }
+        }
     }
 }
