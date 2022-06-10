@@ -4,7 +4,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:root="clr-namespace:Network_Monitor"
-        xmlns:wp="clr-namespace:WpfWindowPlacement;assembly=WpfWindowPlacement"
+        xmlns:wp="clr-namespace:WpfWindowPlacement"
         xmlns:p="clr-namespace:Network_Monitor.Properties"
         xmlns:monitors="clr-namespace:Network_Monitor.Monitors"
         mc:Ignorable="d"

@@ -10,8 +10,4 @@
     <Version>2.2.1</Version>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="WpfWindowPlacement" Version="4.0.2" />
-  </ItemGroup>
-
 </Project>
