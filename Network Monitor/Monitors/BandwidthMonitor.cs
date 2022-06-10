@@ -14,14 +14,14 @@ public abstract class BandwidthMonitor : Monitor
 
     protected abstract long GetTotalBytes();
 
-    protected override Task<string> GetDisplayValueAsync()
+    protected override async Task<string> GetDisplayValueAsync()
     {
-        var bytes = GetBytesDiffAndUpdateLast();
+        var bytes = await Task.Run(() => GetBytesDiffAndUpdateLast());
 
         if (!bytes.HasValue)
-            return Task.FromResult(string.Empty);
+            return string.Empty;
 
-        return Task.FromResult(GetReadableByteString(bytes.Value, Properties.Settings.Default.Bits));
+        return GetReadableByteString(bytes.Value, Properties.Settings.Default.Bits);
     }
 
     private long? GetBytesDiffAndUpdateLast()
