@@ -84,6 +84,8 @@
 
 			<Separator />
 
+			<MenuItem Header="_Releases..." Click="MenuItemCheckForUpdates_OnClick" />
+
 			<MenuItem Header="E_xit" Click="MenuItemExit_OnClick" />
 		</ContextMenu>
 	</Window.ContextMenu>

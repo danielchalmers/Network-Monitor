@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -85,6 +86,11 @@ public partial class MainWindow : Window
 
             Settings.Default.Size = newSize;
         }
+    }
+
+    private void MenuItemCheckForUpdates_OnClick(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo { FileName = "https://github.com/danielchalmers/Network-Monitor/releases", UseShellExecute = true });
     }
 
     private void MenuItemExit_OnClick(object sender, RoutedEventArgs e)
