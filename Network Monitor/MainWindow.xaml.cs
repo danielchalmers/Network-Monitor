@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Network_Monitor.Monitors;
 using Network_Monitor.Properties;
 
@@ -13,6 +14,8 @@ namespace Network_Monitor;
 /// </summary>
 public partial class MainWindow : Window
 {
+    private readonly DispatcherTimer _updateTimer;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -29,28 +32,32 @@ public partial class MainWindow : Window
             new DownloadMonitor(),
             new UploadMonitor()
         };
+
+        _updateTimer = new(DispatcherPriority.Normal);
+        _updateTimer.Interval = Settings.Default.Interval;
+        _updateTimer.Tick += async (_, _) => await UpdateAllMonitors();
     }
 
     public IReadOnlyList<Monitor> Monitors { get; }
 
-    public async Task StartMonitoring()
+    private async void Window_SourceInitialized(object sender, EventArgs e)
     {
-        var timer = new System.Threading.PeriodicTimer(Settings.Default.Interval);
+        await UpdateAllMonitors();
 
-        while (true)
+        _updateTimer.Start();
+    }
+
+    private async Task UpdateAllMonitors()
+    {
+        foreach (var monitor in Monitors)
         {
-            foreach (var monitor in Monitors)
+            try
             {
-                try
-                {
-                    await monitor.UpdateAsync();
-                }
-                catch
-                {
-                }
+                await monitor.UpdateAsync();
             }
-
-            await timer.WaitForNextTickAsync();
+            catch
+            {
+            }
         }
     }
 
@@ -76,11 +83,6 @@ public partial class MainWindow : Window
     private void MenuItemExit_OnClick(object sender, RoutedEventArgs e)
     {
         Close();
-    }
-
-    private async void Window_SourceInitialized(object sender, EventArgs e)
-    {
-        await StartMonitoring();
     }
 
     private void Window_OnClosed(object sender, EventArgs e)
