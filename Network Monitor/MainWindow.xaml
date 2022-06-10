@@ -17,6 +17,7 @@
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
+		Foreground="#212121"
         UseLayoutRounding="True"
         FontFamily="Consolas"
         MouseDown="MainWindow_OnMouseDown"
@@ -65,7 +66,7 @@
 
 	<Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" Grid.IsSharedSizeScope="True">
 		<Grid.Background>
-			<SolidColorBrush Color="White" Opacity="0.85" />
+			<SolidColorBrush Color="#FAFAFA" Opacity="0.85" />
 		</Grid.Background>
 
 		<Grid.Resources>

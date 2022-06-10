@@ -13,7 +13,7 @@ public class UploadMonitor : BandwidthMonitor
     {
         Name = "Upload";
         Icon = '↑';
-        IconBrush = Brushes.Blue;
+        IconBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2979FF")); // Blue A400 https://materialui.co/colors
     }
 
     protected override long GetTotalBytes() =>

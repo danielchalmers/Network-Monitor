@@ -16,7 +16,7 @@ public class LatencyMonitor : Monitor
     {
         Name = "Latency";
         Icon = '⟳';
-        IconBrush = Brushes.DarkOrange;
+        IconBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF9100")); // Orange A400 https://materialui.co/colors
     }
 
     protected override async Task<string> GetDisplayValueAsync()

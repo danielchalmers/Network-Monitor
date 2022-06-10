@@ -13,7 +13,7 @@ public class DownloadMonitor : BandwidthMonitor
     {
         Name = "Download";
         Icon = '↓';
-        IconBrush = Brushes.Green;
+        IconBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#00E676")); // Green A400 https://materialui.co/colors
     }
 
     protected override long GetTotalBytes() =>
