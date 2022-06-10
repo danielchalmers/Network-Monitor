@@ -15,6 +15,7 @@ namespace Network_Monitor;
 public partial class MainWindow : Window
 {
     private readonly DispatcherTimer _updateTimer;
+    private bool _isUpdating;
 
     public MainWindow()
     {
@@ -51,8 +52,20 @@ public partial class MainWindow : Window
 
     private async Task UpdateAllMonitors()
     {
-        foreach (var monitor in Monitors)
-            await monitor.UpdateAsync();
+        if (_isUpdating)
+            return;
+
+        try
+        {
+            _isUpdating = true;
+
+            foreach (var monitor in Monitors)
+                await monitor.UpdateAsync();
+        }
+        finally
+        {
+            _isUpdating = false;
+        }
     }
 
     private void MainWindow_OnMouseDown(object sender, MouseButtonEventArgs e)
