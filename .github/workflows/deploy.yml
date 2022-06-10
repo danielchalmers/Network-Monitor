@@ -1,0 +1,28 @@
+name: Deploy
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-dotnet@v2
+
+      - name: Build
+        run: dotnet publish -o "publish" \
+                            -c Release \
+                            -r win-x64 \
+                            --self-contained true \
+                            -p:PublishSingleFile=true \
+                            -p:IncludeNativeLibrariesForSelfExtract=true \
+                            -p:PublishReadyToRun=true
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "publish/*"
