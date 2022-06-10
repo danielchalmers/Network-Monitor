@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Network_Monitor.Monitors;
@@ -11,25 +12,26 @@ public abstract class BandwidthMonitor : Monitor
     private readonly char[] ByteSuffixes = new[] { 'B', 'K', 'M', 'G', 'T', 'P', 'E' };
     private long _lastBytes;
 
-    public override async Task UpdateAsync()
+    protected abstract long GetTotalBytes();
+
+    protected override Task<string> GetDisplayValueAsync()
     {
         var bytes = GetBytesDiffAndUpdateLast();
 
-        DisplayValue = Properties.Settings.Default.Bits ?
-            GetReadableByteString(bytes * 8).ToLower() :
-            GetReadableByteString(bytes);
+        if (!bytes.HasValue)
+            return Task.FromResult(string.Empty);
+
+        return Task.FromResult(GetReadableByteString(bytes.Value, Properties.Settings.Default.Bits));
     }
 
-    protected abstract long GetTotalBytes();
-
-    private long GetBytesDiffAndUpdateLast()
+    private long? GetBytesDiffAndUpdateLast()
     {
         var bytes = GetTotalBytes();
         try
         {
-            // If the last value hasn't been set or is naturally less than zero (interface disconnected, etc), just return 0.
-            if (_lastBytes <= 0)
-                return 0;
+            // Last value hasn't been set or an interface was disconnected.
+            if (_lastBytes <= 0 || bytes <= 0)
+                return null;
 
             // Return the difference in bytes since the last call.
             return bytes - _lastBytes;
@@ -43,10 +45,13 @@ public abstract class BandwidthMonitor : Monitor
     /// <summary>
     /// Returns a short user-friendly representation of a number of bytes.
     /// </summary>
-    private string GetReadableByteString(double bytes)
+    private string GetReadableByteString(double bytes, bool convertToBits)
     {
         if (bytes < 0)
-            return "<0B";
+            throw new ArgumentOutOfRangeException(nameof(bytes), "Number of bytes must be positive for this.");
+
+        if (convertToBits)
+            bytes *= 8;
 
         var suffixIndex = 0;
         while (bytes >= 1000) // Keep at 3 or less digits.
@@ -61,6 +66,9 @@ public abstract class BandwidthMonitor : Monitor
             str = bytes.ToString("0");
 
         str += ByteSuffixes[suffixIndex];
+
+        if (convertToBits)
+            str = str.ToLower();
 
         Debug.Assert(str.Length <= 4);
 

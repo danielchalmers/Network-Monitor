@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace Network_Monitor.Monitors;
@@ -13,10 +14,8 @@ public class DummyMonitor : Monitor
         Name = "You shouldn't be seeing this!";
         Icon = 'X';
         IconBrush = Brushes.Red;
-
-        DisplayValue = "".PadLeft(4, ' ');
     }
 
-    public override Task UpdateAsync() =>
-        Task.CompletedTask; // Don't need to update anything.
+    protected override Task<string> GetDisplayValueAsync() =>
+        throw new InvalidOperationException("Dummy monitor should never be updated.");
 }

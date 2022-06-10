@@ -19,10 +19,10 @@ public class LatencyMonitor : Monitor
         IconBrush = Brushes.DarkOrange;
     }
 
-    public override async Task UpdateAsync()
+    protected override async Task<string> GetDisplayValueAsync()
     {
         var reply = await _ping.SendPingAsync(Settings.Default.PingHost, (int)Settings.Default.Timeout.TotalMilliseconds);
 
-        DisplayValue = reply.Status == IPStatus.Success ? reply.RoundtripTime.ToString() : "Fail";
+        return reply.Status == IPStatus.Success ? reply.RoundtripTime.ToString() : "Fail";
     }
 }

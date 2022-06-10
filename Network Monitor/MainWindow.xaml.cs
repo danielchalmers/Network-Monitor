@@ -33,8 +33,10 @@ public partial class MainWindow : Window
             new UploadMonitor()
         };
 
-        _updateTimer = new(DispatcherPriority.Normal);
-        _updateTimer.Interval = Settings.Default.Interval;
+        _updateTimer = new(DispatcherPriority.Normal)
+        {
+            Interval = Settings.Default.Interval
+        };
         _updateTimer.Tick += async (_, _) => await UpdateAllMonitors();
     }
 
@@ -50,15 +52,7 @@ public partial class MainWindow : Window
     private async Task UpdateAllMonitors()
     {
         foreach (var monitor in Monitors)
-        {
-            try
-            {
-                await monitor.UpdateAsync();
-            }
-            catch
-            {
-            }
-        }
+            await monitor.UpdateAsync();
     }
 
     private void MainWindow_OnMouseDown(object sender, MouseButtonEventArgs e)
