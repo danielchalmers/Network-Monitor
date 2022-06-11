@@ -80,9 +80,9 @@ namespace Network_Monitor.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("96")]
-        public double Size {
+        public int Size {
             get {
-                return ((double)(this["Size"]));
+                return ((int)(this["Size"]));
             }
             set {
                 this["Size"] = value;
