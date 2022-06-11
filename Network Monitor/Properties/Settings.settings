@@ -17,7 +17,7 @@
     <Setting Name="ShowInTaskbar" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="Size" Type="System.Int32" Scope="User">
+    <Setting Name="Size" Type="System.Double" Scope="User">
       <Value Profile="(Default)">96</Value>
     </Setting>
     <Setting Name="Placement" Type="WpfWindowPlacement.WindowPlacement" Scope="User">

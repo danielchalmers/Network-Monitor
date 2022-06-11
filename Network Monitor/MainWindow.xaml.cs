@@ -79,12 +79,10 @@ public partial class MainWindow : Window
     {
         if (Keyboard.Modifiers == ModifierKeys.Control)
         {
-            var newSize = Settings.Default.Size + e.Delta;
-
-            newSize = Math.Max(newSize, 48);
-            newSize = Math.Min(newSize, 240);
-
-            Settings.Default.Size = newSize;
+            // Scale size based on scroll amount, with one notch on a default PC mouse being a change of 15%.
+            var steps = e.Delta / (double)Mouse.MouseWheelDeltaForOneLine;
+            var change = Settings.Default.Size * steps * 0.15;
+            Settings.Default.Size = Math.Min(Math.Max(Settings.Default.Size + change, 48), 240);
         }
     }
 
