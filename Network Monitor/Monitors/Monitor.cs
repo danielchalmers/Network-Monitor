@@ -1,15 +1,26 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace Network_Monitor.Monitors;
 
 public abstract class Monitor : ObservableObject
 {
+    private readonly DispatcherTimer _updateTimer;
     private string _displayValue = string.Empty.PadRight(4);
 
-    protected Monitor()
+    protected Monitor(TimeSpan updateInterval)
     {
+        if (updateInterval > TimeSpan.Zero)
+        {
+            _updateTimer = new(DispatcherPriority.Normal)
+            {
+                Interval = updateInterval
+            };
+            _updateTimer.Tick += async (_, _) => await UpdateAsync();
+            _updateTimer.Start();
+        }
     }
 
     /// <summary>

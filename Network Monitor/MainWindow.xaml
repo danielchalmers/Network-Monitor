@@ -21,7 +21,6 @@
         FontFamily="Consolas"
         MouseDown="MainWindow_OnMouseDown"
 		PreviewMouseWheel="Window_PreviewMouseWheel"
-        SourceInitialized="Window_SourceInitialized"
         Closed="Window_OnClosed">
 	<Window.Style>
 		<Style TargetType="Window">

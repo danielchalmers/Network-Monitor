@@ -14,6 +14,10 @@ public abstract class BandwidthMonitor : Monitor
 
     protected abstract long GetTotalBytes();
 
+    protected BandwidthMonitor() : base(updateInterval: TimeSpan.FromSeconds(1))
+    {
+    }
+
     protected override async Task<string> GetDisplayValueAsync()
     {
         var bytes = await Task.Run(() => GetBytesDiffAndUpdateLast());

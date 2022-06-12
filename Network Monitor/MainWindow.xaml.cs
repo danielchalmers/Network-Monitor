@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Threading;
 using Network_Monitor.Monitors;
 using Network_Monitor.Properties;
 
@@ -15,9 +13,6 @@ namespace Network_Monitor;
 /// </summary>
 public partial class MainWindow : Window
 {
-    private readonly DispatcherTimer _updateTimer;
-    private bool _isUpdating;
-
     public MainWindow()
     {
         InitializeComponent();
@@ -34,40 +29,9 @@ public partial class MainWindow : Window
             new DownloadMonitor(),
             new UploadMonitor()
         };
-
-        _updateTimer = new(DispatcherPriority.Normal)
-        {
-            Interval = Settings.Default.Interval
-        };
-        _updateTimer.Tick += async (_, _) => await UpdateAllMonitors();
     }
 
     public IReadOnlyList<Monitor> Monitors { get; }
-
-    private async void Window_SourceInitialized(object sender, EventArgs e)
-    {
-        await UpdateAllMonitors();
-
-        _updateTimer.Start();
-    }
-
-    private async Task UpdateAllMonitors()
-    {
-        if (_isUpdating)
-            return;
-
-        try
-        {
-            _isUpdating = true;
-
-            foreach (var monitor in Monitors)
-                await monitor.UpdateAsync();
-        }
-        finally
-        {
-            _isUpdating = false;
-        }
-    }
 
     private void MainWindow_OnMouseDown(object sender, MouseButtonEventArgs e)
     {

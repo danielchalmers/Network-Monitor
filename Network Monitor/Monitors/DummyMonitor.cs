@@ -9,7 +9,7 @@ namespace Network_Monitor.Monitors;
 /// </summary>
 public class DummyMonitor : Monitor
 {
-    public DummyMonitor()
+    public DummyMonitor() : base(TimeSpan.Zero)
     {
         Name = "You shouldn't be seeing this!";
         Icon = 'X';
