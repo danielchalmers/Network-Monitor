@@ -14,7 +14,7 @@ public abstract class BandwidthMonitor : Monitor
 
     protected abstract long GetTotalBytes();
 
-    protected BandwidthMonitor() : base(updateInterval: TimeSpan.FromSeconds(1))
+    protected BandwidthMonitor() : base(interval: TimeSpan.FromSeconds(1))
     {
     }
 

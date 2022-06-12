@@ -7,19 +7,22 @@ namespace Network_Monitor.Monitors;
 
 public abstract class Monitor : ObservableObject
 {
-    private readonly DispatcherTimer _updateTimer;
+    private readonly SystemClockTimer _timer;
     private string _displayValue = string.Empty.PadRight(4);
 
-    protected Monitor(TimeSpan updateInterval)
+    protected Monitor(TimeSpan interval)
     {
-        if (updateInterval > TimeSpan.Zero)
+        var intervalSeconds = (int)interval.TotalSeconds;
+
+        if (intervalSeconds > 0)
         {
-            _updateTimer = new(DispatcherPriority.Normal)
+            _timer = new();
+            _timer.SecondChanged += async (_, _) =>
             {
-                Interval = updateInterval
+                if (string.IsNullOrWhiteSpace(DisplayValue) || DateTime.Now.Second % intervalSeconds == 0)
+                    await UpdateAsync();
             };
-            _updateTimer.Tick += async (_, _) => await UpdateAsync();
-            _updateTimer.Start();
+            _timer.Start();
         }
     }
 
@@ -37,6 +40,11 @@ public abstract class Monitor : ObservableObject
     /// Icon color.
     /// </summary>
     public Brush IconBrush { get; protected set; }
+
+    /// <summary>
+    /// Interval to update in seconds.
+    /// </summary>
+    public int IntervalSeconds { get; protected set; } = 5;
 
     /// <summary>
     /// User-friendly text to show in the UI.
