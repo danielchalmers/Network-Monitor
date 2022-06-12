@@ -30,7 +30,7 @@ public partial class MainWindow : Window
         }
 
         Monitors = new List<Monitor> {
-            new LatencyMonitor(),
+            new LatencyMonitor(Settings.Default.PingHost, Settings.Default.Timeout),
             new DownloadMonitor(),
             new UploadMonitor()
         };
