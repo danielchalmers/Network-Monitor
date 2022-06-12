@@ -14,6 +14,7 @@ public class DummyMonitor : Monitor
         Name = "You shouldn't be seeing this!";
         Icon = 'X';
         IconBrush = Brushes.Red;
+        DisplayValue = string.Empty.PadRight(4);
     }
 
     protected override Task<string> GetDisplayValueAsync() =>

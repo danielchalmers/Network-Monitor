@@ -12,11 +12,11 @@ public abstract class BandwidthMonitor : Monitor
     private readonly char[] ByteSuffixes = new[] { 'B', 'K', 'M', 'G', 'T', 'P', 'E' };
     private long _lastBytes;
 
-    protected abstract long GetTotalBytes();
-
-    protected BandwidthMonitor() : base(interval: TimeSpan.FromSeconds(1))
+    protected BandwidthMonitor() : base(TimeSpan.FromSeconds(2))
     {
     }
+
+    protected abstract long GetTotalBytes();
 
     protected override async Task<string> GetDisplayValueAsync()
     {

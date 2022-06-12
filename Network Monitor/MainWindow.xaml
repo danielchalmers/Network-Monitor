@@ -20,7 +20,7 @@
         UseLayoutRounding="True"
         FontFamily="Consolas"
         MouseDown="MainWindow_OnMouseDown"
-		PreviewMouseWheel="Window_PreviewMouseWheel"
+        PreviewMouseWheel="Window_PreviewMouseWheel"
         Closed="Window_OnClosed">
 	<Window.Style>
 		<Style TargetType="Window">
@@ -145,16 +145,16 @@
 
 			<ItemsControl.ItemTemplate>
 				<DataTemplate>
-					<root:MonitorView Width="{Binding ActualWidth, ElementName=DummyMonitor}" />
+					<root:MonitorView Monitor="{Binding}" Width="{Binding ActualWidth, ElementName=DummyMonitor}" />
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>
 
 		<!--  Hidden dummy monitor to preserve width  -->
 		<root:MonitorView Visibility="Hidden">
-			<root:MonitorView.DataContext>
+			<root:MonitorView.Monitor>
 				<monitors:DummyMonitor />
-			</root:MonitorView.DataContext>
+			</root:MonitorView.Monitor>
 		</root:MonitorView>
 	</Grid>
 </Window>

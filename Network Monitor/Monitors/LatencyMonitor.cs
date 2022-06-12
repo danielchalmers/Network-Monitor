@@ -14,7 +14,7 @@ public class LatencyMonitor : Monitor
     private readonly string _host;
     private readonly int _timeout;
 
-    public LatencyMonitor(string host, TimeSpan timeout) : base(interval: timeout)
+    public LatencyMonitor(string host, TimeSpan timeout) : base(timeout)
     {
         Name = "Latency";
         Icon = '⟳';
