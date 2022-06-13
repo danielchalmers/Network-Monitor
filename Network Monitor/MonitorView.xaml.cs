@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using Network_Monitor.Monitors;
 
@@ -26,15 +27,15 @@ public partial class MonitorView : UserControl
 
     public static void OnMonitorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
+        if (e.OldValue is not null)
+            throw new InvalidOperationException("The monitor can only be set once.");
+
         var view = (MonitorView)d;
         var monitor = (Monitor)e.NewValue;
 
         view.DisplayTextBlock.Text = monitor.DisplayValue;
 
-        view.Timer.SecondChanged += (_, _) =>
-        {
-            view.Dispatcher.Invoke(() => view.DisplayTextBlock.Text = monitor.DisplayValue);
-        };
+        view.Timer.SecondChanged += (_, _) => view.Dispatcher.Invoke(() => view.DisplayTextBlock.Text = monitor.DisplayValue);
         view.Timer.Start();
     }
 }

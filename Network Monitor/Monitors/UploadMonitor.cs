@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Net.NetworkInformation;
 using System.Windows.Media;
 
 namespace Network_Monitor.Monitors;
@@ -17,8 +16,7 @@ public class UploadMonitor : BandwidthMonitor
     }
 
     protected override long GetTotalBytes() =>
-         NetworkInterface
-         .GetAllNetworkInterfaces()
+         NetworkInterfaces
          .Select(x => x.GetIPStatistics().BytesSent)
          .Sum();
 }

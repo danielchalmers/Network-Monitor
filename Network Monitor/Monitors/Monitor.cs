@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace Network_Monitor.Monitors;
@@ -12,7 +11,10 @@ public abstract class Monitor
     protected Monitor(TimeSpan interval)
     {
         if (interval > TimeSpan.Zero)
-            _timer = new Timer(async _ => await UpdateAsync(), null, TimeSpan.Zero, interval);
+        {
+            _timer = new Timer(_ => Update());
+            _timer.Change(TimeSpan.Zero, interval);
+        }
     }
 
     /// <summary>
@@ -38,16 +40,16 @@ public abstract class Monitor
     /// <summary>
     /// Gets the latest value for <see cref="DisplayValue" />.
     /// </summary>
-    protected abstract Task<string> GetDisplayValueAsync();
+    protected abstract string GetDisplayValue();
 
     /// <summary>
     /// Updates <see cref="DisplayValue"/> with the latest value.
     /// </summary>
-    private async Task UpdateAsync()
+    private void Update()
     {
         try
         {
-            DisplayValue = await GetDisplayValueAsync();
+            DisplayValue = GetDisplayValue();
         }
         catch
         {

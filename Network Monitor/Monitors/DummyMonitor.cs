@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace Network_Monitor.Monitors;
@@ -17,6 +16,6 @@ public class DummyMonitor : Monitor
         DisplayValue = string.Empty.PadRight(4);
     }
 
-    protected override Task<string> GetDisplayValueAsync() =>
+    protected override string GetDisplayValue() =>
         throw new InvalidOperationException("Dummy monitor should never be updated.");
 }

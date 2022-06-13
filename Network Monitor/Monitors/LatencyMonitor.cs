@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.NetworkInformation;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace Network_Monitor.Monitors;
@@ -24,9 +23,9 @@ public class LatencyMonitor : Monitor
         _timeout = (int)timeout.TotalMilliseconds;
     }
 
-    protected override async Task<string> GetDisplayValueAsync()
+    protected override string GetDisplayValue()
     {
-        var reply = await _ping.SendPingAsync(_host, _timeout);
+        var reply = _ping.Send(_host, _timeout);
 
         return reply.Status == IPStatus.Success ? reply.RoundtripTime.ToString() : "Fail";
     }

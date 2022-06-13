@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Net.NetworkInformation;
 
 namespace Network_Monitor.Monitors;
 
@@ -10,17 +10,21 @@ namespace Network_Monitor.Monitors;
 public abstract class BandwidthMonitor : Monitor
 {
     private readonly char[] ByteSuffixes = new[] { 'B', 'K', 'M', 'G', 'T', 'P', 'E' };
+    private readonly char[] BitSuffixes = new[] { 'b', 'k', 'm', 'g', 't', 'p', 'e' };
     private long _lastBytes;
 
     protected BandwidthMonitor() : base(TimeSpan.FromSeconds(2))
     {
+        NetworkChange.NetworkAvailabilityChanged += (_, _) => NetworkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
     }
+
+    protected IReadOnlyList<NetworkInterface> NetworkInterfaces { get; private set; } = NetworkInterface.GetAllNetworkInterfaces();
 
     protected abstract long GetTotalBytes();
 
-    protected override async Task<string> GetDisplayValueAsync()
+    protected override string GetDisplayValue()
     {
-        var bytes = await Task.Run(() => GetBytesDiffAndUpdateLast());
+        var bytes = GetBytesDiffAndUpdateLast();
 
         if (!bytes.HasValue)
             return string.Empty;
@@ -49,7 +53,7 @@ public abstract class BandwidthMonitor : Monitor
     /// <summary>
     /// Returns a short user-friendly representation of a number of bytes.
     /// </summary>
-    private string GetReadableByteString(double bytes, bool convertToBits)
+    private string GetReadableByteString(long bytes, bool convertToBits)
     {
         if (bytes < 0)
             throw new ArgumentOutOfRangeException(nameof(bytes), "Number of bytes must be positive for this.");
@@ -64,18 +68,6 @@ public abstract class BandwidthMonitor : Monitor
             suffixIndex++;
         }
 
-        var str = bytes.ToString("0.0");
-
-        if (str.Length > 3)
-            str = bytes.ToString("0");
-
-        str += ByteSuffixes[suffixIndex];
-
-        if (convertToBits)
-            str = str.ToLower();
-
-        Debug.Assert(str.Length <= 4);
-
-        return str;
+        return bytes.ToString(bytes < 10 ? "0.0" : "0") + (convertToBits ? BitSuffixes[suffixIndex] : ByteSuffixes[suffixIndex]);
     }
 }
