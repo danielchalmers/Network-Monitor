@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Win32;
 using Network_Monitor.Monitors;
 using Network_Monitor.Properties;
 
