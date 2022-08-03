@@ -19,7 +19,7 @@ jobs:
       - name: Create installer
         run: |
           dotnet tool install --global wix --version 4.0.0-preview.0
-          wix build Product.wxs -o "publish/Install Network Monitor.msi"
+          wix build Product.wxs -o "publish/Install Bandwidth and Latency Monitor.msi"
 
       - name: Create GitHub release
         uses: ncipollo/release-action@v1

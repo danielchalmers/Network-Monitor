@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Network Monitor", "Network Monitor\Network Monitor.csproj", "{46A5208D-49CB-499A-BC21-7B6993B1F3F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bandwidth and Latency Monitor", "Bandwidth and Latency Monitor\Bandwidth and Latency Monitor.csproj", "{46A5208D-49CB-499A-BC21-7B6993B1F3F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

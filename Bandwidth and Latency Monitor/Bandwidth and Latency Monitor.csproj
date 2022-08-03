@@ -5,7 +5,7 @@
     <TargetFramework>net462</TargetFramework>
     <UseWPF>true</UseWPF>
     <LangVersion>latest</LangVersion>
-    <ApplicationIcon>Network Monitor.ico</ApplicationIcon>
+    <ApplicationIcon>Bandwidth and Latency Monitor.ico</ApplicationIcon>
     <Copyright>© Daniel Chalmers</Copyright>
     <Version>3.0.0-beta3</Version>
   </PropertyGroup>

@@ -1,4 +1,4 @@
-# Network Monitor
+# Bandwidth and Latency Monitor
 
 See live network latency & bandwidth usage.
 
