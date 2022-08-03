@@ -3,7 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		xmlns:local="clr-namespace:Network_Monitor"
+        xmlns:root="clr-namespace:Network_Monitor"
         xmlns:wp="clr-namespace:WpfWindowPlacement"
         xmlns:p="clr-namespace:Network_Monitor.Properties"
         xmlns:monitors="clr-namespace:Network_Monitor.Monitors"
@@ -21,8 +21,7 @@
         FontFamily="Consolas"
         MouseDown="MainWindow_OnMouseDown"
         PreviewMouseWheel="Window_PreviewMouseWheel"
-        Closed="Window_OnClosed"
-		local:WindowSnapping.Margin="5">
+        Closed="Window_OnClosed">
 	<Window.Style>
 		<Style TargetType="Window">
 			<Setter Property="Foreground">
@@ -113,10 +112,10 @@
 		</Grid.Style>
 
 		<Grid.Resources>
-			<Style TargetType="local:MonitorView">
+			<Style TargetType="root:MonitorView">
 				<Setter Property="Template">
 					<Setter.Value>
-						<ControlTemplate TargetType="local:MonitorView">
+						<ControlTemplate TargetType="root:MonitorView">
 							<Viewbox Width="{Binding Size, Source={x:Static p:Settings.Default}, Mode=OneWay}">
 								<ContentPresenter />
 							</Viewbox>
@@ -146,16 +145,16 @@
 
 			<ItemsControl.ItemTemplate>
 				<DataTemplate>
-					<local:MonitorView Monitor="{Binding}" Width="{Binding ActualWidth, ElementName=DummyMonitor}" />
+					<root:MonitorView Monitor="{Binding}" Width="{Binding ActualWidth, ElementName=DummyMonitor}" />
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>
 
 		<!--  Hidden dummy monitor to preserve width  -->
-		<local:MonitorView Visibility="Hidden">
-			<local:MonitorView.Monitor>
+		<root:MonitorView Visibility="Hidden">
+			<root:MonitorView.Monitor>
 				<monitors:DummyMonitor />
-			</local:MonitorView.Monitor>
-		</local:MonitorView>
+			</root:MonitorView.Monitor>
+		</root:MonitorView>
 	</Grid>
 </Window>
