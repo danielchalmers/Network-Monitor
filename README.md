@@ -3,7 +3,7 @@
 See live network latency & bandwidth usage.
 
 [![Release](https://img.shields.io/github/release/danielchalmers/Network-Monitor.svg?label=Release&maxAge=60)](https://github.com/danielchalmers/Network-Monitor/releases/latest)
-[![License](https://img.shields.io/github/license/danielchalmers/Network-Monitor.svg?label=License&maxAge=86400)](LICENSE.md)
+[![License](https://img.shields.io/github/license/danielchalmers/Network-Monitor.svg?label=License&maxAge=86400)](LICENSE)
 
 ## Vertical (Default)
 
