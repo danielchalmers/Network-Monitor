@@ -1,9 +1,9 @@
 # Bandwidth and Latency Monitor
 
-See live network latency & bandwidth usage.
+[![Release](https://img.shields.io/github/release/danielchalmers/Network-Monitor)](https://github.com/danielchalmers/Network-Monitor/releases/latest)
+[![License](https://img.shields.io/github/license/danielchalmers/Network-Monitor)](LICENSE)
 
-[![Release](https://img.shields.io/github/release/danielchalmers/Network-Monitor.svg?label=Release&maxAge=60)](https://github.com/danielchalmers/Network-Monitor/releases/latest)
-[![License](https://img.shields.io/github/license/danielchalmers/Network-Monitor.svg?label=License&maxAge=86400)](LICENSE)
+See live network latency & bandwidth usage.
 
 ## Vertical (Default)
 
