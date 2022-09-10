@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Win32;
 using Network_Monitor.Monitors;
 using Network_Monitor.Properties;
 
@@ -24,11 +26,31 @@ public partial class MainWindow : Window
             Settings.Default.Save();
         }
 
+        Settings.Default.PropertyChanged += Settings_PropertyChanged;
+
         Monitors = new List<Monitor> {
             new LatencyMonitor(Settings.Default.PingHost, Settings.Default.Timeout),
             new DownloadMonitor(),
             new UploadMonitor()
         };
+    }
+
+    private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(Settings.Default.RunOnStartup):
+
+                using (var key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true))
+                {
+                    if (Settings.Default.RunOnStartup)
+                        key?.SetValue("Bandwidth_and_Latency_Monitor", App.ResourceAssembly.Location);
+                    else
+                        key?.DeleteValue("Bandwidth_and_Latency_Monitor", false);
+                }
+
+                break;
+        }
     }
 
     public IReadOnlyList<Monitor> Monitors { get; }
