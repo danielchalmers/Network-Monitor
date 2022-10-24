@@ -7,6 +7,7 @@ using System.Windows.Input;
 using Microsoft.Win32;
 using Network_Monitor.Monitors;
 using Network_Monitor.Properties;
+using WpfWindowPlacement;
 
 namespace Network_Monitor;
 
@@ -82,8 +83,21 @@ public partial class MainWindow : Window
         Close();
     }
 
-    private void Window_OnClosed(object sender, EventArgs e)
+    private void Window_SourceInitialized(object sender, EventArgs e)
     {
+        try
+        {
+            WindowPlacementFunctions.SetPlacement(this, Settings.Default.Placement);
+        }
+        catch
+        {
+            // System.Configuration doesn't like the WindowPlacement struct sometimes.
+        }
+    }
+
+    private void Window_Closing(object sender, CancelEventArgs e)
+    {
+        Settings.Default.Placement = WindowPlacementFunctions.GetPlacement(this);
         Settings.Default.Save();
     }
 }

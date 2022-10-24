@@ -4,14 +4,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:root="clr-namespace:Network_Monitor"
-        xmlns:wp="clr-namespace:WpfWindowPlacement"
         xmlns:p="clr-namespace:Network_Monitor.Properties"
         xmlns:monitors="clr-namespace:Network_Monitor.Monitors"
         mc:Ignorable="d"
         Title="Bandwidth and Latency Monitor"
         Topmost="{Binding Topmost, Source={x:Static p:Settings.Default}, Mode=TwoWay}"
         ShowInTaskbar="{Binding ShowInTaskbar, Source={x:Static p:Settings.Default}, Mode=TwoWay}"
-        wp:WindowPlacementProperties.Placement="{Binding Placement, Source={x:Static p:Settings.Default}, Mode=TwoWay}"
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
         WindowStyle="None"
@@ -21,7 +19,8 @@
         FontFamily="Consolas"
         MouseDown="MainWindow_OnMouseDown"
         PreviewMouseWheel="Window_PreviewMouseWheel"
-        Closed="Window_OnClosed">
+        SourceInitialized="Window_SourceInitialized"
+		Closing="Window_Closing">
 	<Window.Style>
 		<Style TargetType="Window">
 			<Setter Property="Foreground">
