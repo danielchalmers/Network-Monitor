@@ -96,7 +96,7 @@
 			<Style TargetType="Grid">
 				<Setter Property="Background">
 					<Setter.Value>
-						<SolidColorBrush Color="#FAFAFA" Opacity="0.85" />
+						<SolidColorBrush Color="#FAFAFA" Opacity="0.90" />
 					</Setter.Value>
 				</Setter>
 
@@ -105,7 +105,7 @@
 						<DataTrigger.Setters>
 							<Setter Property="Background">
 								<Setter.Value>
-									<SolidColorBrush Color="#212121" Opacity="0.85" />
+									<SolidColorBrush Color="#212121" Opacity="0.90" />
 								</Setter.Value>
 							</Setter>
 						</DataTrigger.Setters>
