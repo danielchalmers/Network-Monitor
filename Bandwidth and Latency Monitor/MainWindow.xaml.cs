@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.Win32;
@@ -73,6 +74,19 @@ public partial class MainWindow : Window
         }
     }
 
+    private void CopyOverviewToClipboard()
+    {
+        var longestMonitorName = Monitors.Max(m => m.Name.Length);
+        var overviewText = string.Join(Environment.NewLine, Monitors.Select(m => $"{m.Name.PadRight(longestMonitorName)}: {m.DisplayValue}"));
+
+        Clipboard.SetText(overviewText.ToString());
+    }
+
+    private void MenuItemCopy_OnClick(object sender, RoutedEventArgs e)
+    {
+        CopyOverviewToClipboard();
+    }
+
     private void MenuItemCheckForUpdates_OnClick(object sender, RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo { FileName = "https://github.com/danielchalmers/Network-Monitor/releases", UseShellExecute = true });
@@ -99,5 +113,11 @@ public partial class MainWindow : Window
     {
         Settings.Default.Placement = WindowPlacementFunctions.GetPlacement(this);
         Settings.Default.Save();
+    }
+
+    private void Window_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton == MouseButton.Left)
+            CopyOverviewToClipboard();
     }
 }

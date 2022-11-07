@@ -20,7 +20,8 @@
         MouseDown="MainWindow_OnMouseDown"
         PreviewMouseWheel="Window_PreviewMouseWheel"
         SourceInitialized="Window_SourceInitialized"
-		Closing="Window_Closing">
+        Closing="Window_Closing"
+        MouseDoubleClick="Window_MouseDoubleClick">
 	<Window.Style>
 		<Style TargetType="Window">
 			<Setter Property="Foreground">
@@ -44,6 +45,10 @@
 	</Window.Style>
 	<Window.ContextMenu>
 		<ContextMenu>
+			<MenuItem Header="_Copy" Click="MenuItemCopy_OnClick" />
+
+			<Separator />
+
 			<MenuItem Header="Measure in _bits"
 			          IsCheckable="True"
 			          IsChecked="{Binding Bits, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
