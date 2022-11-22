@@ -1,6 +1,6 @@
 # Bandwidth and Latency Monitor
 
-[![Release](https://img.shields.io/github/release/danielchalmers/Network-Monitor)](https://github.com/danielchalmers/Network-Monitor/releases/latest)
+[![Release](https://img.shields.io/github/release/danielchalmers/Network-Monitor?include_prereleases)](https://github.com/danielchalmers/Network-Monitor/releases/latest)
 [![License](https://img.shields.io/github/license/danielchalmers/Network-Monitor)](LICENSE)
 
 See live network latency & bandwidth usage.
