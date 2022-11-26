@@ -1,4 +1,4 @@
-# Bandwidth and Latency Monitor
+# Network Monitor
 
 [![Release](https://img.shields.io/github/release/danielchalmers/Network-Monitor?include_prereleases)](https://github.com/danielchalmers/Network-Monitor/releases/latest)
 [![License](https://img.shields.io/github/license/danielchalmers/Network-Monitor)](LICENSE)

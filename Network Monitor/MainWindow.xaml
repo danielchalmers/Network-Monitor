@@ -7,7 +7,7 @@
         xmlns:p="clr-namespace:Network_Monitor.Properties"
         xmlns:monitors="clr-namespace:Network_Monitor.Monitors"
         mc:Ignorable="d"
-        Title="Bandwidth and Latency Monitor"
+        Title="Network Monitor"
         Topmost="{Binding Topmost, Source={x:Static p:Settings.Default}, Mode=TwoWay}"
         ShowInTaskbar="{Binding ShowInTaskbar, Source={x:Static p:Settings.Default}, Mode=TwoWay}"
         SizeToContent="WidthAndHeight"

@@ -46,9 +46,9 @@ public partial class MainWindow : Window
                 using (var key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true))
                 {
                     if (Settings.Default.RunOnStartup)
-                        key?.SetValue("Bandwidth_and_Latency_Monitor", App.ResourceAssembly.Location);
+                        key?.SetValue("Network_Monitor", App.ResourceAssembly.Location);
                     else
-                        key?.DeleteValue("Bandwidth_and_Latency_Monitor", false);
+                        key?.DeleteValue("Network_Monitor", false);
                 }
 
                 break;
