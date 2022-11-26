@@ -69,10 +69,6 @@
 			          IsCheckable="True"
 			          IsChecked="{Binding Dark, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
 
-			<MenuItem Header="Run _on startup"
-			          IsCheckable="True"
-			          IsChecked="{Binding RunOnStartup, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
-
 			<MenuItem>
 				<MenuItem.Header>
 					<StackPanel Orientation="Horizontal">
@@ -90,7 +86,11 @@
 
 			<Separator />
 
-			<MenuItem Header="_Releases..." Click="MenuItemCheckForUpdates_OnClick" />
+			<MenuItem Header="Start with _PC"
+			          IsCheckable="True"
+			          IsChecked="{Binding RunOnStartup, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
+
+			<MenuItem Header="Check for _updates..." Click="MenuItemCheckForUpdates_OnClick" />
 
 			<MenuItem Header="E_xit" Click="MenuItemExit_OnClick" />
 		</ContextMenu>
