@@ -15,4 +15,4 @@ See live network latency & bandwidth usage.
 
 ## Right-click options
 
-![Options](https://user-images.githubusercontent.com/7112040/33785548-894d2a06-dc33-11e7-9218-8c4d7bfc3634.png)
+![Options](https://user-images.githubusercontent.com/7112040/204114602-8d508d10-6a93-43d5-bb8a-af0c4befefd6.png)
