@@ -9,20 +9,20 @@ jobs:
   deploy:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v2
+      - uses: actions/setup-dotnet@v5
 
       - name: Build
         run: dotnet publish -o "publish" -c Release -r win-x64
 
       - name: Create installer
         run: |
-          dotnet tool install --global wix --version 4.0.0-preview.1
+          dotnet tool install --global wix --version 6.0.2
           wix build Product.wxs -o "publish/Install Network Monitor.msi"
 
       - name: Create GitHub release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1.21.0
         with:
           artifacts: "publish/*.exe,publish/*.msi"
           allowUpdates: true
