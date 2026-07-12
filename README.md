@@ -26,7 +26,7 @@ Network Monitor is a tiny widget for Windows that keeps your live latency, downl
 - **Three live readings:** round-trip latency (ping), download speed, and upload speed, each with its own icon.
 - **Bits or bytes:** switch between Mb/s and MB/s; units auto-scale from K to T as traffic changes.
 - **Vertical or horizontal:** a slim column or a wide strip, so it fits any edge of your screen.
-- **Light and dark:** a clean, semi-transparent widget for whichever you prefer.
+- **Light, dark, or auto:** pick a theme, or let Auto follow the Windows light/dark mode and accent color.
 - **Resize instantly:** drag the size slider, or hold **Ctrl** and scroll over the widget to scale it.
 - **Stays where you want:** keep it on top of other windows, drag it anywhere, and it remembers where you left it.
 - **Copy on demand:** right-click → **Copy** to grab the current numbers.
@@ -49,5 +49,5 @@ Network Monitor is a tiny widget for Windows that keeps your live latency, downl
 
 - **Move it:** drag the widget anywhere on screen.
 - **Resize it:** hold **Ctrl** and scroll over it, or use the **Size** slider in the menu.
-- **Options:** right-click for bits/bytes, vertical/horizontal layout, dark mode, stay-on-top, show-in-taskbar, start-with-PC, and updates.
-- Latency is measured by pinging `8.8.8.8` (Google DNS); download and upload reflect traffic across all your network interfaces.
+- **Options:** right-click for bits/bytes, orientation, theme, stay-on-top, show-in-taskbar, start-with-PC, etc.
+- Latency is measured by pinging `8.8.8.8` (Google DNS); download and upload reflect traffic across your network interfaces.

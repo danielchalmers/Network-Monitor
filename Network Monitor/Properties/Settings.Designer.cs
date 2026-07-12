@@ -126,13 +126,13 @@ namespace Network_Monitor.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool Dark {
+        [global::System.Configuration.DefaultSettingValueAttribute("Auto")]
+        public global::Network_Monitor.AppTheme Theme {
             get {
-                return ((bool)(this["Dark"]));
+                return ((global::Network_Monitor.AppTheme)(this["Theme"]));
             }
             set {
-                this["Dark"] = value;
+                this["Theme"] = value;
             }
         }
         

@@ -31,11 +31,7 @@ public abstract class Monitor : ObservableObject
             PublishTimer.SecondChanged += (_, _) => PublishLatest();
         }
 
-        Settings.Default.PropertyChanged += (_, e) =>
-        {
-            if (e.PropertyName == nameof(Settings.Default.Dark))
-                RaisePropertyChanged(nameof(IconBrush));
-        };
+        ThemeService.Instance.PropertyChanged += (_, _) => RaisePropertyChanged(nameof(IconBrush));
     }
 
     /// <summary>
@@ -50,9 +46,12 @@ public abstract class Monitor : ObservableObject
 
     /// <summary>
     /// Icon color for the active theme.
-    /// Follows the pattern Windows itself uses: darker accent shades in light mode, lighter tints in dark mode.
+    /// Light and Dark use the fixed Fluent palette (darker shades in light mode, lighter tints in dark mode); Auto follows the system accent color instead.
     /// </summary>
-    public Brush IconBrush => Settings.Default.Dark ? _darkIconBrush : _lightIconBrush;
+    public Brush IconBrush =>
+        Settings.Default.Theme == AppTheme.Auto && ThemeService.Instance.AccentBrush is Brush accent
+            ? accent
+            : ThemeService.Instance.IsDark ? _darkIconBrush : _lightIconBrush;
 
     /// <summary>
     /// User-friendly text to show in the UI.

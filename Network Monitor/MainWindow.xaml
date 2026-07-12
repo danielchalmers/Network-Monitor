@@ -22,6 +22,9 @@
         SourceInitialized="Window_SourceInitialized"
         Closing="Window_Closing"
         MouseDoubleClick="Window_MouseDoubleClick">
+	<Window.Resources>
+		<root:EnumToBooleanConverter x:Key="EnumToBoolean" />
+	</Window.Resources>
 	<Window.Style>
 		<Style TargetType="Window">
 			<Setter Property="Foreground">
@@ -31,7 +34,7 @@
 			</Setter>
 
 			<Style.Triggers>
-				<DataTrigger Binding="{Binding Dark, Source={x:Static p:Settings.Default}, Mode=TwoWay}" Value="True">
+				<DataTrigger Binding="{Binding IsDark, Source={x:Static root:ThemeService.Instance}}" Value="True">
 					<DataTrigger.Setters>
 						<Setter Property="Foreground">
 							<Setter.Value>
@@ -65,9 +68,19 @@
 			          IsCheckable="True"
 			          IsChecked="{Binding Horizontal, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
 
-			<MenuItem Header="_Dark mode"
-			          IsCheckable="True"
-			          IsChecked="{Binding Dark, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
+			<MenuItem Header="_Theme">
+				<MenuItem Header="_Auto"
+				          IsCheckable="True"
+				          IsChecked="{Binding Theme, Source={x:Static p:Settings.Default}, Converter={StaticResource EnumToBoolean}, ConverterParameter=Auto, Mode=TwoWay}" />
+
+				<MenuItem Header="_Light"
+				          IsCheckable="True"
+				          IsChecked="{Binding Theme, Source={x:Static p:Settings.Default}, Converter={StaticResource EnumToBoolean}, ConverterParameter=Light, Mode=TwoWay}" />
+
+				<MenuItem Header="_Dark"
+				          IsCheckable="True"
+				          IsChecked="{Binding Theme, Source={x:Static p:Settings.Default}, Converter={StaticResource EnumToBoolean}, ConverterParameter=Dark, Mode=TwoWay}" />
+			</MenuItem>
 
 			<MenuItem>
 				<MenuItem.Header>
@@ -108,7 +121,7 @@
 				</Setter>
 
 				<Style.Triggers>
-					<DataTrigger Binding="{Binding Dark, Source={x:Static p:Settings.Default}, Mode=TwoWay}" Value="True">
+					<DataTrigger Binding="{Binding IsDark, Source={x:Static root:ThemeService.Instance}}" Value="True">
 						<DataTrigger.Setters>
 							<Setter Property="Background">
 								<Setter.Value>
