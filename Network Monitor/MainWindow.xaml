@@ -92,6 +92,8 @@
 
 			<MenuItem Header="Check for _updates..." Click="MenuItemCheckForUpdates_OnClick" />
 
+			<MenuItem Header="Give _feedback..." Click="MenuItemGiveFeedback_OnClick" />
+
 			<MenuItem Header="E_xit" Click="MenuItemExit_OnClick" />
 		</ContextMenu>
 	</Window.ContextMenu>

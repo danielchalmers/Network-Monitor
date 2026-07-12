@@ -89,6 +89,11 @@ public partial class MainWindow : Window
         Process.Start(new ProcessStartInfo { FileName = "https://github.com/danielchalmers/Network-Monitor/releases", UseShellExecute = true });
     }
 
+    private void MenuItemGiveFeedback_OnClick(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo { FileName = "https://github.com/danielchalmers/Network-Monitor/issues", UseShellExecute = true });
+    }
+
     private void MenuItemExit_OnClick(object sender, RoutedEventArgs e)
     {
         Close();
