@@ -96,7 +96,7 @@
 		</ContextMenu>
 	</Window.ContextMenu>
 
-	<Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" Grid.IsSharedSizeScope="True">
+	<Grid Grid.IsSharedSizeScope="True">
 		<Grid.Style>
 			<Style TargetType="Grid">
 				<Setter Property="Background">

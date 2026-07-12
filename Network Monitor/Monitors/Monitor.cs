@@ -1,19 +1,31 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Windows.Media;
 
 namespace Network_Monitor.Monitors;
 
-public abstract class Monitor
+public abstract class Monitor : ObservableObject
 {
+    /// <summary>
+    /// Shared timer that publishes every monitor's value in step with the system clock.
+    /// Keeping the display refresh on clock seconds means multiple instances of this app (and other clock-synced apps like DesktopClock) update in visual unison.
+    /// </summary>
+    private static readonly SystemClockTimer PublishTimer = CreatePublishTimer();
+
     private readonly Timer _timer;
+    private readonly object _stateLock = new();
+    private string _displayValue;
+    private string _latestValue;
+    private bool _isPaused;
 
     protected Monitor(TimeSpan interval)
     {
         if (interval > TimeSpan.Zero)
         {
-            _timer = new Timer(_ => Update());
+            _timer = new Timer(_ => Measure());
             _timer.Change(TimeSpan.Zero, interval);
+
+            PublishTimer.SecondChanged += (_, _) => PublishLatest();
         }
     }
 
@@ -35,7 +47,37 @@ public abstract class Monitor
     /// <summary>
     /// User-friendly text to show in the UI.
     /// </summary>
-    public string DisplayValue { get; protected set; }
+    public string DisplayValue
+    {
+        get => _displayValue;
+        protected set => Set(ref _displayValue, value);
+    }
+
+    /// <summary>
+    /// Whether <see cref="DisplayValue" /> should hold its current value instead of refreshing.
+    /// Values are still measured in the background so time-based readings stay accurate, and the latest one is published as soon as the pause ends.
+    /// </summary>
+    public bool IsPaused
+    {
+        get
+        {
+            lock (_stateLock)
+                return _isPaused;
+        }
+        set
+        {
+            string heldValue;
+
+            lock (_stateLock)
+            {
+                _isPaused = value;
+                heldValue = value ? null : _latestValue;
+            }
+
+            if (heldValue is not null)
+                DisplayValue = heldValue;
+        }
+    }
 
     /// <summary>
     /// Gets the latest value for <see cref="DisplayValue" />.
@@ -43,17 +85,58 @@ public abstract class Monitor
     protected abstract string GetDisplayValue();
 
     /// <summary>
-    /// Updates <see cref="DisplayValue"/> with the latest value.
+    /// Measures the latest value and stores it for the next publish.
     /// </summary>
-    private void Update()
+    private void Measure()
     {
+        string value;
+
         try
         {
-            DisplayValue = GetDisplayValue();
+            value = GetDisplayValue();
         }
         catch
         {
-            DisplayValue = "Fail";
+            value = "Fail";
         }
+
+        lock (_stateLock)
+            _latestValue = value;
+    }
+
+    /// <summary>
+    /// Publishes the latest measured value to <see cref="DisplayValue" /> unless paused.
+    /// </summary>
+    private void PublishLatest()
+    {
+        string value;
+
+        lock (_stateLock)
+        {
+            if (_isPaused)
+                return;
+
+            value = _latestValue;
+        }
+
+        if (value is not null)
+            DisplayValue = value;
+    }
+
+    private static SystemClockTimer CreatePublishTimer()
+    {
+        var timer = new SystemClockTimer();
+        timer.Start();
+        return timer;
+    }
+
+    /// <summary>
+    /// Creates a frozen brush from a hex color string for use as an <see cref="IconBrush" />.
+    /// </summary>
+    protected static Brush CreateIconBrush(string hexColor)
+    {
+        var brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(hexColor));
+        brush.Freeze();
+        return brush;
     }
 }

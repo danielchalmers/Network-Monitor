@@ -20,7 +20,7 @@
 		<Viewbox Grid.Column="1"
 		         StretchDirection="DownOnly"
 		         Margin="1,0,1,0">
-			<TextBlock x:Name="DisplayTextBlock" TextAlignment="Center" />
+			<TextBlock Text="{Binding DisplayValue}" TextAlignment="Center" />
 		</Viewbox>
 	</Grid>
 </UserControl>

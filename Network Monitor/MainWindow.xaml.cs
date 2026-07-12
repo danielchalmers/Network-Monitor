@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.Win32;
-using Network_Monitor.Monitors;
 using Network_Monitor.Properties;
 using WpfWindowPlacement;
 
@@ -30,12 +27,10 @@ public partial class MainWindow : Window
 
         Settings.Default.PropertyChanged += Settings_PropertyChanged;
 
-        Monitors = new List<Monitor> {
-            new LatencyMonitor(Settings.Default.PingHost, Settings.Default.Timeout),
-            new DownloadMonitor(),
-            new UploadMonitor()
-        };
+        DataContext = new MainViewModel();
     }
+
+    private MainViewModel ViewModel => (MainViewModel)DataContext;
 
     private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
@@ -55,24 +50,21 @@ public partial class MainWindow : Window
         }
     }
 
-    public IReadOnlyList<Monitor> Monitors { get; }
-
-    public bool UpdatesPaused { get; private set; }
-
     private void MainWindow_OnMouseDown(object sender, MouseButtonEventArgs e)
     {
         if (e.ChangedButton != MouseButton.Left)
             return;
 
-        // Freeze the displayed values while the mouse is held down so they don't change under the cursor while dragging.
-        UpdatesPaused = true;
+        // Hold the displayed values while the window is grabbed so they don't change under the cursor.
+        // DragMove blocks until the button is released, so the finally always resumes.
+        ViewModel.UpdatesPaused = true;
         try
         {
             DragMove();
         }
         finally
         {
-            UpdatesPaused = false;
+            ViewModel.UpdatesPaused = false;
         }
     }
 
@@ -87,17 +79,9 @@ public partial class MainWindow : Window
         }
     }
 
-    private void CopyOverviewToClipboard()
-    {
-        var longestMonitorName = Monitors.Max(m => m.Name.Length);
-        var overviewText = string.Join(Environment.NewLine, Monitors.Select(m => $"{m.Name.PadRight(longestMonitorName)}: {m.DisplayValue}"));
-
-        Clipboard.SetText(overviewText.ToString());
-    }
-
     private void MenuItemCopy_OnClick(object sender, RoutedEventArgs e)
     {
-        CopyOverviewToClipboard();
+        Clipboard.SetText(ViewModel.GetOverviewText());
     }
 
     private void MenuItemCheckForUpdates_OnClick(object sender, RoutedEventArgs e)
@@ -131,6 +115,6 @@ public partial class MainWindow : Window
     private void Window_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (e.ChangedButton == MouseButton.Left)
-            CopyOverviewToClipboard();
+            Clipboard.SetText(ViewModel.GetOverviewText());
     }
 }

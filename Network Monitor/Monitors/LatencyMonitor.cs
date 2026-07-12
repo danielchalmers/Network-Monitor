@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.NetworkInformation;
-using System.Windows.Media;
 
 namespace Network_Monitor.Monitors;
 
@@ -17,7 +16,7 @@ public class LatencyMonitor : Monitor
     {
         Name = "Latency";
         Icon = '⟳';
-        IconBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF9100")); // Orange A400 https://materialui.co/colors
+        IconBrush = CreateIconBrush("#FF9100"); // Orange A400 https://materialui.co/colors
 
         _host = host;
         _timeout = (int)timeout.TotalMilliseconds;
