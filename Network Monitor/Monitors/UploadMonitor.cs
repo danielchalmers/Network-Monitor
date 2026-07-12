@@ -11,7 +11,7 @@ public class UploadMonitor : BandwidthMonitor
     {
         Name = "Upload";
         Icon = '↑';
-        IconBrush = CreateIconBrush("#2979FF"); // Blue A400 https://materialui.co/colors
+        SetIconColors("#0078D4", "#5CAAE5"); // Fluent blue primary / tint30 https://react.fluentui.dev/?path=/docs/theme-colors--docs
     }
 
     protected override long GetTotalBytes() =>

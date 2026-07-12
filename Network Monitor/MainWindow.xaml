@@ -26,7 +26,7 @@
 		<Style TargetType="Window">
 			<Setter Property="Foreground">
 				<Setter.Value>
-					<SolidColorBrush Color="#212121" />
+					<SolidColorBrush Color="#242424" />
 				</Setter.Value>
 			</Setter>
 
@@ -35,7 +35,7 @@
 					<DataTrigger.Setters>
 						<Setter Property="Foreground">
 							<Setter.Value>
-								<SolidColorBrush Color="#FAFAFA" />
+								<SolidColorBrush Color="#FFFFFF" />
 							</Setter.Value>
 						</Setter>
 					</DataTrigger.Setters>
@@ -103,7 +103,7 @@
 			<Style TargetType="Grid">
 				<Setter Property="Background">
 					<Setter.Value>
-						<SolidColorBrush Color="#FAFAFA" Opacity="0.90" />
+						<SolidColorBrush Color="#F3F3F3" Opacity="0.90" />
 					</Setter.Value>
 				</Setter>
 
@@ -112,7 +112,7 @@
 						<DataTrigger.Setters>
 							<Setter Property="Background">
 								<Setter.Value>
-									<SolidColorBrush Color="#212121" Opacity="0.90" />
+									<SolidColorBrush Color="#202020" Opacity="0.90" />
 								</Setter.Value>
 							</Setter>
 						</DataTrigger.Setters>

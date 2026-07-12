@@ -11,7 +11,7 @@ public class DownloadMonitor : BandwidthMonitor
     {
         Name = "Download";
         Icon = '↓';
-        IconBrush = CreateIconBrush("#00E676"); // Green A400 https://materialui.co/colors
+        SetIconColors("#107C10", "#54B054"); // Fluent green primary / tint30 https://react.fluentui.dev/?path=/docs/theme-colors--docs
     }
 
     protected override long GetTotalBytes() =>

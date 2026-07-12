@@ -16,7 +16,7 @@ public class LatencyMonitor : Monitor
     {
         Name = "Latency";
         Icon = '⟳';
-        IconBrush = CreateIconBrush("#FF9100"); // Orange A400 https://materialui.co/colors
+        SetIconColors("#F7630C", "#FAA06B"); // Fluent orange primary / tint30 https://react.fluentui.dev/?path=/docs/theme-colors--docs
 
         _host = host;
         _timeout = (int)timeout.TotalMilliseconds;

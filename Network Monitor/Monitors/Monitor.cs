@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Windows.Media;
+using Network_Monitor.Properties;
 
 namespace Network_Monitor.Monitors;
 
@@ -17,6 +18,8 @@ public abstract class Monitor : ObservableObject
     private string _displayValue;
     private string _latestValue;
     private bool _isPaused;
+    private Brush _lightIconBrush;
+    private Brush _darkIconBrush;
 
     protected Monitor(TimeSpan interval)
     {
@@ -27,6 +30,12 @@ public abstract class Monitor : ObservableObject
 
             PublishTimer.SecondChanged += (_, _) => PublishLatest();
         }
+
+        Settings.Default.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(Settings.Default.Dark))
+                RaisePropertyChanged(nameof(IconBrush));
+        };
     }
 
     /// <summary>
@@ -40,9 +49,10 @@ public abstract class Monitor : ObservableObject
     public char Icon { get; protected set; }
 
     /// <summary>
-    /// Icon color.
+    /// Icon color for the active theme.
+    /// Follows the pattern Windows itself uses: darker accent shades in light mode, lighter tints in dark mode.
     /// </summary>
-    public Brush IconBrush { get; protected set; }
+    public Brush IconBrush => Settings.Default.Dark ? _darkIconBrush : _lightIconBrush;
 
     /// <summary>
     /// User-friendly text to show in the UI.
@@ -131,9 +141,16 @@ public abstract class Monitor : ObservableObject
     }
 
     /// <summary>
-    /// Creates a frozen brush from a hex color string for use as an <see cref="IconBrush" />.
+    /// Sets the icon colors for the light and dark themes.
     /// </summary>
-    protected static Brush CreateIconBrush(string hexColor)
+    protected void SetIconColors(string lightHexColor, string darkHexColor)
+    {
+        _lightIconBrush = CreateFrozenBrush(lightHexColor);
+        _darkIconBrush = CreateFrozenBrush(darkHexColor);
+        RaisePropertyChanged(nameof(IconBrush));
+    }
+
+    private static Brush CreateFrozenBrush(string hexColor)
     {
         var brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(hexColor));
         brush.Freeze();

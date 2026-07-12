@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows.Media;
 
 namespace Network_Monitor.Monitors;
 
@@ -12,7 +11,7 @@ public class DummyMonitor : Monitor
     {
         Name = "You shouldn't be seeing this!";
         Icon = 'X';
-        IconBrush = Brushes.Red;
+        SetIconColors("#D13438", "#D13438"); // Fluent red primary; never visible.
         DisplayValue = string.Empty.PadRight(4);
     }
 
