@@ -57,10 +57,23 @@ public partial class MainWindow : Window
 
     public IReadOnlyList<Monitor> Monitors { get; }
 
+    public bool UpdatesPaused { get; private set; }
+
     private void MainWindow_OnMouseDown(object sender, MouseButtonEventArgs e)
     {
-        if (e.ChangedButton == MouseButton.Left)
+        if (e.ChangedButton != MouseButton.Left)
+            return;
+
+        // Freeze the displayed values while the mouse is held down so they don't change under the cursor while dragging.
+        UpdatesPaused = true;
+        try
+        {
             DragMove();
+        }
+        finally
+        {
+            UpdatesPaused = false;
+        }
     }
 
     private void Window_PreviewMouseWheel(object sender, MouseWheelEventArgs e)

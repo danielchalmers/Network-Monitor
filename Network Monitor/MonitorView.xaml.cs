@@ -35,7 +35,14 @@ public partial class MonitorView : UserControl
 
         view.DisplayTextBlock.Text = monitor.DisplayValue;
 
-        view.Timer.SecondChanged += (_, _) => view.Dispatcher.Invoke(() => view.DisplayTextBlock.Text = monitor.DisplayValue);
+        view.Timer.SecondChanged += (_, _) => view.Dispatcher.Invoke(() =>
+        {
+            // Pause updates while the user is holding the mouse down on the window (e.g. dragging it).
+            if (Window.GetWindow(view) is MainWindow { UpdatesPaused: true })
+                return;
+
+            view.DisplayTextBlock.Text = monitor.DisplayValue;
+        });
         view.Timer.Start();
     }
 }
