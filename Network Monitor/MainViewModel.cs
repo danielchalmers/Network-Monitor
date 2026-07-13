@@ -42,12 +42,11 @@ public class MainViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Returns a text summary of every monitor's current value.
+    /// Returns a text summary of every monitor's stats, suitable for pasting into a support ticket or chat.
     /// </summary>
     public string GetOverviewText()
     {
-        var longestMonitorName = Monitors.Max(m => m.Name.Length);
-
-        return string.Join(Environment.NewLine, Monitors.Select(m => $"{m.Name.PadRight(longestMonitorName)}: {m.DisplayValue}"));
+        return string.Join(Environment.NewLine + Environment.NewLine,
+            Monitors.Select(m => m.Details ?? $"{m.Name}: {m.DisplayValue}"));
     }
 }

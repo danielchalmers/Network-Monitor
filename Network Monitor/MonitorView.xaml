@@ -4,7 +4,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d">
-	<Grid DataContext="{Binding Monitor, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
+	<!--  The long show duration keeps the live-updating stats visible while the user watches them.  -->
+	<Grid DataContext="{Binding Monitor, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+	      Background="Transparent"
+	      ToolTip="{Binding Details}"
+	      ToolTipService.ShowDuration="60000">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="Auto" SharedSizeGroup="Icon" />
 			<ColumnDefinition Width="*" SharedSizeGroup="Value" />
@@ -13,7 +17,6 @@
 		<TextBlock Grid.Column="0"
 		           Text="{Binding Icon}"
 		           Foreground="{Binding IconBrush}"
-		           ToolTip="{Binding Name}"
 		           FontWeight="DemiBold"
 		           TextAlignment="Center" />
 
