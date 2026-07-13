@@ -27,20 +27,27 @@ public class LatencyMonitor : Monitor
 
     protected override string GetDisplayValue()
     {
-        StartPingIfIdle();
+        // If the previous ping is still waiting for a reply, the result we show this second is from an older ping.
+        IsStale = !TryStartPing();
 
-        return _lastResult;
+        return _lastResult ?? NoData;
     }
 
     /// <summary>
-    /// Starts a ping in the background unless one is already waiting for a reply.
+    /// Starts a ping in the background and returns whether one was started, or false if the previous one is still waiting for a reply.
     /// Keeps the clock tick from blocking on slow replies, so the timeout setting bounds how long a reply can take without dictating how often the display refreshes.
     /// </summary>
-    private async void StartPingIfIdle()
+    private bool TryStartPing()
     {
         if (Interlocked.CompareExchange(ref _pingInFlight, 1, 0) != 0)
-            return;
+            return false;
 
+        SendPing();
+        return true;
+    }
+
+    private async void SendPing()
+    {
         try
         {
             var reply = await _ping.SendPingAsync(_host, _timeout).ConfigureAwait(false);

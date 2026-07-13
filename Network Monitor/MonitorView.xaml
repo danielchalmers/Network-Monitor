@@ -20,7 +20,18 @@
 		<Viewbox Grid.Column="1"
 		         StretchDirection="DownOnly"
 		         Margin="1,0,1,0">
-			<TextBlock Text="{Binding DisplayValue}" TextAlignment="Center" />
+			<TextBlock Text="{Binding DisplayValue}" TextAlignment="Center">
+				<TextBlock.Style>
+					<Style TargetType="TextBlock">
+						<Style.Triggers>
+							<!--  Dim values that are older than expected so they aren't mistaken for live readings.  -->
+							<DataTrigger Binding="{Binding IsStale}" Value="True">
+								<Setter Property="Opacity" Value="0.55" />
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</TextBlock.Style>
+			</TextBlock>
 		</Viewbox>
 	</Grid>
 </UserControl>

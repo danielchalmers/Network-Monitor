@@ -28,7 +28,7 @@ public abstract class BandwidthMonitor : Monitor
         var bytesPerSecond = GetBytesPerSecondAndUpdateLast();
 
         if (!bytesPerSecond.HasValue)
-            return string.Empty;
+            return NoData;
 
         return GetReadableByteString(bytesPerSecond.Value, Properties.Settings.Default.Bits);
     }

@@ -1,3 +1,4 @@
+using System.Net.NetworkInformation;
 using System.Windows.Media;
 using Network_Monitor.Properties;
 
@@ -11,10 +12,16 @@ public abstract class Monitor : ObservableObject
     /// </summary>
     private static readonly SystemClockTimer ClockTimer = CreateClockTimer();
 
+    /// <summary>
+    /// Placeholder shown when no reading is available, such as before the first measurement or while the network is down.
+    /// </summary>
+    protected const string NoData = "—";
+
     private readonly object _stateLock = new();
     private string _displayValue;
     private string _latestValue;
     private bool _isPaused;
+    private bool _isStale;
     private Brush _lightIconBrush;
     private Brush _darkIconBrush;
 
@@ -52,6 +59,16 @@ public abstract class Monitor : ObservableObject
     {
         get => _displayValue;
         protected set => Set(ref _displayValue, value);
+    }
+
+    /// <summary>
+    /// Whether <see cref="DisplayValue" /> is older than expected because a fresh reading hasn't arrived on schedule.
+    /// The UI dims stale values so they aren't mistaken for live ones.
+    /// </summary>
+    public bool IsStale
+    {
+        get => _isStale;
+        protected set => Set(ref _isStale, value);
     }
 
     /// <summary>
@@ -95,7 +112,16 @@ public abstract class Monitor : ObservableObject
 
         try
         {
-            value = GetDisplayValue();
+            if (NetworkInterface.GetIsNetworkAvailable())
+            {
+                value = GetDisplayValue();
+            }
+            else
+            {
+                // No network at all is a distinct state from a failed reading, so show a quiet placeholder instead of an alarming "Fail".
+                value = NoData;
+                IsStale = false;
+            }
         }
         catch
         {
