@@ -1,5 +1,3 @@
-using System;
-using System.Threading;
 using System.Windows.Media;
 using Network_Monitor.Properties;
 
@@ -8,12 +6,11 @@ namespace Network_Monitor.Monitors;
 public abstract class Monitor : ObservableObject
 {
     /// <summary>
-    /// Shared timer that publishes every monitor's value in step with the system clock.
-    /// Keeping the display refresh on clock seconds means multiple instances of this app (and other clock-synced apps like DesktopClock) update in visual unison.
+    /// Shared timer that drives every monitor in step with the system clock.
+    /// Measuring and publishing on the same clock-second tick makes all monitors change in visual unison at the moment the second changes, alongside other clock-synced apps like DesktopClock.
     /// </summary>
-    private static readonly SystemClockTimer PublishTimer = CreatePublishTimer();
+    private static readonly SystemClockTimer ClockTimer = CreateClockTimer();
 
-    private readonly Timer _timer;
     private readonly object _stateLock = new();
     private string _displayValue;
     private string _latestValue;
@@ -21,15 +18,10 @@ public abstract class Monitor : ObservableObject
     private Brush _lightIconBrush;
     private Brush _darkIconBrush;
 
-    protected Monitor(TimeSpan interval)
+    protected Monitor(bool updatesEverySecond)
     {
-        if (interval > TimeSpan.Zero)
-        {
-            _timer = new Timer(_ => Measure());
-            _timer.Change(TimeSpan.Zero, interval);
-
-            PublishTimer.SecondChanged += (_, _) => PublishLatest();
-        }
+        if (updatesEverySecond)
+            ClockTimer.SecondChanged += (_, _) => Update();
 
         ThemeService.Instance.PropertyChanged += (_, _) => RaisePropertyChanged(nameof(IconBrush));
     }
@@ -90,13 +82,14 @@ public abstract class Monitor : ObservableObject
 
     /// <summary>
     /// Gets the latest value for <see cref="DisplayValue" />.
+    /// Called on the shared clock tick, so it must return quickly; implementations that wait on the network should start async work and return the last completed result instead of blocking.
     /// </summary>
     protected abstract string GetDisplayValue();
 
     /// <summary>
-    /// Measures the latest value and stores it for the next publish.
+    /// Measures the latest value and publishes it to <see cref="DisplayValue" /> unless paused.
     /// </summary>
-    private void Measure()
+    private void Update()
     {
         string value;
 
@@ -110,29 +103,18 @@ public abstract class Monitor : ObservableObject
         }
 
         lock (_stateLock)
-            _latestValue = value;
-    }
-
-    /// <summary>
-    /// Publishes the latest measured value to <see cref="DisplayValue" /> unless paused.
-    /// </summary>
-    private void PublishLatest()
-    {
-        string value;
-
-        lock (_stateLock)
         {
+            _latestValue = value;
+
             if (_isPaused)
                 return;
-
-            value = _latestValue;
         }
 
         if (value is not null)
             DisplayValue = value;
     }
 
-    private static SystemClockTimer CreatePublishTimer()
+    private static SystemClockTimer CreateClockTimer()
     {
         var timer = new SystemClockTimer();
         timer.Start();

@@ -1,5 +1,5 @@
-﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.NetworkInformation;
 
 namespace Network_Monitor.Monitors;
@@ -12,8 +12,9 @@ public abstract class BandwidthMonitor : Monitor
     private readonly char[] ByteSuffixes = new[] { 'B', 'K', 'M', 'G', 'T', 'P', 'E' };
     private readonly char[] BitSuffixes = new[] { 'b', 'k', 'm', 'g', 't', 'p', 'e' };
     private long _lastBytes;
+    private long _lastTimestamp;
 
-    protected BandwidthMonitor() : base(TimeSpan.FromSeconds(2))
+    protected BandwidthMonitor() : base(true)
     {
         NetworkChange.NetworkAvailabilityChanged += (_, _) => NetworkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
     }
@@ -24,47 +25,51 @@ public abstract class BandwidthMonitor : Monitor
 
     protected override string GetDisplayValue()
     {
-        var bytes = GetBytesDiffAndUpdateLast();
+        var bytesPerSecond = GetBytesPerSecondAndUpdateLast();
 
-        if (!bytes.HasValue)
+        if (!bytesPerSecond.HasValue)
             return string.Empty;
 
-        return GetReadableByteString(bytes.Value, Properties.Settings.Default.Bits);
-    }
-
-    private long? GetBytesDiffAndUpdateLast()
-    {
-        var bytes = GetTotalBytes();
-        try
-        {
-            // Last value hasn't been set or an interface was disconnected.
-            if (_lastBytes <= 0 || bytes <= 0)
-                return null;
-
-            // Return the difference in bytes since the last call.
-            return bytes - _lastBytes;
-        }
-        finally
-        {
-            _lastBytes = bytes;
-        }
+        return GetReadableByteString(bytesPerSecond.Value, Properties.Settings.Default.Bits);
     }
 
     /// <summary>
-    /// Returns a short user-friendly representation of a number of bytes.
+    /// Returns the transfer rate since the last call, normalized by the actual elapsed time so timer jitter doesn't skew the reading.
     /// </summary>
-    private string GetReadableByteString(long bytes, bool convertToBits)
+    private double? GetBytesPerSecondAndUpdateLast()
     {
-        if (bytes < 0)
-            throw new ArgumentOutOfRangeException(nameof(bytes), "Number of bytes must be positive for this.");
+        var bytes = GetTotalBytes();
+        var timestamp = Stopwatch.GetTimestamp();
+        var lastBytes = _lastBytes;
+        var lastTimestamp = _lastTimestamp;
 
+        _lastBytes = bytes;
+        _lastTimestamp = timestamp;
+
+        // Last value hasn't been set, or an interface was disconnected and its counters reset.
+        if (lastBytes <= 0 || bytes < lastBytes)
+            return null;
+
+        var elapsedSeconds = (timestamp - lastTimestamp) / (double)Stopwatch.Frequency;
+
+        if (elapsedSeconds <= 0)
+            return null;
+
+        return (bytes - lastBytes) / elapsedSeconds;
+    }
+
+    /// <summary>
+    /// Returns a short user-friendly representation of a transfer rate in bytes per second.
+    /// </summary>
+    private string GetReadableByteString(double bytes, bool convertToBits)
+    {
         if (convertToBits)
             bytes *= 8;
 
         var suffixIndex = 0;
         while (bytes >= 1000) // Keep at 3 or less digits.
         {
-            bytes /= 1024;
+            bytes /= 1000;
             suffixIndex++;
         }
 

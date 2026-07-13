@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Net.NetworkInformation;
+using System.Threading;
 
 namespace Network_Monitor.Monitors;
 
@@ -11,8 +12,10 @@ public class LatencyMonitor : Monitor
     private readonly Ping _ping = new();
     private readonly string _host;
     private readonly int _timeout;
+    private volatile string _lastResult;
+    private int _pingInFlight;
 
-    public LatencyMonitor(string host, TimeSpan timeout) : base(timeout)
+    public LatencyMonitor(string host, TimeSpan timeout) : base(true)
     {
         Name = "Latency";
         Icon = '⟳';
@@ -24,8 +27,33 @@ public class LatencyMonitor : Monitor
 
     protected override string GetDisplayValue()
     {
-        var reply = _ping.Send(_host, _timeout);
+        StartPingIfIdle();
 
-        return reply.Status == IPStatus.Success ? reply.RoundtripTime.ToString() : "Fail";
+        return _lastResult;
+    }
+
+    /// <summary>
+    /// Starts a ping in the background unless one is already waiting for a reply.
+    /// Keeps the clock tick from blocking on slow replies, so the timeout setting bounds how long a reply can take without dictating how often the display refreshes.
+    /// </summary>
+    private async void StartPingIfIdle()
+    {
+        if (Interlocked.CompareExchange(ref _pingInFlight, 1, 0) != 0)
+            return;
+
+        try
+        {
+            var reply = await _ping.SendPingAsync(_host, _timeout).ConfigureAwait(false);
+
+            _lastResult = reply.Status == IPStatus.Success ? reply.RoundtripTime.ToString() : "Fail";
+        }
+        catch
+        {
+            _lastResult = "Fail";
+        }
+        finally
+        {
+            Interlocked.Exchange(ref _pingInFlight, 0);
+        }
     }
 }
