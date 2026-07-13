@@ -1,9 +1,12 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Win32;
+using Network_Monitor.Monitors;
 using Network_Monitor.Properties;
 using WpfWindowPlacement;
 
@@ -77,6 +80,42 @@ public partial class MainWindow : Window
             var change = Settings.Default.Size * steps * 0.15;
             Settings.Default.Size = (int)Math.Min(Math.Max(Settings.Default.Size + change, 32), 320);
         }
+    }
+
+    private void MenuItemAdapter_OnSubmenuOpened(object sender, RoutedEventArgs e)
+    {
+        AdapterMenuItem.Items.Clear();
+        AdapterMenuItem.Items.Add(CreateAdapterMenuItem("_All", string.Empty));
+
+        var adapters = NetworkAdapters.GetMonitorable()
+            .OrderBy(x => x.Name)
+            .ToList();
+
+        foreach (var adapter in adapters)
+        {
+            // Doubled underscores so adapter names don't turn into access keys.
+            AdapterMenuItem.Items.Add(CreateAdapterMenuItem(adapter.Name.Replace("_", "__"), adapter.Id));
+        }
+
+        // Keep a saved adapter selectable while it's unplugged so the choice is visible and can be changed.
+        var selectedId = Settings.Default.InterfaceId;
+
+        if (!string.IsNullOrEmpty(selectedId) && !adapters.Any(x => x.Id == selectedId))
+            AdapterMenuItem.Items.Add(CreateAdapterMenuItem("(Disconnected)", selectedId));
+    }
+
+    private static MenuItem CreateAdapterMenuItem(string header, string interfaceId)
+    {
+        var item = new MenuItem
+        {
+            Header = header,
+            IsCheckable = true,
+            IsChecked = Settings.Default.InterfaceId == interfaceId,
+        };
+
+        item.Click += (_, _) => Settings.Default.InterfaceId = interfaceId;
+
+        return item;
     }
 
     private void MenuItemCopy_OnClick(object sender, RoutedEventArgs e)

@@ -28,18 +28,60 @@ public abstract class BandwidthMonitor : Monitor
     /// </summary>
     private readonly Queue<double> _samples = new();
 
+    /// <summary>
+    /// Guards the cached adapter list and the delta baseline, which the clock tick reads while network-change events rewrite the list.
+    /// </summary>
+    private readonly object _measureLock = new();
+    private IReadOnlyList<NetworkInterface> _monitorableInterfaces = NetworkAdapters.GetMonitorable();
+    private string _lastBasis;
     private long _lastBytes;
     private long _lastTimestamp;
     private long _sessionBytes;
 
     protected BandwidthMonitor() : base(true)
     {
-        NetworkChange.NetworkAvailabilityChanged += (_, _) => NetworkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+        // Address changes fire on adapter connect/disconnect too, unlike availability which only fires when the machine gains or loses networking entirely.
+        NetworkChange.NetworkAvailabilityChanged += (_, _) => RefreshInterfaces();
+        NetworkChange.NetworkAddressChanged += (_, _) => RefreshInterfaces();
+
+        // Rebuild the cache when the selection changes so a freshly picked adapter is found even if its network-change event was delayed or missed.
+        Properties.Settings.Default.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(Properties.Settings.Default.InterfaceId))
+                RefreshInterfaces();
+        };
     }
 
-    protected IReadOnlyList<NetworkInterface> NetworkInterfaces { get; private set; } = NetworkInterface.GetAllNetworkInterfaces();
+    /// <summary>
+    /// Sums the byte counters of the given interfaces (received for download, sent for upload).
+    /// </summary>
+    protected abstract long GetTotalBytes(IReadOnlyList<NetworkInterface> interfaces);
 
-    protected abstract long GetTotalBytes();
+    /// <summary>
+    /// The interfaces to count traffic on: the adapter picked in the context menu, or all monitorable adapters.
+    /// Must be called under <see cref="_measureLock" /> so the resolved set stays consistent with the baseline measured against it.
+    /// </summary>
+    private IReadOnlyList<NetworkInterface> GetSelectedInterfaces()
+    {
+        var interfaces = _monitorableInterfaces;
+        var interfaceId = Properties.Settings.Default.InterfaceId;
+
+        return string.IsNullOrEmpty(interfaceId)
+            ? interfaces
+            : interfaces.Where(x => x.Id == interfaceId).ToArray();
+    }
+
+    /// <summary>
+    /// Rebuilds the cached adapter list so newly connected or removed adapters are picked up.
+    /// The baseline isn't touched here; a changed adapter set is detected during measurement instead, which keeps the set and its baseline atomic.
+    /// </summary>
+    private void RefreshInterfaces()
+    {
+        var refreshed = NetworkAdapters.GetMonitorable();
+
+        lock (_measureLock)
+            _monitorableInterfaces = refreshed;
+    }
 
     protected override string GetDisplayValue()
     {
@@ -59,6 +101,11 @@ public abstract class BandwidthMonitor : Monitor
     protected override string GetDetails()
     {
         var lines = new List<string> { Name };
+
+        var interfaceId = Properties.Settings.Default.InterfaceId;
+
+        if (!string.IsNullOrEmpty(interfaceId))
+            lines.Add($"Adapter: {_monitorableInterfaces.FirstOrDefault(x => x.Id == interfaceId)?.Name ?? "Disconnected"}");
 
         if (_samples.Count > 0)
         {
@@ -80,27 +127,42 @@ public abstract class BandwidthMonitor : Monitor
     /// </summary>
     private double? GetBytesPerSecondAndUpdateLast()
     {
-        var bytes = GetTotalBytes();
-        var timestamp = Stopwatch.GetTimestamp();
-        var lastBytes = _lastBytes;
-        var lastTimestamp = _lastTimestamp;
+        // Resolving the adapter set, reading its counters, and updating the baseline all happen under one lock so a delta can never pair new counters with a stale baseline.
+        lock (_measureLock)
+        {
+            var interfaces = GetSelectedInterfaces();
+            var basis = GetBasis(interfaces);
+            var bytes = GetTotalBytes(interfaces);
+            var timestamp = Stopwatch.GetTimestamp();
 
-        _lastBytes = bytes;
-        _lastTimestamp = timestamp;
+            var lastBasis = _lastBasis;
+            var lastBytes = _lastBytes;
+            var lastTimestamp = _lastTimestamp;
 
-        // Last value hasn't been set, or an interface was disconnected and its counters reset.
-        if (lastBytes <= 0 || bytes < lastBytes)
-            return null;
+            _lastBasis = basis;
+            _lastBytes = bytes;
+            _lastTimestamp = timestamp;
 
-        var elapsedSeconds = (timestamp - lastTimestamp) / (double)Stopwatch.Frequency;
+            // Warm up (no rate this tick) when there's no prior reading, the counters dropped because an interface went away, or the adapter set changed since the last reading.
+            if (lastBytes <= 0 || bytes < lastBytes || basis != lastBasis)
+                return null;
 
-        if (elapsedSeconds <= 0)
-            return null;
+            var elapsedSeconds = (timestamp - lastTimestamp) / (double)Stopwatch.Frequency;
 
-        _sessionBytes += bytes - lastBytes;
+            if (elapsedSeconds <= 0)
+                return null;
 
-        return (bytes - lastBytes) / elapsedSeconds;
+            _sessionBytes += bytes - lastBytes;
+
+            return (bytes - lastBytes) / elapsedSeconds;
+        }
     }
+
+    /// <summary>
+    /// Returns an order-independent signature of the interface set, so a delta is only computed when this tick measured the same adapters as the last one.
+    /// </summary>
+    private static string GetBasis(IReadOnlyList<NetworkInterface> interfaces) =>
+        string.Join(";", interfaces.Select(x => x.Id).OrderBy(id => id));
 
     /// <summary>
     /// Returns a short user-friendly representation of a transfer rate in bytes per second.

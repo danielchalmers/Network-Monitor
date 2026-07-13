@@ -56,6 +56,13 @@
 			          IsCheckable="True"
 			          IsChecked="{Binding Bits, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
 
+			<!--  Populated on open so it always reflects the adapters currently on the machine.  -->
+			<MenuItem x:Name="AdapterMenuItem"
+			          Header="Network _adapter"
+			          SubmenuOpened="MenuItemAdapter_OnSubmenuOpened">
+				<MenuItem Header="(loading)" />
+			</MenuItem>
+
 			<MenuItem Header="Stay on _top"
 			          IsCheckable="True"
 			          IsChecked="{Binding Topmost, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
