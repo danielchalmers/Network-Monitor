@@ -23,15 +23,18 @@ Network Monitor is a tiny widget for Windows that keeps your live latency, downl
 
 ## ✨ Features
 
-- **Three live readings:** round-trip latency (ping), download speed, and upload speed, each with its own icon.
+- **Three live readings:** round-trip latency (ping), download speed, and upload speed, updated every second.
+- **Hover for history:** a 60-second sparkline with min/avg/max, jitter, packet loss, and session totals.
+- **Pick your adapter:** measure every network adapter combined, or single one out from the menu.
 - **Bits or bytes:** switch between Mb/s and MB/s; units auto-scale from K to T as traffic changes.
 - **Vertical or horizontal:** a slim column or a wide strip, so it fits any edge of your screen.
 - **Light, dark, or auto:** pick a theme, or let Auto follow the Windows light/dark mode and accent color.
 - **Resize instantly:** drag the size slider, or hold **Ctrl** and scroll over the widget to scale it.
 - **Stays where you want:** keep it on top of other windows, drag it anywhere, and it remembers where you left it.
-- **Copy on demand:** right-click → **Copy** to grab the current numbers.
+- **Copy on demand:** double-click, or right-click → **Copy**, to grab the current numbers.
 - **Starts with Windows:** optionally launch on sign-in, and check for updates in one click from the menu.
-- **Light on resources:** updates are synced to the system clock, and it recovers on its own if the network drops.
+- **Honest numbers:** stale readings dim, lost pings show as gaps, and it recovers on its own after drops.
+- **Light on resources:** one tiny reading per second, published exactly when the system clock ticks.
 
 ## 🚀 Install
 
@@ -49,5 +52,6 @@ Network Monitor is a tiny widget for Windows that keeps your live latency, downl
 
 - **Move it:** drag the widget anywhere on screen.
 - **Resize it:** hold **Ctrl** and scroll over it, or use the **Size** slider in the menu.
-- **Options:** right-click for bits/bytes, orientation, theme, stay-on-top, show-in-taskbar, start-with-PC, etc.
-- Latency is measured by pinging `8.8.8.8` (Google DNS); download and upload reflect traffic across your network interfaces.
+- **Hover it:** hold the cursor over any reading for a sparkline and detailed stats from the last minute.
+- **Options:** right-click for network adapter, bits/bytes, orientation, theme, stay-on-top, etc.
+- Latency is measured by pinging `8.8.8.8` (Google DNS); download and upload count all adapters, or one you pick.
