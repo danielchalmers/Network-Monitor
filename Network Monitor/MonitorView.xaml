@@ -3,12 +3,27 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:Network_Monitor"
              mc:Ignorable="d">
-	<!--  The long show duration keeps the live-updating stats visible while the user watches them.  -->
+	<!--  The long show duration keeps the live-updating sparkline and stats visible while the user watches them.  -->
 	<Grid DataContext="{Binding Monitor, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
 	      Background="Transparent"
-	      ToolTip="{Binding Details}"
 	      ToolTipService.ShowDuration="60000">
+		<Grid.ToolTip>
+			<ToolTip>
+				<StackPanel MinWidth="180">
+					<!--  ~60s trend of the same rolling window the stats summarize, tinted to match the monitor's icon.  -->
+					<local:Sparkline Height="36"
+					                 Margin="0,2,0,6"
+					                 Values="{Binding History}"
+					                 BaselineZero="{Binding HistoryStartsAtZero}"
+					                 Stroke="{Binding IconBrush}"
+					                 StrokeThickness="1.5" />
+
+					<TextBlock Text="{Binding Details}" />
+				</StackPanel>
+			</ToolTip>
+		</Grid.ToolTip>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="Auto" SharedSizeGroup="Icon" />
 			<ColumnDefinition Width="*" SharedSizeGroup="Value" />

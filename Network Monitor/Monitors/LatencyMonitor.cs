@@ -83,6 +83,12 @@ public class LatencyMonitor : Monitor
         return string.Join(Environment.NewLine, lines);
     }
 
+    protected override IReadOnlyList<double?> GetHistory()
+    {
+        lock (_samples)
+            return _samples.Select(s => s >= 0 ? (double?)s : null).ToArray();
+    }
+
     /// <summary>
     /// Returns the average difference between consecutive round trip times, which is what makes a connection feel unstable even when the average latency looks fine.
     /// </summary>

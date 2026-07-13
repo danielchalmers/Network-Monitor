@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Windows.Media;
 using Network_Monitor.Properties;
@@ -23,6 +24,7 @@ public abstract class Monitor : ObservableObject
     private string _latestValue;
     private string _details;
     private string _latestDetails;
+    private IReadOnlyList<double?> _history = Array.Empty<double?>();
     private bool _isPaused;
     private bool _isStale;
     private Brush _lightIconBrush;
@@ -72,6 +74,20 @@ public abstract class Monitor : ObservableObject
         get => _details;
         private set => Set(ref _details, value);
     }
+
+    /// <summary>
+    /// Recent readings for the hover sparkline, oldest first. Null entries are gaps (e.g. a lost ping).
+    /// </summary>
+    public IReadOnlyList<double?> History
+    {
+        get => _history;
+        private set => Set(ref _history, value);
+    }
+
+    /// <summary>
+    /// Whether the sparkline's vertical scale is anchored at zero to show magnitude (throughput) rather than spanning min–max to show variation (latency jitter).
+    /// </summary>
+    public bool HistoryStartsAtZero { get; protected set; }
 
     /// <summary>
     /// Whether <see cref="DisplayValue" /> is older than expected because a fresh reading hasn't arrived on schedule.
@@ -127,6 +143,11 @@ public abstract class Monitor : ObservableObject
     protected virtual string GetDetails() => Name;
 
     /// <summary>
+    /// Gets the recent readings for <see cref="History" />, oldest first, using null for gaps.
+    /// </summary>
+    protected virtual IReadOnlyList<double?> GetHistory() => Array.Empty<double?>();
+
+    /// <summary>
     /// Measures the latest value and publishes it to <see cref="DisplayValue" /> and <see cref="Details" /> unless paused.
     /// </summary>
     private void Update()
@@ -168,6 +189,7 @@ public abstract class Monitor : ObservableObject
             DisplayValue = value;
 
         Details = details;
+        History = GetHistory();
     }
 
     private static SystemClockTimer CreateClockTimer()
