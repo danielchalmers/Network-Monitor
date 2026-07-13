@@ -1,3 +1,4 @@
+using System;
 using System.Net.NetworkInformation;
 using System.Windows.Media;
 using Network_Monitor.Properties;
@@ -20,6 +21,8 @@ public abstract class Monitor : ObservableObject
     private readonly object _stateLock = new();
     private string _displayValue;
     private string _latestValue;
+    private string _details;
+    private string _latestDetails;
     private bool _isPaused;
     private bool _isStale;
     private Brush _lightIconBrush;
@@ -62,6 +65,15 @@ public abstract class Monitor : ObservableObject
     }
 
     /// <summary>
+    /// Multi-line diagnostic text shown when hovering over the monitor.
+    /// </summary>
+    public string Details
+    {
+        get => _details;
+        private set => Set(ref _details, value);
+    }
+
+    /// <summary>
     /// Whether <see cref="DisplayValue" /> is older than expected because a fresh reading hasn't arrived on schedule.
     /// The UI dims stale values so they aren't mistaken for live ones.
     /// </summary>
@@ -85,15 +97,20 @@ public abstract class Monitor : ObservableObject
         set
         {
             string heldValue;
+            string heldDetails;
 
             lock (_stateLock)
             {
                 _isPaused = value;
                 heldValue = value ? null : _latestValue;
+                heldDetails = value ? null : _latestDetails;
             }
 
             if (heldValue is not null)
                 DisplayValue = heldValue;
+
+            if (heldDetails is not null)
+                Details = heldDetails;
         }
     }
 
@@ -104,33 +121,44 @@ public abstract class Monitor : ObservableObject
     protected abstract string GetDisplayValue();
 
     /// <summary>
-    /// Measures the latest value and publishes it to <see cref="DisplayValue" /> unless paused.
+    /// Gets the latest value for <see cref="Details" />.
+    /// Called right after <see cref="GetDisplayValue" /> on the same tick, so the two always describe the same reading.
+    /// </summary>
+    protected virtual string GetDetails() => Name;
+
+    /// <summary>
+    /// Measures the latest value and publishes it to <see cref="DisplayValue" /> and <see cref="Details" /> unless paused.
     /// </summary>
     private void Update()
     {
         string value;
+        string details;
 
         try
         {
             if (NetworkInterface.GetIsNetworkAvailable())
             {
                 value = GetDisplayValue();
+                details = GetDetails();
             }
             else
             {
                 // No network at all is a distinct state from a failed reading, so show a quiet placeholder instead of an alarming "Fail".
                 value = NoData;
+                details = $"{Name}{Environment.NewLine}No network connection";
                 IsStale = false;
             }
         }
         catch
         {
             value = "Fail";
+            details = Name;
         }
 
         lock (_stateLock)
         {
             _latestValue = value;
+            _latestDetails = details;
 
             if (_isPaused)
                 return;
@@ -138,6 +166,8 @@ public abstract class Monitor : ObservableObject
 
         if (value is not null)
             DisplayValue = value;
+
+        Details = details;
     }
 
     private static SystemClockTimer CreateClockTimer()
