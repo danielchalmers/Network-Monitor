@@ -1,25 +1,24 @@
 # Network Monitor
 
-[![Release](https://img.shields.io/github/release/danielchalmers/Network-Monitor?include_prereleases)](https://github.com/danielchalmers/Network-Monitor/releases/latest)
-[![License](https://img.shields.io/github/license/danielchalmers/Network-Monitor)](LICENSE)
+[![Release](https://img.shields.io/github/release/danielchalmers/Network-Monitor?include_prereleases)](https://github.com/danielchalmers/Network-Monitor/releases/latest) [![License](https://img.shields.io/github/license/danielchalmers/Network-Monitor)](LICENSE)
 
-Network Monitor is a tiny widget for Windows that keeps your live latency, download, and upload speeds on the desktop.
+A small widget for Windows that keeps your live latency, download, and upload speeds on the desktop.
 
-![Network Monitor showing live latency, download, and upload](https://user-images.githubusercontent.com/7112040/33785224-16384542-dc32-11e7-8574-676f0fe52726.gif)
+<img width="300" alt="Network Monitor ticking through live latency, download, and upload" src="https://github.com/user-attachments/assets/a2fb99f1-b749-4275-8f4d-1805bf2bfc83" />
 
-## 📸 Screenshots
+## 📸 See more
 
-**Dark mode**
+Hover for a 60-second sparkline and the stats behind it: min/avg/max, jitter, packet loss, and session totals.
 
-![Dark mode](https://user-images.githubusercontent.com/7112040/173041072-b55593e1-9849-472e-a1ec-a1c64f7fc810.png)
+<img width="560" alt="Hover tooltip showing a latency sparkline with min/avg/max, jitter, and packet loss" src="https://github.com/user-attachments/assets/1295bb25-ee35-48b1-bc92-4241a75d89ae" />
 
-**Horizontal layout**
+**Light, dark, or auto**
 
-![Horizontal layout](https://user-images.githubusercontent.com/7112040/33785456-202dfeb0-dc33-11e7-87e5-af4a09d77058.gif)
+<img width="280" alt="Network Monitor in dark mode" src="https://github.com/user-attachments/assets/036d321c-6b59-4fd3-984f-1d1ba2fd4c0f" />
 
-**Right-click for all the options**
+**Vertical or horizontal**
 
-![Right-click options](https://user-images.githubusercontent.com/7112040/204114602-8d508d10-6a93-43d5-bb8a-af0c4befefd6.png)
+<img width="560" alt="Network Monitor as a horizontal strip" src="https://github.com/user-attachments/assets/2e37da0e-1415-4b28-88bb-464dd518632d" />
 
 ## ✨ Features
 
