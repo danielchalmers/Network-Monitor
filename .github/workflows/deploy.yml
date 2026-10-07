@@ -5,21 +5,18 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   deploy:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v5
+      - uses: ./.github/actions/build-and-test
 
-      - name: Build
-        run: dotnet publish -o "publish" -c Release -r win-x64
-
-      - name: Create installer
-        run: |
-          dotnet tool install --global wix --version 6.0.2
-          wix build Product.wxs -o "publish/Install Network Monitor.msi"
+      - uses: ./.github/actions/create-release-artifacts
 
       - name: Create GitHub release
         uses: ncipollo/release-action@v1.21.0
@@ -27,4 +24,4 @@ jobs:
           artifacts: "publish/*.exe,publish/*.msi"
           allowUpdates: true
           artifactErrorsFailBuild: true
-          prerelease: contains(github.ref, 'beta')
+          generateReleaseNotes: true

@@ -7,7 +7,8 @@
     <LangVersion>latest</LangVersion>
     <ApplicationIcon>Network Monitor.ico</ApplicationIcon>
     <Copyright>© Daniel Chalmers</Copyright>
-    <Version>4.0.0</Version>
+    <Version>4.1.0</Version>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
 </Project>
