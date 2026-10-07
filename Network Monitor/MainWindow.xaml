@@ -49,11 +49,18 @@
 	</Window.Style>
 	<Window.ContextMenu>
 		<ContextMenu>
+			<!--  Shows which version is running, as in DesktopClock.  -->
+			<MenuItem Header="{x:Static root:App.VersionText}"
+			          HeaderStringFormat="Network Monitor {0}"
+			          IsEnabled="False" />
+
+			<Separator />
+
 			<MenuItem Header="_Copy" Click="MenuItemCopy_OnClick" />
 
 			<Separator />
 
-			<MenuItem Header="Measure in _bits"
+			<MenuItem Header="Measure in _bits (Mbps)"
 			          IsCheckable="True"
 			          IsChecked="{Binding Bits, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
 
@@ -64,7 +71,7 @@
 				<MenuItem Header="(loading)" />
 			</MenuItem>
 
-			<MenuItem Header="Stay on _top"
+			<MenuItem Header="Always on _top"
 			          IsCheckable="True"
 			          IsChecked="{Binding Topmost, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
 
@@ -76,18 +83,25 @@
 			          IsCheckable="True"
 			          IsChecked="{Binding Horizontal, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
 
-			<MenuItem Header="_Theme">
+			<!--  Picking a theme is a choice rather than a toggle: the items set it on click and the binding only shows it, so clicking the checked one keeps it checked. They stay checkable so screen readers announce which one is.  -->
+			<MenuItem Header="Th_eme">
 				<MenuItem Header="_Auto"
 				          IsCheckable="True"
-				          IsChecked="{Binding Theme, Source={x:Static p:Settings.Default}, Converter={StaticResource EnumToBoolean}, ConverterParameter=Auto, Mode=TwoWay}" />
+				          Tag="{x:Static root:AppTheme.Auto}"
+				          Click="MenuItemTheme_OnClick"
+				          IsChecked="{Binding Theme, Source={x:Static p:Settings.Default}, Converter={StaticResource EnumToBoolean}, ConverterParameter=Auto, Mode=OneWay}" />
 
 				<MenuItem Header="_Light"
 				          IsCheckable="True"
-				          IsChecked="{Binding Theme, Source={x:Static p:Settings.Default}, Converter={StaticResource EnumToBoolean}, ConverterParameter=Light, Mode=TwoWay}" />
+				          Tag="{x:Static root:AppTheme.Light}"
+				          Click="MenuItemTheme_OnClick"
+				          IsChecked="{Binding Theme, Source={x:Static p:Settings.Default}, Converter={StaticResource EnumToBoolean}, ConverterParameter=Light, Mode=OneWay}" />
 
 				<MenuItem Header="_Dark"
 				          IsCheckable="True"
-				          IsChecked="{Binding Theme, Source={x:Static p:Settings.Default}, Converter={StaticResource EnumToBoolean}, ConverterParameter=Dark, Mode=TwoWay}" />
+				          Tag="{x:Static root:AppTheme.Dark}"
+				          Click="MenuItemTheme_OnClick"
+				          IsChecked="{Binding Theme, Source={x:Static p:Settings.Default}, Converter={StaticResource EnumToBoolean}, ConverterParameter=Dark, Mode=OneWay}" />
 			</MenuItem>
 
 			<MenuItem>
@@ -111,9 +125,9 @@
 			          IsCheckable="True"
 			          IsChecked="{Binding RunOnStartup, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
 
-			<MenuItem Header="Check for _updates..." Click="MenuItemCheckForUpdates_OnClick" />
+			<MenuItem Header="Check for _updates" Click="MenuItemCheckForUpdates_OnClick" />
 
-			<MenuItem Header="Give _feedback..." Click="MenuItemGiveFeedback_OnClick" />
+			<MenuItem Header="Give _feedback" Click="MenuItemGiveFeedback_OnClick" />
 
 			<MenuItem Header="E_xit" Click="MenuItemExit_OnClick" />
 		</ContextMenu>

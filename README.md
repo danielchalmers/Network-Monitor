@@ -52,5 +52,5 @@ Hover for a 60-second sparkline and the stats behind it: min/avg/max, jitter, pa
 - **Move it:** drag the widget anywhere on screen.
 - **Resize it:** hold **Ctrl** and scroll over it, or use the **Size** slider in the menu.
 - **Hover it:** hold the cursor over any reading for a sparkline and detailed stats from the last minute.
-- **Options:** right-click for network adapter, bits/bytes, orientation, theme, stay-on-top, etc.
+- **Options:** right-click for network adapter, bits/bytes, orientation, theme, always on top, etc.
 - Latency is measured by pinging `8.8.8.8` (Google DNS); download and upload count all adapters, or one you pick.
