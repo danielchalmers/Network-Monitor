@@ -22,13 +22,6 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        if (Settings.Default.MustUpgrade)
-        {
-            Settings.Default.Upgrade();
-            Settings.Default.MustUpgrade = false;
-            Settings.Default.Save();
-        }
-
         Settings.Default.PropertyChanged += Settings_PropertyChanged;
 
         DataContext = new MainViewModel();
@@ -152,10 +145,18 @@ public partial class MainWindow : Window
         }
     }
 
+    private void Window_LocationChanged(object sender, EventArgs e)
+    {
+        // Remember the position as it changes, so it survives a crash or a forced restart and not only a clean exit.
+        // Moves before the window has loaded are just the saved position being restored.
+        if (IsLoaded)
+            Settings.Default.Placement = WindowPlacementFunctions.GetPlacement(this);
+    }
+
     private void Window_Closing(object sender, CancelEventArgs e)
     {
         Settings.Default.Placement = WindowPlacementFunctions.GetPlacement(this);
-        Settings.Default.Save();
+        SettingsSaver.SaveNow();
     }
 
     private void Window_MouseDoubleClick(object sender, MouseButtonEventArgs e)

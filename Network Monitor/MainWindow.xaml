@@ -20,6 +20,7 @@
         MouseDown="MainWindow_OnMouseDown"
         PreviewMouseWheel="Window_PreviewMouseWheel"
         SourceInitialized="Window_SourceInitialized"
+        LocationChanged="Window_LocationChanged"
         Closing="Window_Closing"
         MouseDoubleClick="Window_MouseDoubleClick">
 	<Window.Resources>
