@@ -75,17 +75,12 @@ public class Sparkline : FrameworkElement
         var padding = StrokeThickness + 1;
         var plotHeight = Math.Max(1, ActualHeight - (2 * padding));
 
-        var min = BaselineZero ? 0 : present.Min();
-        var max = present.Max();
-        var range = max - min;
+        var scale = SparklineScale.For(present, BaselineZero);
 
         double X(int index) => values.Count == 1 ? ActualWidth / 2 : (double)index / (values.Count - 1) * ActualWidth;
 
-        // Normalize over the vertical range; higher values sit higher on screen.
-        // A series with no range sits on the midline, except an all-zero series on a zero baseline, which belongs on the floor.
-        double Y(double value) => range <= 0
-            ? padding + (BaselineZero ? plotHeight : plotHeight / 2)
-            : padding + (plotHeight * (1 - ((value - min) / range)));
+        // Higher values sit higher on screen.
+        double Y(double value) => padding + (plotHeight * (1 - scale.GetHeight(value)));
 
         var pen = new Pen(Stroke, StrokeThickness)
         {
