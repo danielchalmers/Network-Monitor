@@ -29,6 +29,8 @@ public abstract class BandwidthMonitor : Monitor
     private IReadOnlyList<NetworkInterface> _monitorableInterfaces = NetworkAdapters.GetMonitorable();
     private CounterReading _lastReading;
     private long _sessionBytes;
+    private string _lastSelection;
+    private bool _skipNextSample;
 
     protected BandwidthMonitor() : base(true)
     {
@@ -80,7 +82,25 @@ public abstract class BandwidthMonitor : Monitor
 
     protected override string GetDisplayValue()
     {
+        // Stats from the previously picked adapter would otherwise be shown under the new one's name.
+        // This is checked here on the clock tick, which owns the samples, rather than when the setting changes.
+        var selection = Properties.Settings.Default.InterfaceId;
+
+        if (selection != _lastSelection)
+        {
+            _samples.Clear();
+            _sessionBytes = 0;
+            _lastSelection = selection;
+        }
+
         var bytesPerSecond = GetBytesPerSecondAndUpdateLast();
+
+        // The first rate after the clock stopped is averaged over the whole gap, so it still counts toward the total but isn't shown as a reading.
+        if (_skipNextSample)
+        {
+            _skipNextSample = false;
+            return NoData;
+        }
 
         if (!bytesPerSecond.HasValue)
             return NoData;
@@ -95,6 +115,12 @@ public abstract class BandwidthMonitor : Monitor
 
     protected override IReadOnlyList<double?> GetHistory() =>
         _samples.Select(s => (double?)s).ToArray();
+
+    protected override void ResetHistory()
+    {
+        _samples.Clear();
+        _skipNextSample = true;
+    }
 
     protected override string GetDetails()
     {
