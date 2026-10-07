@@ -21,4 +21,13 @@ public class LatencyMathTests
     {
         Assert.Equal(0, LatencyMath.GetJitter(new long[] { 20 }));
     }
+
+    [Theory]
+    [InlineData(0, "<1")]
+    [InlineData(1, "1")]
+    [InlineData(23, "23")]
+    public void FormatRoundtrip_ShowsUnderAMillisecondAsLessThanOne(long roundtripTime, string expected)
+    {
+        Assert.Equal(expected, LatencyMonitor.FormatRoundtrip(roundtripTime));
+    }
 }

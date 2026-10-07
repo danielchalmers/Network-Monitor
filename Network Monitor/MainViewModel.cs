@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Network_Monitor.Monitors;
 using Network_Monitor.Properties;
@@ -46,7 +47,10 @@ public class MainViewModel : ObservableObject
     /// </summary>
     public string GetOverviewText()
     {
+        // The version and time come first so a pasted report says when it was taken and by what.
+        var header = $"Network Monitor {App.VersionText}, {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}";
+
         return string.Join(Environment.NewLine + Environment.NewLine,
-            Monitors.Select(m => m.Details ?? $"{m.Name}: {m.DisplayValue}"));
+            new[] { header }.Concat(Monitors.Select(m => m.Details ?? $"{m.Name}: {m.DisplayValue}")));
     }
 }

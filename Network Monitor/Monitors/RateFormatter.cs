@@ -13,19 +13,27 @@ public static class RateFormatter
 
     /// <summary>
     /// Returns a short representation of a transfer rate for the widget, where every character counts.
+    /// The result is never more than four characters, so the reading doesn't shrink to fit as traffic changes.
     /// </summary>
     public static string FormatCompactRate(double bytesPerSecond, bool asBits)
     {
         var value = asBits ? bytesPerSecond * 8 : bytesPerSecond;
 
+        // An idle connection reads as a plain zero rather than "0.0b".
+        if (value < 0.05)
+            return "0";
+
+        var suffixes = asBits ? BitSuffixes : ByteSuffixes;
         var suffixIndex = 0;
-        while (value >= 1000) // Keep at 3 or less digits.
+
+        // Step up a unit just before a value would round up to 1000, so 999.6 K shows as 1.0M rather than 1000K.
+        while (value >= 999.5 && suffixIndex < suffixes.Length - 1)
         {
             value /= 1000;
             suffixIndex++;
         }
 
-        return value.ToString(value < 10 ? "0.0" : "0") + (asBits ? BitSuffixes[suffixIndex] : ByteSuffixes[suffixIndex]);
+        return FormatNumber(value) + suffixes[suffixIndex];
     }
 
     /// <summary>
@@ -41,14 +49,22 @@ public static class RateFormatter
 
     private static string FormatWithUnits(double value, string[] units)
     {
+        if (value < 0.05)
+            return "0 " + units[0];
+
         var unitIndex = 0;
 
-        while (value >= 1000 && unitIndex < units.Length - 1)
+        while (value >= 999.5 && unitIndex < units.Length - 1)
         {
             value /= 1000;
             unitIndex++;
         }
 
-        return value.ToString(value < 10 ? "0.0" : "0") + " " + units[unitIndex];
+        return FormatNumber(value) + " " + units[unitIndex];
     }
+
+    /// <summary>
+    /// Returns one decimal place below 10 and none above, deciding by the rounded value so 9.96 shows as "10" rather than "10.0".
+    /// </summary>
+    private static string FormatNumber(double value) => value.ToString(value < 9.95 ? "0.0" : "0");
 }
