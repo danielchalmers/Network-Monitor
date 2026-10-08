@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Net.NetworkInformation;
 using System.Windows.Media;
 using Network_Monitor.Properties;
 
@@ -176,6 +175,12 @@ public abstract class Monitor : ObservableObject
     protected virtual IReadOnlyList<double?> GetHistory() => Array.Empty<double?>();
 
     /// <summary>
+    /// Whether the reading just taken shows the network working, like a ping that came back.
+    /// Traffic doesn't count, since virtual adapters for Hyper-V, WSL, and Docker keep chattering with no network at all.
+    /// </summary>
+    protected virtual bool HasLiveReading => false;
+
+    /// <summary>
     /// Gets the latest value for <see cref="SpokenValue" />, from the value just shown.
     /// </summary>
     protected virtual string GetSpokenValue(string displayValue) =>
@@ -207,14 +212,13 @@ public abstract class Monitor : ObservableObject
 
         try
         {
-            if (NetworkInterface.GetIsNetworkAvailable())
+            value = GetDisplayValue();
+            details = GetDetails();
+
+            // No network at all gets its own explanation, so it isn't mistaken for a failed reading.
+            // A ping that came back always wins, so a missed network event can't hide live numbers.
+            if (NetworkStatus.IsOffline && !HasLiveReading)
             {
-                value = GetDisplayValue();
-                details = GetDetails();
-            }
-            else
-            {
-                // No network at all gets its own explanation, so it isn't mistaken for a failed reading.
                 value = NoData;
                 details = $"{Name}{Environment.NewLine}No network connection";
                 IsStale = false;

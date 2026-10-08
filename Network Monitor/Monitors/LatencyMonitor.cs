@@ -50,6 +50,8 @@ public class LatencyMonitor : Monitor
         return _lastResult ?? NoData;
     }
 
+    protected override bool HasLiveReading => !IsStale && _lastResult is string result && result != "Fail";
+
     protected override string GetDetails()
     {
         long[] samples;
@@ -121,6 +123,9 @@ public class LatencyMonitor : Monitor
             var success = reply.Status == IPStatus.Success;
 
             _lastResult = success ? FormatRoundtrip(reply.RoundtripTime) : "Fail";
+
+            if (success)
+                NetworkStatus.ReportReply();
             RecordSample(success ? reply.RoundtripTime : -1);
         }
         catch
