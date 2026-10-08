@@ -26,7 +26,20 @@ public abstract class BandwidthMonitor : Monitor
     /// Guards the cached adapter list and the delta baseline, which the clock tick reads while network-change events rewrite the list.
     /// </summary>
     private readonly object _measureLock = new();
-    private IReadOnlyList<NetworkInterface> _monitorableInterfaces = NetworkAdapters.GetMonitorable();
+    private IReadOnlyList<NetworkInterface> _monitorableInterfaces = Array.Empty<NetworkInterface>();
+    private NetworkInterface _internetAdapter;
+    private (int Index, System.Net.Sockets.AddressFamily Family)? _internetRoute;
+
+    /// <summary>
+    /// The adapter Automatic last measured, kept through moments without a route so a dropout doesn't count as moving to another adapter.
+    /// </summary>
+    private string _lastInternetAdapterId;
+
+    /// <summary>
+    /// Ticks left before looking for the internet adapter again while there's a route but its adapter wasn't listed yet.
+    /// </summary>
+    private int _ticksUntilRetry;
+
     private CounterReading _lastReading;
     private long _sessionBytes;
     private DateTime _sessionStart = DateTime.Now;
@@ -35,6 +48,8 @@ public abstract class BandwidthMonitor : Monitor
 
     protected BandwidthMonitor() : base(true)
     {
+        RefreshInterfaces();
+
         // Address changes fire on adapter connect/disconnect too, unlike availability which only fires when the machine gains or loses networking entirely.
         NetworkChange.NetworkAvailabilityChanged += (_, _) => RefreshInterfaces();
         NetworkChange.NetworkAddressChanged += (_, _) => RefreshInterfaces();
@@ -53,36 +68,76 @@ public abstract class BandwidthMonitor : Monitor
     protected abstract long GetTotalBytes(IReadOnlyList<NetworkInterface> interfaces);
 
     /// <summary>
-    /// The interfaces to count traffic on: the adapter picked in the context menu, or all monitorable adapters.
+    /// The interfaces to count traffic on: the adapter picked in the context menu, the one that reaches the internet (Automatic), or all of them.
     /// Must be called under <see cref="_measureLock" /> so the resolved set stays consistent with the baseline measured against it.
     /// </summary>
-    private IReadOnlyList<NetworkInterface> GetSelectedInterfaces()
-    {
-        var interfaces = _monitorableInterfaces;
-        var interfaceId = Properties.Settings.Default.InterfaceId;
-
-        return string.IsNullOrEmpty(interfaceId)
-            ? interfaces
-            : interfaces.Where(x => x.Id == interfaceId).ToArray();
-    }
+    private IReadOnlyList<NetworkInterface> GetSelectedInterfaces() =>
+        NetworkAdapters.Select(_monitorableInterfaces, Properties.Settings.Default.InterfaceId, _internetAdapter);
 
     /// <summary>
-    /// Rebuilds the cached adapter list so newly connected or removed adapters are picked up.
+    /// Rebuilds the cached adapter list so newly connected or removed adapters are picked up, and finds which one reaches the internet now.
     /// The baseline isn't touched here; a changed adapter set is detected during measurement instead, which keeps the set and its baseline atomic.
     /// </summary>
     private void RefreshInterfaces()
     {
         var refreshed = NetworkAdapters.GetMonitorable();
+        var route = NetworkAdapters.GetInternetRoute();
+        var internetAdapter = NetworkAdapters.FindInternetAdapter(refreshed);
 
         lock (_measureLock)
+        {
             _monitorableInterfaces = refreshed;
+            _internetRoute = route;
+            _internetAdapter = internetAdapter;
+
+            if (internetAdapter != null)
+                _lastInternetAdapterId = internetAdapter.Id;
+        }
+    }
+
+    /// <summary>
+    /// Checks whether the route to the internet has moved to another adapter, which can happen without a network-change event, like when a VPN adds its routes after connecting or one connection's priority drops below another's.
+    /// Called on the clock tick while Automatic is picked. The adapters are only listed again when the route has moved.
+    /// </summary>
+    private void FollowInternetRoute()
+    {
+        var route = NetworkAdapters.GetInternetRoute();
+        bool shouldRefresh;
+
+        lock (_measureLock)
+        {
+            // A brand new route's adapter can take a moment to be listed, so look again every few seconds until it is.
+            var isUnlisted = route is not null && _internetAdapter is null && --_ticksUntilRetry <= 0;
+            shouldRefresh = !Equals(route, _internetRoute) || isUnlisted;
+
+            if (shouldRefresh)
+                _ticksUntilRetry = 5;
+        }
+
+        if (shouldRefresh)
+            RefreshInterfaces();
+    }
+
+    /// <summary>
+    /// Returns what's being measured, which changes when another adapter is picked or when Automatic moves to a different one, like after plugging in a cable.
+    /// Losing the route for a moment, like when Wi-Fi drops, isn't a change, so the session total carries on when it comes back.
+    /// </summary>
+    private string GetSelectionKey()
+    {
+        var interfaceId = Properties.Settings.Default.InterfaceId;
+
+        lock (_measureLock)
+            return string.IsNullOrEmpty(interfaceId) ? "automatic:" + _lastInternetAdapterId : interfaceId;
     }
 
     protected override string GetDisplayValue()
     {
-        // Stats from the previously picked adapter would otherwise be shown under the new one's name.
+        if (string.IsNullOrEmpty(Properties.Settings.Default.InterfaceId))
+            FollowInternetRoute();
+
+        // Stats from the previously measured adapter would otherwise be shown under the new one's name.
         // This is checked here on the clock tick, which owns the samples, rather than when the setting changes.
-        var selection = Properties.Settings.Default.InterfaceId;
+        var selection = GetSelectionKey();
 
         if (selection != _lastSelection)
         {
@@ -130,10 +185,8 @@ public abstract class BandwidthMonitor : Monitor
     {
         var lines = new List<string> { Name };
 
-        var interfaceId = Properties.Settings.Default.InterfaceId;
-
-        if (!string.IsNullOrEmpty(interfaceId))
-            lines.Add($"Adapter: {_monitorableInterfaces.FirstOrDefault(x => x.Id == interfaceId)?.Name ?? "Disconnected"}");
+        lock (_measureLock)
+            lines.Add(NetworkAdapters.Describe(_monitorableInterfaces, Properties.Settings.Default.InterfaceId, _internetAdapter));
 
         if (_samples.Count > 0)
         {

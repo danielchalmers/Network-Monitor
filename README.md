@@ -24,7 +24,7 @@ Hover for a 60-second sparkline and the stats behind it: min/avg/max, jitter, pa
 
 - **Three live readings:** round-trip latency (ping), download speed, and upload speed, updated every second.
 - **Hover for history:** a 60-second sparkline with min/avg/max, jitter, packet loss, and session totals.
-- **Pick your adapter:** measure every network adapter combined, or single one out from the menu.
+- **Pick your adapter:** Automatic follows whichever adapter reaches the internet, or pick one, or all of them.
 - **Bits or bytes:** switch between Mbps and MB/s; units auto-scale from K to T as traffic changes.
 - **Vertical or horizontal:** a slim column or a wide strip, so it fits any edge of your screen.
 - **Light, dark, or auto:** pick a theme, or let Auto follow the Windows light/dark mode and accent color.
@@ -54,4 +54,4 @@ Hover for a 60-second sparkline and the stats behind it: min/avg/max, jitter, pa
 - **Hover it:** hold the cursor over any reading for a sparkline and detailed stats from the last minute.
 - **Lost it?** Start Network Monitor again and the running widget comes back into view.
 - **Options:** right-click for network adapter, bits/bytes, orientation, theme, always on top, etc.
-- Latency is measured by pinging `8.8.8.8` (Google DNS); download and upload count all adapters, or one you pick.
+- Latency is measured by pinging `8.8.8.8` (Google DNS); download and upload follow your internet adapter.
