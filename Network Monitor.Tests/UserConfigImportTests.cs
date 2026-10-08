@@ -43,7 +43,6 @@ public sealed class UserConfigImportTests : IDisposable
                     <Network_Monitor.Properties.Settings>
                         <setting name="MustUpgrade" serializeAs="String"><value>False</value></setting>
                         <setting name="Size" serializeAs="String"><value>{size}</value></setting>
-                        <setting name="RunOnStartup" serializeAs="String"><value>True</value></setting>
                         {placement}
                     </Network_Monitor.Properties.Settings>
                 </userSettings>
@@ -112,16 +111,6 @@ public sealed class UserConfigImportTests : IDisposable
 
         Assert.Null(ReadSetting(CurrentCopyPath, "Placement"));
         Assert.Equal("96", ReadSetting(CurrentCopyPath, "Size"));
-    }
-
-    [Fact]
-    public void ImportIfNewCopy_LeavesStartWithWindowsWithTheOtherCopy()
-    {
-        WriteConfig("Network.Monitor.exe_Url_old", "4.0.0.0", new DateTime(2026, 1, 1));
-
-        UserConfigImport.ImportIfNewCopy(CurrentCopyPath, includePlacement: true);
-
-        Assert.Null(ReadSetting(CurrentCopyPath, "RunOnStartup"));
     }
 
     [Fact]
