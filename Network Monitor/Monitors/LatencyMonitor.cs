@@ -33,7 +33,21 @@ public class LatencyMonitor : Monitor
     private readonly ConcurrentBag<Ping> _idlePings = new();
 
     private int _pingsOut;
-    private bool _hasLiveReading;
+
+    /// <summary>
+    /// What the reading showed on the latest tick, which the tooltip and screen readers describe.
+    /// </summary>
+    private LatencyView _view = LatencyView.Note("Waiting for the first reply", "waiting for the first reply");
+
+    /// <summary>
+    /// When the reply before the current outage arrived, in UTC, while the outage clock is showing.
+    /// </summary>
+    private DateTime? _outageStart;
+
+    /// <summary>
+    /// The latest outage that ended, in UTC, for the tooltip.
+    /// </summary>
+    private (DateTime Start, DateTime End)? _lastOutage;
 
     public LatencyMonitor(string host, TimeSpan timeout) : base(true)
     {
@@ -52,36 +66,46 @@ public class LatencyMonitor : Monitor
     protected override string GetDisplayValue()
     {
         // Show the last second whose ping has finished, then send this second's.
-        var reading = GetReading(_history.GetSlots());
+        var snapshot = _history.GetSnapshot();
+        var finished = LatencyHistory.GetFinished(snapshot.Slots);
+        var now = DateTime.UtcNow;
+
+        NetworkStatus.FollowInternetRoute();
+
+        var view = Outage.Decide(
+            finished.Length > 0 ? finished[finished.Length - 1] : null,
+            GetReading(snapshot.Slots).IsWaiting,
+            finished.Where(s => s >= 0).Select(s => (long?)s).LastOrDefault(),
+            snapshot.SecondsSinceReply,
+            snapshot.LastReplyAt,
+            now,
+            NetworkStatus.IsReconnecting,
+            NetworkStatus.HasRepliedOnThisNetwork);
+
         StartPing();
+        RememberOutage(view, snapshot.LastReplyAt, now);
 
-        // A reply slower than a second leaves the previous reading up, dimmed, until it arrives.
-        IsStale = reading.IsWaiting && reading.Roundtrip is not null;
-        _hasLiveReading = reading.Roundtrip is not null && !reading.IsWaiting;
-
-        return reading.Roundtrip is long roundtrip ? FormatRoundtrip(roundtrip) : NoData;
+        _view = view;
+        IsStale = view.IsStale;
+        return view.Value;
     }
 
-    protected override bool HasLiveReading => _hasLiveReading;
+    protected override bool HasLiveReading => _view.IsLive;
 
     protected override string GetDetails()
     {
-        var slots = _history.GetSlots();
-        var finished = LatencyHistory.GetFinished(slots);
-        var header = $"{Name} to {_host}";
-
-        if (finished.Length == 0)
-            return $"{header}{Environment.NewLine}Waiting for the first reply";
-
-        var last = finished[finished.Length - 1];
+        var finished = LatencyHistory.GetFinished(_history.GetSnapshot().Slots);
         var successes = finished.Where(s => s >= 0).ToArray();
         var losses = finished.Length - successes.Length;
+        var view = _view;
 
-        var lines = new List<string>
-        {
-            header,
-            $"Now: {(last >= 0 ? $"{FormatRoundtrip(last)} ms" : "no reply")}",
-        };
+        var lines = new List<string> { $"{Name} to {_host}" };
+
+        if ((view.IsLive || view.IsStale) && successes.Length > 0)
+            lines.Add($"Now: {FormatRoundtrip(successes[successes.Length - 1])} ms");
+
+        if (view.NoteLine is not null)
+            lines.Add(view.NoteLine);
 
         if (successes.Length > 0)
             lines.Add($"Min/Avg/Max: {FormatRoundtrip(successes.Min())} / {FormatRoundtrip((long)Math.Round(successes.Average(), MidpointRounding.AwayFromZero))} / {FormatRoundtrip(successes.Max())} ms");
@@ -90,18 +114,51 @@ public class LatencyMonitor : Monitor
             lines.Add($"Jitter: {LatencyMath.GetJitter(successes):0} ms");
 
         // One ping a second, so each finished ping is a second.
-        lines.Add($"Packet loss: {(double)losses / finished.Length:0%} of the last {finished.Length} s");
+        if (finished.Length > 0)
+            lines.Add($"Packet loss: {(double)losses / finished.Length:0%} of the last {finished.Length} s");
 
-        if (IsStale)
-            lines.Add("Waiting for a reply");
+        var now = DateTime.UtcNow;
+
+        if (_lastOutage is var (start, end) && now - end < Outage.RecoveryShownFor)
+            lines.Add(Outage.DescribeRecovery(start, end, now));
 
         return string.Join(Environment.NewLine, lines);
     }
 
-    protected override void ResetHistory() => _history.Reset();
+    protected override void ResetHistory()
+    {
+        _history.Reset();
+
+        // Time asleep isn't an outage.
+        _outageStart = null;
+    }
+
+    /// <summary>
+    /// Notes when an outage clock starts, and once replies are back, how long the outage lasted.
+    /// </summary>
+    /// <param name="view">What the reading shows this tick.</param>
+    /// <param name="lastReplyAt">When the last reply arrived, in UTC, as of the snapshot the view came from.</param>
+    /// <param name="now">The current time, in UTC.</param>
+    private void RememberOutage(LatencyView view, DateTime? lastReplyAt, DateTime now)
+    {
+        if (view.IsOutage)
+        {
+            _outageStart ??= lastReplyAt;
+        }
+        else if (view.IsBlockedNetwork)
+        {
+            // Time on a network that blocks ping isn't an outage.
+            _outageStart = null;
+        }
+        else if (view.IsLive && _outageStart is DateTime start)
+        {
+            _lastOutage = (start, lastReplyAt ?? now);
+            _outageStart = null;
+        }
+    }
 
     protected override IReadOnlyList<double?> GetHistory() =>
-        LatencyHistory.GetFinished(_history.GetSlots()).Select(s => s >= 0 ? (double?)s : null).ToArray();
+        LatencyHistory.GetFinished(_history.GetSnapshot().Slots).Select(s => s >= 0 ? (double?)s : null).ToArray();
 
     /// <summary>
     /// Returns what to show from <paramref name="slots" /> (oldest first): the newest finished second's round trip time, or null if it got no reply or there's none yet, and whether a newer ping is still waiting for its reply.
@@ -164,7 +221,8 @@ public class LatencyMonitor : Monitor
         }
     }
 
-    protected override string GetSpokenValue(string displayValue) => $"{Name}, {FormatSpoken(displayValue)}";
+    protected override string GetSpokenValue(string displayValue) =>
+        displayValue == _view.Value ? $"{Name}, {_view.Spoken}" : base.GetSpokenValue(displayValue);
 
     /// <summary>
     /// Returns a latency reading as a screen reader should say it.

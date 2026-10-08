@@ -208,6 +208,7 @@ public abstract class Monitor : ObservableObject
 
         string value;
         string details;
+        string spoken = null;
         IReadOnlyList<double?> history;
 
         try
@@ -221,6 +222,7 @@ public abstract class Monitor : ObservableObject
             {
                 value = NoData;
                 details = $"{Name}{Environment.NewLine}No network connection";
+                spoken = $"{Name}, no network connection";
                 IsStale = false;
             }
 
@@ -246,7 +248,7 @@ public abstract class Monitor : ObservableObject
         if (value is not null)
         {
             DisplayValue = value;
-            SpokenValue = GetSpokenValue(value);
+            SpokenValue = spoken ?? GetSpokenValue(value);
         }
 
         Details = details;
