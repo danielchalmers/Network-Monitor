@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Interop;
@@ -31,6 +32,12 @@ public partial class App : Application
 
         base.OnStartup(e);
 
+        if (!SingleInstance.TryClaim(ExePath))
+        {
+            Shutdown();
+            return;
+        }
+
         // The window is created here rather than by StartupUri so the settings are ready before anything reads them.
         if (!SettingsStartup.Prepare(e.Args))
         {
@@ -41,8 +48,11 @@ public partial class App : Application
         SettingsSaver.Start();
         RepairStartup();
 
-        MainWindow = new MainWindow();
-        MainWindow.Show();
+        var window = new MainWindow();
+        MainWindow = window;
+        window.Show();
+
+        SingleInstance.ListenForShowRequests(() => Dispatcher.BeginInvoke(new Action(window.Reveal)));
     }
 
     private static void RepairStartup()

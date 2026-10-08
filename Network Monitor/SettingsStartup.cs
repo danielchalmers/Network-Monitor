@@ -39,6 +39,7 @@ public static class SettingsStartup
         catch (ConfigurationErrorsException ex) when (!args.Contains(RepairedArgument) && TryDeleteUnreadable(ex, userConfigPath))
         {
             // The settings already failed to load in this process and can't be loaded again, so start over in a fresh one.
+            SingleInstance.Release();
             Process.Start(new ProcessStartInfo(Process.GetCurrentProcess().MainModule.FileName, RepairedArgument) { UseShellExecute = false });
             return false;
         }
