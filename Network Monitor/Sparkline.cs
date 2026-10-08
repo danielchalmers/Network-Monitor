@@ -24,9 +24,9 @@ public class Sparkline : FrameworkElement
         nameof(StrokeThickness), typeof(double), typeof(Sparkline),
         new FrameworkPropertyMetadata(1.5, FrameworkPropertyMetadataOptions.AffectsRender));
 
-    public static readonly DependencyProperty BaselineZeroProperty = DependencyProperty.Register(
-        nameof(BaselineZero), typeof(bool), typeof(Sparkline),
-        new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
+    public static readonly DependencyProperty MinimumTopProperty = DependencyProperty.Register(
+        nameof(MinimumTop), typeof(double), typeof(Sparkline),
+        new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender));
 
     /// <summary>
     /// The values to plot, oldest first. Null entries are gaps.
@@ -50,13 +50,12 @@ public class Sparkline : FrameworkElement
     }
 
     /// <summary>
-    /// Whether the vertical scale is anchored at zero so the line shows magnitude, like a throughput graph.
-    /// When false the scale spans the data's own min–max range, which emphasizes variation, like jitter in a latency graph.
+    /// The lowest value the top of the plot can stand for, so small values aren't zoomed in on (see <see cref="SparklineScale.For" />).
     /// </summary>
-    public bool BaselineZero
+    public double MinimumTop
     {
-        get => (bool)GetValue(BaselineZeroProperty);
-        set => SetValue(BaselineZeroProperty, value);
+        get => (double)GetValue(MinimumTopProperty);
+        set => SetValue(MinimumTopProperty, value);
     }
 
     protected override void OnRender(DrawingContext drawingContext)
@@ -75,7 +74,7 @@ public class Sparkline : FrameworkElement
         var padding = StrokeThickness + 1;
         var plotHeight = Math.Max(1, ActualHeight - (2 * padding));
 
-        var scale = SparklineScale.For(present, BaselineZero);
+        var scale = SparklineScale.For(present, MinimumTop);
 
         double X(int index) => values.Count == 1 ? ActualWidth / 2 : (double)index / (values.Count - 1) * ActualWidth;
 

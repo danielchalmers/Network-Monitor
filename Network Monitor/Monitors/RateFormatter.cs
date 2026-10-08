@@ -10,6 +10,8 @@ public static class RateFormatter
     private static readonly string[] ByteRateUnits = new[] { "B/s", "KB/s", "MB/s", "GB/s", "TB/s" };
     private static readonly string[] BitRateUnits = new[] { "bps", "kbps", "Mbps", "Gbps", "Tbps" };
     private static readonly string[] SizeUnits = new[] { "B", "KB", "MB", "GB", "TB" };
+    private static readonly string[] SpokenByteRateUnits = new[] { "bytes per second", "kilobytes per second", "megabytes per second", "gigabytes per second", "terabytes per second" };
+    private static readonly string[] SpokenBitRateUnits = new[] { "bits per second", "kilobits per second", "megabits per second", "gigabits per second", "terabits per second" };
 
     /// <summary>
     /// Returns a short representation of a transfer rate for the widget, where every character counts.
@@ -41,6 +43,12 @@ public static class RateFormatter
     /// </summary>
     public static string FormatRate(double bytesPerSecond, bool asBits) =>
         FormatWithUnits(asBits ? bytesPerSecond * 8 : bytesPerSecond, asBits ? BitRateUnits : ByteRateUnits);
+
+    /// <summary>
+    /// Returns a transfer rate with its units spelled out, for screen readers.
+    /// </summary>
+    public static string FormatSpokenRate(double bytesPerSecond, bool asBits) =>
+        FormatWithUnits(asBits ? bytesPerSecond * 8 : bytesPerSecond, asBits ? SpokenBitRateUnits : SpokenByteRateUnits);
 
     /// <summary>
     /// Returns an amount of data, such as a session total, with full unit names.

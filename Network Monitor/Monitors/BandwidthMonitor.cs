@@ -35,9 +35,6 @@ public abstract class BandwidthMonitor : Monitor
 
     protected BandwidthMonitor() : base(true)
     {
-        // A throughput graph reads as magnitude, so its scale is anchored at zero; min–max would blow idle-traffic wiggles up into dramatic-looking noise.
-        HistoryStartsAtZero = true;
-
         // Address changes fire on adapter connect/disconnect too, unlike availability which only fires when the machine gains or loses networking entirely.
         NetworkChange.NetworkAvailabilityChanged += (_, _) => RefreshInterfaces();
         NetworkChange.NetworkAddressChanged += (_, _) => RefreshInterfaces();
@@ -117,6 +114,11 @@ public abstract class BandwidthMonitor : Monitor
 
     protected override IReadOnlyList<double?> GetHistory() =>
         _samples.Select(s => (double?)s).ToArray();
+
+    protected override string GetSpokenValue(string displayValue) =>
+        displayValue == NoData || _samples.Count == 0
+            ? base.GetSpokenValue(displayValue)
+            : $"{Name}, {RateFormatter.FormatSpokenRate(_samples.Last(), Properties.Settings.Default.Bits)}";
 
     protected override void ResetHistory()
     {

@@ -35,6 +35,9 @@ public class LatencyMonitor : Monitor
         Icon = '⟳';
         SetIconColors("#F7630C", "#FAA06B"); // Fluent orange primary / tint30 https://react.fluentui.dev/?path=/docs/theme-colors--docs
 
+        // A healthy connection's few milliseconds of wobble should look like a wobble, not fill the graph's whole height like a real spike.
+        HistoryMinimumTop = 50;
+
         _host = host;
         _timeout = (int)timeout.TotalMilliseconds;
     }
@@ -130,6 +133,20 @@ public class LatencyMonitor : Monitor
             Interlocked.Exchange(ref _pingInFlight, 0);
         }
     }
+
+    protected override string GetSpokenValue(string displayValue) => $"{Name}, {FormatSpoken(displayValue)}";
+
+    /// <summary>
+    /// Returns a latency reading as a screen reader should say it.
+    /// </summary>
+    public static string FormatSpoken(string displayValue) => displayValue switch
+    {
+        NoData => "no reading",
+        "<1" => "less than 1 millisecond",
+        "1" => "1 millisecond",
+        _ when long.TryParse(displayValue, out _) => $"{displayValue} milliseconds",
+        _ => displayValue,
+    };
 
     /// <summary>
     /// Returns a round trip time in milliseconds, or "&lt;1" for a reply that came back within a millisecond, which ping reports as zero.

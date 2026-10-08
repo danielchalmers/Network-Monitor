@@ -36,6 +36,8 @@ public partial class MainWindow : Window
         // Hold the displayed values while the window is grabbed so they don't change under the cursor.
         // DragMove blocks until the button is released, so the finally always resumes.
         ViewModel.UpdatesPaused = true;
+        MonitorView.ToolTipsResumeAt = DateTime.MaxValue;
+        MonitorView.CloseToolTip();
         try
         {
             DragMove();
@@ -43,6 +45,9 @@ public partial class MainWindow : Window
         finally
         {
             ViewModel.UpdatesPaused = false;
+
+            // The cursor is still resting on the widget right after the drop, which isn't a request for the tooltip.
+            MonitorView.ToolTipsResumeAt = DateTime.UtcNow.AddSeconds(1);
         }
     }
 
