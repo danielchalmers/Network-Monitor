@@ -80,20 +80,25 @@ public static class CrashHandler
         $"{exception}\r\n\r\n";
 
     /// <summary>
+    /// Returns the path of the log for <paramref name="exePath" /> in <paramref name="folder" />, which is named after the exe.
+    /// </summary>
+    public static string GetLogPath(string folder, string exePath) =>
+        Path.Combine(folder, Path.GetFileNameWithoutExtension(exePath) + ".log");
+
+    /// <summary>
     /// Appends the error to a log next to the app, or in the temp folder if that one can't be written to.
     /// </summary>
     /// <returns>The path of the log that was written, or <c>null</c> if neither could be.</returns>
     private static string TryWriteLog(Exception exception)
     {
         var exePath = Process.GetCurrentProcess().MainModule.FileName;
-        var fileName = Path.GetFileNameWithoutExtension(exePath) + ".log";
         var entry = FormatLogEntry(exception, DateTimeOffset.Now);
 
         foreach (var folder in new[] { Path.GetDirectoryName(exePath), Path.GetTempPath() })
         {
             try
             {
-                var path = Path.Combine(folder, fileName);
+                var path = GetLogPath(folder, exePath);
 
                 if (File.Exists(path) && new FileInfo(path).Length > MaxLogSize)
                     File.Delete(path);

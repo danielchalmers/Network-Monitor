@@ -47,6 +47,23 @@ public static class StartupRegistration
     }
 
     /// <summary>
+    /// Stops starting <paramref name="exePath" /> at sign-in, along with Task Manager's record of whether it's enabled.
+    /// A Run value for another copy is left alone, such as a portable copy the user still runs after uninstalling the installed one.
+    /// </summary>
+    public static void DisableFor(string exePath)
+    {
+        using var runKey = Registry.CurrentUser.OpenSubKey(RunKeyPath, writable: true);
+
+        if (!IsSamePath(runKey?.GetValue(ValueName) as string, exePath))
+            return;
+
+        runKey.DeleteValue(ValueName, throwOnMissingValue: false);
+
+        using var approvedKey = Registry.CurrentUser.OpenSubKey(ApprovedKeyPath, writable: true);
+        approvedKey?.DeleteValue(ValueName, throwOnMissingValue: false);
+    }
+
+    /// <summary>
     /// Points the Run value at <paramref name="exePath" /> when the exe it names was deleted, such as after the user deleted an old portable download and kept the new one.
     /// Also quotes a path that was saved without quotes by older versions, which is unreliable for paths with spaces.
     /// A Run value for another copy that still exists, or might just be unreachable right now, is left alone.

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Interop;
@@ -25,6 +26,14 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        // The uninstall waits for this, so it comes before anything that could show a message or hand off to a copy that's still running.
+        if (e.Args.Contains(UninstallCleanup.Argument))
+        {
+            UninstallCleanup.Run(ExePath);
+            Shutdown();
+            return;
+        }
+
         CrashHandler.Register(this);
 
         // Three numbers gain nothing from the graphics card, and drawing them in software saves about 10 MB of memory with no visible difference.

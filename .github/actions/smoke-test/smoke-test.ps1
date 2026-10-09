@@ -4,7 +4,8 @@ Installs, upgrades, launches, and uninstalls one architecture's release files, f
 
 .DESCRIPTION
 It only checks that the app starts and keeps running, never its readings, because CI machines may block ping.
-Runs on Windows PowerShell 5.1 and PowerShell 7, so it can also be run by hand in Windows Sandbox.
+It also sets the current user's "Start with Windows" entry, so only run it on a machine that's thrown away afterwards, like CI or Windows Sandbox.
+Runs on Windows PowerShell 5.1 and PowerShell 7, so it can be run by hand in Windows Sandbox.
 #>
 param(
     [Parameter(Mandatory)]
@@ -28,6 +29,9 @@ $UpgradeCode = '{46A5208D-49CB-499A-BC21-7B6993B1F3F4}'
 $Machines = @{ x64 = 0x8664; arm64 = 0xAA64 }
 $InstalledExe = Join-Path $env:LOCALAPPDATA 'Network Monitor\Network Monitor.exe'
 $Shortcut = Join-Path ([Environment]::GetFolderPath('Programs')) 'Network Monitor\Network Monitor.lnk'
+$RunKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
+$ApprovedKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run'
+$StartupName = 'Network_Monitor'
 
 New-Item -ItemType Directory -Force $Logs | Out-Null
 $Logs = (Resolve-Path $Logs).Path
@@ -102,6 +106,33 @@ function Get-PackageVersion([string] $package) {
     return $version
 }
 
+# Sets the startup entry the way the app's "Start with Windows" does, plus the record Task Manager keeps of it being enabled.
+function Set-Startup([string] $exe) {
+    Set-ItemProperty $RunKey $StartupName "`"$exe`""
+
+    # A fresh profile may not have the key yet, and -Force on one that exists would empty it.
+    if (-not (Test-Path $ApprovedKey)) {
+        New-Item $ApprovedKey -Force | Out-Null
+    }
+
+    Set-ItemProperty $ApprovedKey $StartupName ([byte[]](2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) -Type Binary
+}
+
+# Returns nothing when the value is missing, where Get-ItemPropertyValue would throw whatever -ErrorAction says.
+function Get-StartupValue([string] $key) {
+    $values = Get-ItemProperty $key -ErrorAction Ignore
+
+    if ($values -and $values.PSObject.Properties[$StartupName]) {
+        return $values.PSObject.Properties[$StartupName].Value
+    }
+}
+
+function Assert-Startup([string] $exe) {
+    if ((Get-StartupValue $RunKey) -ne "`"$exe`"" -or -not (Get-StartupValue $ApprovedKey)) {
+        throw "The startup entry for $exe is gone or changed: $(Get-StartupValue $RunKey)."
+    }
+}
+
 # Starts the exe and fails if it exits or writes a crash log within 10 seconds.
 # The crash handler keeps the process open while it shows its message, so a running process alone doesn't prove it didn't crash.
 function Assert-KeepsRunning([string] $exe) {
@@ -160,6 +191,8 @@ if ($Arch -eq 'x64') {
     }
 }
 
+$upgrading = $false
+
 if ($Repository) {
     Step "Install the newest release of $Repository with an installer for $Arch"
     $headers = @{}
@@ -193,10 +226,22 @@ if ($Repository) {
         Invoke-WebRequest $asset.browser_download_url -OutFile $previousMsi -Headers $headers -UseBasicParsing
         Assert-Msiexec '/i' $previousMsi 'install-previous'
         Write-Host "Installed $($release.tag_name) ($($asset.name))."
+        $upgrading = $true
     }
     else {
         Write-Warning "No release of $Repository has an installer for $Arch, so upgrading from one isn't tested."
     }
+}
+
+# Arm PCs can also install the x64 build, so upgrading from it tests an upgrade from a version that cleans up when it's uninstalled.
+if ($Arch -eq 'arm64') {
+    Step 'Install the x64 build, as someone on Arm who picked the wrong file would'
+    Assert-Msiexec '/i' (Get-ReleaseFile 'msi' 'x64') 'install-x64-on-arm64'
+    $upgrading = $true
+}
+
+if ($upgrading) {
+    Set-Startup $InstalledExe
 }
 
 Step "Install $(Split-Path $msi -Leaf)"
@@ -220,10 +265,17 @@ if (-not (Test-Path $Shortcut)) {
 
 Assert-Machine $InstalledExe
 
+if ($upgrading) {
+    Step 'Upgrading kept the startup entry'
+    Assert-Startup $InstalledExe
+}
+
 Step 'Installed app starts and keeps running'
 Assert-KeepsRunning $InstalledExe
 
-Step 'Uninstall'
+Step 'Uninstalling removes the startup entry and crash log'
+Set-Startup $InstalledExe
+Set-Content (Join-Path (Split-Path $InstalledExe) 'Network Monitor.log') 'An old crash'
 Assert-Msiexec '/x' $msi 'uninstall'
 
 if (@(Get-InstalledProducts).Count) {
@@ -234,11 +286,23 @@ if (@(Get-UninstallEntries).Count) {
     throw 'Network Monitor is still in installed apps after uninstalling.'
 }
 
-foreach ($path in $InstalledExe, $Shortcut) {
+foreach ($path in (Split-Path $InstalledExe), $Shortcut) {
     if (Test-Path $path) {
         throw "Uninstalling left $path behind."
     }
 }
+
+if ((Get-StartupValue $RunKey) -or (Get-StartupValue $ApprovedKey)) {
+    throw 'Uninstalling left the startup entry behind.'
+}
+
+Step "Uninstalling leaves another copy's startup entry alone"
+Assert-Msiexec '/i' $msi 'reinstall'
+Set-Startup $portableExe
+Assert-Msiexec '/x' $msi 'uninstall-again'
+Assert-Startup $portableExe
+Remove-ItemProperty $RunKey $StartupName
+Remove-ItemProperty $ApprovedKey $StartupName
 
 Step 'Portable app starts and keeps running'
 Assert-KeepsRunning $portableExe

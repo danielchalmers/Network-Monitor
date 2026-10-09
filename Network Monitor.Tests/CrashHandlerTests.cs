@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.IO;
 using System.Threading;
 
 namespace Network_Monitor.Tests;
@@ -39,6 +40,14 @@ public class CrashHandlerTests
         {
             Thread.CurrentThread.CurrentCulture = original;
         }
+    }
+
+    [Theory]
+    [InlineData(@"C:\Users\you\AppData\Local\Network Monitor\Network Monitor.exe", @"C:\Users\you\AppData\Local\Network Monitor\Network Monitor.log")]
+    [InlineData(@"C:\Users\you\Downloads\Network.Monitor.exe", @"C:\Users\you\Downloads\Network.Monitor.log")]
+    public void GetLogPath_IsNamedAfterTheExe(string exePath, string expected)
+    {
+        Assert.Equal(expected, CrashHandler.GetLogPath(Path.GetDirectoryName(exePath), exePath));
     }
 
     [Fact]

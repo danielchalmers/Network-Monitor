@@ -1,6 +1,6 @@
 name: Smoke test
 
-description: Installs over the latest release, launches, and uninstalls one architecture's release files.
+description: Installs over the latest release, launches, and uninstalls one architecture's release files, checking what each step leaves behind.
 
 inputs:
   arch:

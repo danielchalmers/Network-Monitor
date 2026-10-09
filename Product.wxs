@@ -41,10 +41,15 @@
 
     <CustomAction Id="RunMainExe" Directory="INSTALLFOLDER" ExeCommand="[INSTALLFOLDER]$(var.Name).exe" Execute="commit" Return="asyncNoWait" />
 
+    <!--Removes the startup entry and crash log the app may have added, which Windows Installer doesn't know about-->
+    <CustomAction Id="UninstallCleanup" FileRef="MainExe" ExeCommand="--uninstall" Execute="deferred" Return="ignore" />
+
     <InstallExecuteSequence>
       <RemoveExistingProducts Before="InstallInitialize" />
       <!--Start the widget after installing or upgrading, but not when uninstalling or installing silently-->
       <Custom Action="RunMainExe" Before="InstallFinalize" Condition="NOT REMOVE AND UILevel &gt; 2" />
+      <!--Only when the app is really uninstalled: an upgrade uninstalls the old version too, and must keep the user's startup entry-->
+      <Custom Action="UninstallCleanup" Before="RemoveFiles" Condition="REMOVE~=&quot;ALL&quot; AND NOT UPGRADINGPRODUCTCODE" />
     </InstallExecuteSequence>
   </Package>
 
