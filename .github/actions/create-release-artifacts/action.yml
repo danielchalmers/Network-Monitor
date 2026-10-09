@@ -2,15 +2,23 @@ name: Create release artifacts
 
 description: Publishes the app and builds its installer into the publish folder.
 
+inputs:
+  version:
+    description: 'Version number for the app, such as 4.1.0. Leave empty to use the one in the project file.'
+    default: ''
+
 runs:
   using: "composite"
   steps:
     - uses: actions/setup-dotnet@v5
 
     # Only the app is published, so the test project's files stay out of the release folder.
+    # The installer takes its version from the exe, so setting it here covers both.
     - name: Publish
       shell: bash
-      run: dotnet publish "Network Monitor/Network Monitor.csproj" -c Release -o publish
+      env:
+        VERSION: ${{ inputs.version }}
+      run: dotnet publish "Network Monitor/Network Monitor.csproj" -c Release -o publish ${VERSION:+-p:Version=$VERSION}
 
     - name: Build installer
       shell: bash
