@@ -30,6 +30,7 @@ public abstract class Monitor : ObservableObject
     private Brush _lightIconBrush;
     private Brush _darkIconBrush;
     private int? _lastUpdateTicks;
+    private string _spokenValue;
 
     /// <summary>
     /// A gap between ticks longer than this means the clock stopped, usually because the PC was asleep.
@@ -41,7 +42,11 @@ public abstract class Monitor : ObservableObject
         if (updatesEverySecond)
             ClockTimer.SecondChanged += (_, _) => Update();
 
-        ThemeService.Instance.PropertyChanged += (_, _) => RaisePropertyChanged(nameof(IconBrush));
+        ThemeService.Instance.PropertyChanged += (_, _) =>
+        {
+            RaisePropertyChanged(nameof(IconBrush));
+            RaisePropertyChanged(nameof(TooltipBrush));
+        };
     }
 
     /// <summary>
@@ -62,6 +67,14 @@ public abstract class Monitor : ObservableObject
         Settings.Default.Theme == AppTheme.Auto && ThemeService.Instance.AccentBrush is Brush accent
             ? accent
             : ThemeService.Instance.IsDark ? _darkIconBrush : _lightIconBrush;
+
+    /// <summary>
+    /// Color for the graph in the tooltip, which stays light whatever the widget's theme: the accent in Auto, otherwise the light theme's darker shade, which can be seen against it.
+    /// </summary>
+    public Brush TooltipBrush =>
+        Settings.Default.Theme == AppTheme.Auto && ThemeService.Instance.AccentBrush is Brush accent
+            ? accent
+            : _lightIconBrush;
 
     /// <summary>
     /// User-friendly text to show in the UI.
@@ -91,9 +104,18 @@ public abstract class Monitor : ObservableObject
     }
 
     /// <summary>
-    /// Whether the sparkline's vertical scale is anchored at zero to show magnitude (throughput) rather than spanning min–max to show variation (latency jitter).
+    /// The lowest value the top of the history graph can stand for, which keeps small readings looking small.
     /// </summary>
-    public bool HistoryStartsAtZero { get; protected set; }
+    public double HistoryMinimumTop { get; protected set; }
+
+    /// <summary>
+    /// The reading as a screen reader should say it, such as "Download, 45 megabits per second".
+    /// </summary>
+    public string SpokenValue
+    {
+        get => _spokenValue;
+        private set => Set(ref _spokenValue, value);
+    }
 
     /// <summary>
     /// Whether <see cref="DisplayValue" /> is older than expected because a fresh reading hasn't arrived on schedule.
@@ -154,6 +176,12 @@ public abstract class Monitor : ObservableObject
     protected virtual IReadOnlyList<double?> GetHistory() => Array.Empty<double?>();
 
     /// <summary>
+    /// Gets the latest value for <see cref="SpokenValue" />, from the value just shown.
+    /// </summary>
+    protected virtual string GetSpokenValue(string displayValue) =>
+        displayValue == NoData ? $"{Name}, no reading" : $"{Name}, {displayValue}";
+
+    /// <summary>
     /// Forgets the recent readings behind the hover stats when they no longer describe the last minute, such as after the PC wakes up.
     /// Called on the clock tick, like the other measurement methods.
     /// </summary>
@@ -212,7 +240,10 @@ public abstract class Monitor : ObservableObject
         }
 
         if (value is not null)
+        {
             DisplayValue = value;
+            SpokenValue = GetSpokenValue(value);
+        }
 
         Details = details;
         History = history;
@@ -248,6 +279,7 @@ public abstract class Monitor : ObservableObject
         _lightIconBrush = CreateFrozenBrush(lightHexColor);
         _darkIconBrush = CreateFrozenBrush(darkHexColor);
         RaisePropertyChanged(nameof(IconBrush));
+        RaisePropertyChanged(nameof(TooltipBrush));
     }
 
     private static Brush CreateFrozenBrush(string hexColor)
