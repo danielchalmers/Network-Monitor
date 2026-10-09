@@ -29,6 +29,12 @@ public abstract class Monitor : ObservableObject
     private bool _isStale;
     private Brush _lightIconBrush;
     private Brush _darkIconBrush;
+    private int? _lastUpdateTicks;
+
+    /// <summary>
+    /// A gap between ticks longer than this means the clock stopped, usually because the PC was asleep.
+    /// </summary>
+    private const int MaxMillisecondsBetweenTicks = 5000;
 
     protected Monitor(bool updatesEverySecond)
     {
@@ -148,12 +154,28 @@ public abstract class Monitor : ObservableObject
     protected virtual IReadOnlyList<double?> GetHistory() => Array.Empty<double?>();
 
     /// <summary>
+    /// Forgets the recent readings behind the hover stats when they no longer describe the last minute, such as after the PC wakes up.
+    /// Called on the clock tick, like the other measurement methods.
+    /// </summary>
+    protected virtual void ResetHistory()
+    {
+    }
+
+    /// <summary>
     /// Measures the latest value and publishes it to <see cref="DisplayValue" /> and <see cref="Details" /> unless paused.
     /// </summary>
     private void Update()
     {
+        var now = Environment.TickCount;
+
+        if (_lastUpdateTicks is int last && unchecked(now - last) > MaxMillisecondsBetweenTicks)
+            ResetHistory();
+
+        _lastUpdateTicks = now;
+
         string value;
         string details;
+        IReadOnlyList<double?> history;
 
         try
         {
@@ -164,16 +186,20 @@ public abstract class Monitor : ObservableObject
             }
             else
             {
-                // No network at all is a distinct state from a failed reading, so show a quiet placeholder instead of an alarming "Fail".
+                // No network at all gets its own explanation, so it isn't mistaken for a failed reading.
                 value = NoData;
                 details = $"{Name}{Environment.NewLine}No network connection";
                 IsStale = false;
             }
+
+            history = GetHistory();
         }
         catch
         {
-            value = "Fail";
-            details = Name;
+            // Reading the counters can fail for a moment, such as when an adapter goes away mid-read, so show the quiet placeholder and try again next tick.
+            value = NoData;
+            details = $"{Name}{Environment.NewLine}Couldn't take a reading";
+            history = GetHistorySafely();
         }
 
         lock (_stateLock)
@@ -189,7 +215,22 @@ public abstract class Monitor : ObservableObject
             DisplayValue = value;
 
         Details = details;
-        History = GetHistory();
+        History = history;
+    }
+
+    /// <summary>
+    /// Returns the current history, or none if even that fails, so a failed reading never brings back a graph that was just cleared.
+    /// </summary>
+    private IReadOnlyList<double?> GetHistorySafely()
+    {
+        try
+        {
+            return GetHistory();
+        }
+        catch
+        {
+            return Array.Empty<double?>();
+        }
     }
 
     private static SystemClockTimer CreateClockTimer()

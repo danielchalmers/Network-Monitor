@@ -29,12 +29,12 @@ public readonly struct CounterReading
 
     /// <summary>
     /// Returns the transfer rate between two readings in bytes per second, or null when they can't be compared.
-    /// Readings can't be compared when there's no earlier one or its counter was still zero, the counters went backwards because an adapter went away, a different set of adapters was measured, or no time passed.
+    /// Readings can't be compared when there's no earlier one, no adapters were measured, the counters went backwards because an adapter went away, a different set of adapters was measured, or no time passed.
     /// The rate is normalized by the actual time between the readings so timer jitter doesn't skew it.
     /// </summary>
     public static double? GetBytesPerSecond(CounterReading previous, CounterReading current, long timestampFrequency)
     {
-        if (previous.Bytes <= 0 || current.Bytes < previous.Bytes || current.Basis != previous.Basis)
+        if (previous.Basis is null || string.IsNullOrEmpty(current.Basis) || current.Bytes < previous.Bytes || current.Basis != previous.Basis)
             return null;
 
         var elapsedSeconds = (current.Timestamp - previous.Timestamp) / (double)timestampFrequency;

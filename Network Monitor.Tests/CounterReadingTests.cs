@@ -51,10 +51,19 @@ public class CounterReadingTests
     }
 
     [Fact]
-    public void GetBytesPerSecond_ForACounterThatIsStillZero_ReturnsNull()
+    public void GetBytesPerSecond_ForACounterThatIsStillZero_ReturnsZero()
     {
         var previous = new CounterReading("a", 0, 0);
         var current = new CounterReading("a", 0, 1_000);
+
+        Assert.Equal(0, CounterReading.GetBytesPerSecond(previous, current, Frequency));
+    }
+
+    [Fact]
+    public void GetBytesPerSecond_WithoutAnyAdapters_ReturnsNull()
+    {
+        var previous = new CounterReading("", 0, 0);
+        var current = new CounterReading("", 0, 1_000);
 
         Assert.Null(CounterReading.GetBytesPerSecond(previous, current, Frequency));
     }

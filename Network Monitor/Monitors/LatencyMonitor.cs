@@ -83,6 +83,14 @@ public class LatencyMonitor : Monitor
         return string.Join(Environment.NewLine, lines);
     }
 
+    protected override void ResetHistory()
+    {
+        lock (_samples)
+            _samples.Clear();
+
+        _lastResult = null;
+    }
+
     protected override IReadOnlyList<double?> GetHistory()
     {
         lock (_samples)
