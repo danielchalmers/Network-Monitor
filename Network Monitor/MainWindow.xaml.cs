@@ -118,9 +118,14 @@ public partial class MainWindow : Window
         CopyOverview();
     }
 
+    private void MenuItemTheme_OnClick(object sender, RoutedEventArgs e)
+    {
+        Settings.Default.Theme = (AppTheme)((MenuItem)sender).Tag;
+    }
+
     private void MenuItemCheckForUpdates_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenUrl("https://github.com/danielchalmers/Network-Monitor/releases");
+        OpenUrl("https://github.com/danielchalmers/Network-Monitor/releases/latest");
     }
 
     private void MenuItemGiveFeedback_OnClick(object sender, RoutedEventArgs e)
