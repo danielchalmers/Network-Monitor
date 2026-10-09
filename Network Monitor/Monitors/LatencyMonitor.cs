@@ -73,7 +73,7 @@ public class LatencyMonitor : Monitor
             lines.Add($"Min/Avg/Max: {successes.Min()} / {successes.Average():0} / {successes.Max()} ms");
 
         if (successes.Length > 1)
-            lines.Add($"Jitter: ±{GetJitter(successes):0} ms");
+            lines.Add($"Jitter: ±{LatencyMath.GetJitter(successes):0} ms");
 
         lines.Add($"Packet loss: {(double)losses / samples.Length:0%} ({losses} of {samples.Length} pings)");
 
@@ -87,19 +87,6 @@ public class LatencyMonitor : Monitor
     {
         lock (_samples)
             return _samples.Select(s => s >= 0 ? (double?)s : null).ToArray();
-    }
-
-    /// <summary>
-    /// Returns the average difference between consecutive round trip times, which is what makes a connection feel unstable even when the average latency looks fine.
-    /// </summary>
-    private static double GetJitter(long[] roundtripTimes)
-    {
-        double totalDifference = 0;
-
-        for (var i = 1; i < roundtripTimes.Length; i++)
-            totalDifference += Math.Abs(roundtripTimes[i] - roundtripTimes[i - 1]);
-
-        return totalDifference / (roundtripTimes.Length - 1);
     }
 
     /// <summary>
