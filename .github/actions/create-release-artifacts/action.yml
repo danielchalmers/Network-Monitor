@@ -4,8 +4,8 @@ description: Publishes the app for each architecture, with an installer and a po
 
 inputs:
   version:
-    description: 'Version number for the app, such as 4.1.0. Leave empty to use the one in the project file.'
-    default: ''
+    description: 'Version number for the app, such as 5.0.0'
+    default: '0.0.0'
   archs:
     description: 'Architectures to build for'
     default: 'x64 arm64'
@@ -15,19 +15,12 @@ runs:
   steps:
     - uses: actions/setup-dotnet@v5
 
-    - name: Set version
-      id: version
-      shell: bash
-      env:
-        VERSION: ${{ inputs.version }}
-      run: echo "version=${VERSION:-$(dotnet msbuild "Network Monitor/Network Monitor.csproj" -getProperty:Version)}" >> "$GITHUB_OUTPUT"
-
     # Only the app is published, so the test project's files stay out of the release folder.
     # The installer takes its version from the exe, so setting it here covers both.
     - name: Publish
       shell: bash
       env:
-        VERSION: ${{ steps.version.outputs.version }}
+        VERSION: ${{ inputs.version }}
       run: |
         for arch in ${{ inputs.archs }}; do
           dotnet publish "Network Monitor/Network Monitor.csproj" -c Release --os win --arch $arch -o "publish/$arch" -p:Version=$VERSION
@@ -37,7 +30,7 @@ runs:
     - name: Build installers
       shell: bash
       env:
-        VERSION: ${{ steps.version.outputs.version }}
+        VERSION: ${{ inputs.version }}
       run: |
         dotnet tool install --global wix --version 6.0.2
         for arch in ${{ inputs.archs }}; do
