@@ -51,8 +51,9 @@
   <!--Main executable-->
   <Fragment>
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
-      <Component Id="MainExe" Guid="DD9C368E-7C85-4EE7-968E-BCE67E1BE292">
-        <File Id="MainExe" Name="$(var.Name).exe" Source="publish/$(var.Name).exe" />
+      <!--Not the GUID 4.x used: the exe is now a 64-bit component, and Windows Installer requires a new GUID when one replaces a 32-bit component-->
+      <Component Id="MainExe" Guid="09213AA3-FD1D-4FF7-A598-3AF48F47A6C8">
+        <File Id="MainExe" Name="$(var.Name).exe" Source="$(var.MainExeSource)" />
       </Component>
     </ComponentGroup>
   </Fragment>

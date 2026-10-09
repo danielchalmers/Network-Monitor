@@ -1,0 +1,30 @@
+name: Smoke test
+
+description: Installs over the latest release, launches, and uninstalls one architecture's release files.
+
+inputs:
+  arch:
+    description: 'Architecture to test, which must match the machine running it'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/download-artifact@v7
+      with:
+        name: network-monitor
+        path: artifacts
+
+    - name: Smoke test
+      shell: pwsh
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: ./.github/actions/smoke-test/smoke-test.ps1 -Arch ${{ inputs.arch }} -Repository ${{ github.repository }}
+
+    - name: Upload installer logs
+      if: failure()
+      uses: actions/upload-artifact@v7
+      with:
+        name: smoke-logs-${{ inputs.arch }}
+        path: smoke-logs
+        if-no-files-found: ignore

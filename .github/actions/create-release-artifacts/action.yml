@@ -1,27 +1,54 @@
 name: Create release artifacts
 
-description: Publishes the app and builds its installer into the publish folder.
+description: Publishes the app for each architecture and builds an installer and a portable zip for each into the publish folder.
 
 inputs:
   version:
     description: 'Version number for the app, such as 4.1.0. Leave empty to use the one in the project file.'
     default: ''
+  archs:
+    description: 'Architectures to build for'
+    default: 'x64 arm64'
 
 runs:
   using: "composite"
   steps:
     - uses: actions/setup-dotnet@v5
 
+    - name: Set version
+      id: version
+      shell: bash
+      env:
+        VERSION: ${{ inputs.version }}
+      run: echo "version=${VERSION:-$(dotnet msbuild "Network Monitor/Network Monitor.csproj" -getProperty:Version)}" >> "$GITHUB_OUTPUT"
+
     # Only the app is published, so the test project's files stay out of the release folder.
     # The installer takes its version from the exe, so setting it here covers both.
     - name: Publish
       shell: bash
       env:
-        VERSION: ${{ inputs.version }}
-      run: dotnet publish "Network Monitor/Network Monitor.csproj" -c Release -o publish ${VERSION:+-p:Version=$VERSION}
+        VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        for arch in ${{ inputs.archs }}; do
+          dotnet publish "Network Monitor/Network Monitor.csproj" -c Release --os win --arch $arch -o "publish/$arch" -p:Version=$VERSION
+        done
 
-    - name: Build installer
+    # Each installer is built for its own architecture, so Windows refuses to install the Arm64 one on an x64 PC instead of installing an app that can't start.
+    - name: Build installers
       shell: bash
+      env:
+        VERSION: ${{ steps.version.outputs.version }}
       run: |
         dotnet tool install --global wix --version 6.0.2
-        wix build Product.wxs -o "publish/Install Network Monitor.msi"
+        for arch in ${{ inputs.archs }}; do
+          wix build Product.wxs -arch $arch -d MainExeSource="publish/$arch/Network Monitor.exe" -o "publish/Network-Monitor-$VERSION-$arch.msi"
+        done
+
+    - name: Create portable zips
+      shell: pwsh
+      env:
+        VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        foreach ($arch in "${{ inputs.archs }}".Split(" ")) {
+          Compress-Archive -Path "publish/$arch/Network Monitor.exe" -DestinationPath "publish/Network-Monitor-$env:VERSION-$arch.zip" -Force
+        }

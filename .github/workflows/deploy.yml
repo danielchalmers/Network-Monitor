@@ -32,7 +32,7 @@ jobs:
         uses: ncipollo/release-action@v1.21.0
         with:
           tag: ${{ github.ref_name }}
-          artifacts: "publish/*.exe,publish/*.msi"
+          artifacts: "publish/*.zip,publish/*.msi"
           artifactErrorsFailBuild: true
           allowUpdates: true
           removeArtifacts: true

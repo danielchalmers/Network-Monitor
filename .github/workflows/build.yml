@@ -27,5 +27,24 @@ jobs:
           name: network-monitor
           if-no-files-found: error
           path: |
-            publish/*.exe
+            publish/*.zip
             publish/*.msi
+
+  # Each architecture is tested on its own kind of PC, so the Arm64 build is proven to start on Windows on Arm.
+  smoke-test:
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            runner: windows-latest
+          - arch: arm64
+            runner: windows-11-arm
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/smoke-test
+        with:
+          arch: ${{ matrix.arch }}
