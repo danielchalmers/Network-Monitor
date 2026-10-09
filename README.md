@@ -37,14 +37,18 @@ Hover for a 60-second sparkline and the stats behind it: min/avg/max, jitter, pa
 
 ## 🚀 Install
 
+Needs 64-bit Windows. Every download comes in **`x64`** for most PCs and **`arm64`** for Windows on Arm.
+
+Not sure which you have? Check *System type* in **Settings → System → About**.
+
 ### Option 1: Installer (recommended)
 
-1. Download **`Install.Network.Monitor.msi`** from the [latest release](https://github.com/danielchalmers/Network-Monitor/releases/latest).
+1. Download the **`.msi`** for your PC from the [latest release](https://github.com/danielchalmers/Network-Monitor/releases/latest).
 2. Run it, and Network Monitor starts when it's done.
 
 ### Option 2: Portable
 
-1. Download **`Network.Monitor.exe`** from the [latest release](https://github.com/danielchalmers/Network-Monitor/releases/latest).
+1. Download **`Network-Monitor-x64.exe`** or **`Network-Monitor-arm64.exe`** from the [latest release](https://github.com/danielchalmers/Network-Monitor/releases/latest).
 2. Run it — no installation needed.
 
 ## 🕹️ Using it
