@@ -18,7 +18,8 @@
         UseLayoutRounding="True"
         FontFamily="Consolas"
         MouseDown="MainWindow_OnMouseDown"
-        PreviewMouseWheel="Window_PreviewMouseWheel"
+        SizeChanged="Window_SizeChanged"
+        ContentRendered="Window_ContentRendered"
         SourceInitialized="Window_SourceInitialized"
         LocationChanged="Window_LocationChanged"
         Closing="Window_Closing"
@@ -104,17 +105,15 @@
 				          IsChecked="{Binding Theme, Source={x:Static p:Settings.Default}, Converter={StaticResource EnumToBoolean}, ConverterParameter=Dark, Mode=OneWay}" />
 			</MenuItem>
 
-			<MenuItem>
+			<!--  On the same logarithmic scale as Ctrl+scroll, so small sizes get fine control. Clicking the label keeps the menu open.  -->
+			<MenuItem StaysOpenOnClick="True">
 				<MenuItem.Header>
 					<StackPanel Orientation="Horizontal">
 						<TextBlock Text="Size: " />
 
-						<Slider Width="64"
-						        Value="{Binding Size, Source={x:Static p:Settings.Default}, Mode=TwoWay}"
-						        Minimum="32"
-						        Maximum="320"
-						        IsSnapToTickEnabled="True"
-						        AutoToolTipPlacement="TopLeft" />
+						<root:SizeSlider Width="80"
+						                 AutomationProperties.Name="Size"
+						                 Value="{Binding Size, Source={x:Static p:Settings.Default}, Converter={root:SizeScaleConverter}, Mode=TwoWay}" />
 					</StackPanel>
 				</MenuItem.Header>
 			</MenuItem>

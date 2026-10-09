@@ -6,6 +6,7 @@ using System.Media;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using Network_Monitor.Monitors;
 using Network_Monitor.Properties;
 using WpfWindowPlacement;
@@ -45,14 +46,79 @@ public partial class MainWindow : Window
         }
     }
 
-    private void Window_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    private const int WM_MOUSEWHEEL = 0x020A;
+    private const int MK_CONTROL = 0x0008;
+
+    private double _pendingWheelSteps;
+    private bool _hasRendered;
+    private ScreenEdges.FixedEdges? _fixedEdges;
+    private bool _isRepositioning;
+
+    private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
-        if (Keyboard.Modifiers == ModifierKeys.Control)
+        // Resize with Ctrl+scroll. Ctrl is read from the wheel message itself rather than the keyboard state, which Windows doesn't promise to keep current for a window that isn't active, and the widget usually isn't.
+        if (msg == WM_MOUSEWHEEL)
         {
-            // Scale size based on scroll amount, with one notch on a default PC mouse being a change of 15%.
-            var steps = e.Delta / (double)Mouse.MouseWheelDeltaForOneLine;
-            var change = Settings.Default.Size * steps * 0.15;
-            Settings.Default.Size = (int)Math.Min(Math.Max(Settings.Default.Size + change, 32), 320);
+            // A 64-bit wParam or lParam can't be cast straight to int, so take the parts from the full value.
+            var data = wParam.ToInt64();
+            var point = lParam.ToInt64();
+
+            // Windows can send the wheel to the active window wherever the pointer is, so only resize when it's over the widget.
+            if ((data & MK_CONTROL) != 0 && ScreenEdges.IsOverWindow(this, (short)(point & 0xFFFF), (short)((point >> 16) & 0xFFFF)))
+            {
+                ResizeByWheel((short)((data >> 16) & 0xFFFF));
+                handled = true;
+            }
+        }
+
+        return IntPtr.Zero;
+    }
+
+    private void ResizeByWheel(int delta)
+    {
+        // Precision touchpads send many small steps, which are added up so they still resize the widget rather than each rounding away to nothing.
+        _pendingWheelSteps += delta / (double)Mouse.MouseWheelDeltaForOneLine;
+
+        var size = Settings.Default.Size;
+        var newSize = SizeScaleConverter.ScaleSize(size, _pendingWheelSteps);
+
+        if (newSize != size)
+        {
+            Settings.Default.Size = newSize;
+            _pendingWheelSteps = 0;
+        }
+        else if ((_pendingWheelSteps > 0 && size >= SizeScaleConverter.MaxSize) || (_pendingWheelSteps < 0 && size <= SizeScaleConverter.MinSize))
+        {
+            // Scrolling further past the limit shouldn't have to be undone before scrolling back.
+            _pendingWheelSteps = 0;
+        }
+    }
+
+    private void Window_ContentRendered(object sender, EventArgs e)
+    {
+        _hasRendered = true;
+    }
+
+    private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        // Sizing while the window first appears isn't a resize, and moving it then would undo its restored position.
+        if (!_hasRendered || e.PreviousSize.Width <= 0 || e.PreviousSize.Height <= 0)
+            return;
+
+        var oldBounds = new Rect(ScreenEdges.GetTopLeft(this), e.PreviousSize);
+        var screen = ScreenEdges.GetScreenBounds(this);
+        _fixedEdges ??= ScreenEdges.GetFixedEdges(oldBounds, screen);
+        var position = ScreenEdges.GetPositionAfterResize(oldBounds, e.NewSize, screen, _fixedEdges.Value);
+
+        _isRepositioning = true;
+        try
+        {
+            Left = position.X;
+            Top = position.Y;
+        }
+        finally
+        {
+            _isRepositioning = false;
         }
     }
 
@@ -147,6 +213,8 @@ public partial class MainWindow : Window
 
     private void Window_SourceInitialized(object sender, EventArgs e)
     {
+        HwndSource.FromHwnd(new WindowInteropHelper(this).Handle)?.AddHook(WndProc);
+
         try
         {
             WindowPlacementFunctions.SetPlacement(this, Settings.Default.Placement);
@@ -159,6 +227,10 @@ public partial class MainWindow : Window
 
     private void Window_LocationChanged(object sender, EventArgs e)
     {
+        // Once the widget has been moved somewhere else, the next resize decides afresh which edges to keep fixed.
+        if (!_isRepositioning)
+            _fixedEdges = null;
+
         // Remember the position as it changes, so it survives a crash or a forced restart and not only a clean exit.
         // Moves before the window has loaded are just the saved position being restored.
         if (IsLoaded)
