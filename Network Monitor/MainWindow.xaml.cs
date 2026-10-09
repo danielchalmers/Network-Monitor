@@ -142,25 +142,33 @@ public partial class MainWindow : Window
 
     private void MenuItemAdapter_OnSubmenuOpened(object sender, RoutedEventArgs e)
     {
-        AdapterMenuItem.Items.Clear();
-        AdapterMenuItem.Items.Add(CreateAdapterMenuItem("_All", string.Empty));
-
         var adapters = NetworkAdapters.GetMonitorable()
             .OrderBy(x => x.Name)
             .ToList();
 
+        var internetAdapter = NetworkAdapters.FindInternetAdapter(adapters);
+
+        AdapterMenuItem.Items.Clear();
+        AdapterMenuItem.Items.Add(CreateAdapterMenuItem(internetAdapter is null ? "_Automatic" : $"_Automatic (now {EscapeAccessKeys(internetAdapter.Name)})", string.Empty));
+        AdapterMenuItem.Items.Add(new Separator());
+
         foreach (var adapter in adapters)
-        {
-            // Doubled underscores so adapter names don't turn into access keys.
-            AdapterMenuItem.Items.Add(CreateAdapterMenuItem(adapter.Name.Replace("_", "__"), adapter.Id));
-        }
+            AdapterMenuItem.Items.Add(CreateAdapterMenuItem(EscapeAccessKeys(adapter.Name), adapter.Id));
 
         // Keep a saved adapter selectable while it's unplugged so the choice is visible and can be changed.
         var selectedId = Settings.Default.InterfaceId;
 
-        if (!string.IsNullOrEmpty(selectedId) && !adapters.Any(x => x.Id == selectedId))
+        if (!string.IsNullOrEmpty(selectedId) && selectedId != NetworkAdapters.AllAdapters && !adapters.Any(x => x.Id == selectedId))
             AdapterMenuItem.Items.Add(CreateAdapterMenuItem("(Disconnected)", selectedId));
+
+        AdapterMenuItem.Items.Add(new Separator());
+        AdapterMenuItem.Items.Add(CreateAdapterMenuItem("A_ll adapters", NetworkAdapters.AllAdapters));
     }
+
+    /// <summary>
+    /// Doubles underscores so adapter names don't turn into access keys.
+    /// </summary>
+    private static string EscapeAccessKeys(string text) => text.Replace("_", "__");
 
     private static MenuItem CreateAdapterMenuItem(string header, string interfaceId)
     {
