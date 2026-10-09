@@ -11,4 +11,8 @@
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+
 </Project>

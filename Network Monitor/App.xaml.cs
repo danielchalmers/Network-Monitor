@@ -18,5 +18,17 @@ public partial class App : Application
     {
         CrashHandler.Register(this);
         base.OnStartup(e);
+
+        // The window is created here rather than by StartupUri so the settings are ready before anything reads them.
+        if (!SettingsStartup.Prepare(e.Args))
+        {
+            Shutdown();
+            return;
+        }
+
+        SettingsSaver.Start();
+
+        MainWindow = new MainWindow();
+        MainWindow.Show();
     }
 }
