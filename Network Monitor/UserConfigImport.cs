@@ -40,9 +40,6 @@ public static class UserConfigImport
         var document = XDocument.Load(source);
         EnsureSectionDeclared(document);
 
-        // Starting with Windows belongs to whichever exe it was turned on for, so the new copy starts with it off rather than claiming a startup entry that runs another exe.
-        GetSettings(document).Where(x => (string)x.Attribute("name") == "RunOnStartup").Remove();
-
         if (!includePlacement)
             GetSettings(document).Where(x => (string)x.Attribute("name") == "Placement").Remove();
 

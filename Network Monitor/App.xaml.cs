@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 using System.Windows;
 
 namespace Network_Monitor;
@@ -14,6 +15,11 @@ public partial class App : Application
     public static string VersionText { get; } =
         typeof(App).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? string.Empty;
 
+    /// <summary>
+    /// The full path of the running exe.
+    /// </summary>
+    public static string ExePath { get; } = Process.GetCurrentProcess().MainModule.FileName;
+
     protected override void OnStartup(StartupEventArgs e)
     {
         CrashHandler.Register(this);
@@ -27,8 +33,23 @@ public partial class App : Application
         }
 
         SettingsSaver.Start();
+        RepairStartup();
 
         MainWindow = new MainWindow();
         MainWindow.Show();
+    }
+
+    private static void RepairStartup()
+    {
+#if !DEBUG // A debug build shouldn't take over the user's own startup entry.
+        try
+        {
+            StartupRegistration.RepairOnLaunch(ExePath);
+        }
+        catch
+        {
+            // A policy can make the Run key read-only.
+        }
+#endif
     }
 }

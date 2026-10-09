@@ -6,7 +6,6 @@ using System.Media;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Microsoft.Win32;
 using Network_Monitor.Monitors;
 using Network_Monitor.Properties;
 using WpfWindowPlacement;
@@ -22,30 +21,10 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        Settings.Default.PropertyChanged += Settings_PropertyChanged;
-
         DataContext = new MainViewModel();
     }
 
     private MainViewModel ViewModel => (MainViewModel)DataContext;
-
-    private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        switch (e.PropertyName)
-        {
-            case nameof(Settings.Default.RunOnStartup):
-
-                using (var key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true))
-                {
-                    if (Settings.Default.RunOnStartup)
-                        key?.SetValue("Network_Monitor", App.ResourceAssembly.Location);
-                    else
-                        key?.DeleteValue("Network_Monitor", false);
-                }
-
-                break;
-        }
-    }
 
     private void MainWindow_OnMouseDown(object sender, MouseButtonEventArgs e)
     {
@@ -116,6 +95,34 @@ public partial class MainWindow : Window
     private void MenuItemCopy_OnClick(object sender, RoutedEventArgs e)
     {
         CopyOverview();
+    }
+
+    private void ContextMenu_OnOpened(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            StartWithWindowsMenuItem.IsChecked = StartupRegistration.IsEnabled(App.ExePath);
+        }
+        catch
+        {
+            StartWithWindowsMenuItem.IsChecked = false;
+        }
+    }
+
+    private void MenuItemStartWithWindows_OnClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (StartupRegistration.IsEnabled(App.ExePath))
+                StartupRegistration.Disable();
+            else
+                StartupRegistration.Enable(App.ExePath);
+        }
+        catch
+        {
+            // A policy can make the Run key read-only.
+            SystemSounds.Beep.Play();
+        }
     }
 
     private void MenuItemTheme_OnClick(object sender, RoutedEventArgs e)

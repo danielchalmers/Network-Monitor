@@ -48,7 +48,7 @@
 		</Style>
 	</Window.Style>
 	<Window.ContextMenu>
-		<ContextMenu>
+		<ContextMenu Opened="ContextMenu_OnOpened">
 			<!--  Shows which version is running, as in DesktopClock.  -->
 			<MenuItem Header="{x:Static root:App.VersionText}"
 			          HeaderStringFormat="Network Monitor {0}"
@@ -121,9 +121,11 @@
 
 			<Separator />
 
-			<MenuItem Header="Start with _PC"
+			<!--  Checked from the registry each time the menu opens, since Task Manager can change it too. Checkable so screen readers announce it.  -->
+			<MenuItem x:Name="StartWithWindowsMenuItem"
+			          Header="Start with _Windows"
 			          IsCheckable="True"
-			          IsChecked="{Binding RunOnStartup, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
+			          Click="MenuItemStartWithWindows_OnClick" />
 
 			<MenuItem Header="Check for _updates" Click="MenuItemCheckForUpdates_OnClick" />
 
