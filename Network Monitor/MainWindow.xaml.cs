@@ -99,6 +99,19 @@ public partial class MainWindow : Window
         }
     }
 
+    /// <summary>
+    /// Brings the widget into view when its exe is started again: in front of other windows, and fully back on a screen if it was partly off one.
+    /// </summary>
+    public void Reveal()
+    {
+        var bounds = new Rect(ScreenEdges.GetTopLeft(this), new Size(ActualWidth, ActualHeight));
+        var position = ScreenEdges.KeepOnScreen(bounds, ScreenEdges.GetScreenBounds(this));
+
+        Left = position.X;
+        Top = position.Y;
+        Activate();
+    }
+
     private void Window_ContentRendered(object sender, EventArgs e)
     {
         _hasRendered = true;

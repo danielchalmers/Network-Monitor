@@ -40,7 +40,7 @@ Hover for a 60-second sparkline and the stats behind it: min/avg/max, jitter, pa
 ### Option 1: Installer (recommended)
 
 1. Download **`Install.Network.Monitor.msi`** from the [latest release](https://github.com/danielchalmers/Network-Monitor/releases/latest).
-2. Run it, then launch **Network Monitor** from the Start menu.
+2. Run it, and Network Monitor starts when it's done.
 
 ### Option 2: Portable
 
@@ -52,5 +52,6 @@ Hover for a 60-second sparkline and the stats behind it: min/avg/max, jitter, pa
 - **Move it:** drag the widget anywhere on screen.
 - **Resize it:** hold **Ctrl** and scroll over it, or use the **Size** slider in the menu.
 - **Hover it:** hold the cursor over any reading for a sparkline and detailed stats from the last minute.
+- **Lost it?** Start Network Monitor again and the running widget comes back into view.
 - **Options:** right-click for network adapter, bits/bytes, orientation, theme, always on top, etc.
 - Latency is measured by pinging `8.8.8.8` (Google DNS); download and upload count all adapters, or one you pick.

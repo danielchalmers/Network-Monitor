@@ -43,7 +43,8 @@
 
     <InstallExecuteSequence>
       <RemoveExistingProducts Before="InstallInitialize" />
-      <Custom Action="RunMainExe" Before="InstallFinalize" />
+      <!--Start the widget after installing or upgrading, but not when uninstalling or installing silently-->
+      <Custom Action="RunMainExe" Before="InstallFinalize" Condition="NOT REMOVE AND UILevel &gt; 2" />
     </InstallExecuteSequence>
   </Package>
 
