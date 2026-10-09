@@ -1,0 +1,19 @@
+name: Create release artifacts
+
+description: Publishes the app and builds its installer into the publish folder.
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-dotnet@v5
+
+    # Only the app is published, so the test project's files stay out of the release folder.
+    - name: Publish
+      shell: bash
+      run: dotnet publish "Network Monitor/Network Monitor.csproj" -c Release -o publish
+
+    - name: Build installer
+      shell: bash
+      run: |
+        dotnet tool install --global wix --version 6.0.2
+        wix build Product.wxs -o "publish/Install Network Monitor.msi"
