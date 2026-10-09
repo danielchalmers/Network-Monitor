@@ -1,9 +1,10 @@
 name: Deploy
 
+# Publishing a release on GitHub creates its tag, which starts this workflow.
 on:
   push:
     tags:
-      - 'v*'
+      - 'v*.*.*'
 
 permissions:
   contents: write
@@ -14,14 +15,27 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Set release version
+        id: release
+        shell: bash
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
       - uses: ./.github/actions/build-and-test
 
       - uses: ./.github/actions/create-release-artifacts
+        with:
+          version: ${{ steps.release.outputs.version }}
 
-      - name: Create GitHub release
+      # The release already exists, so this only replaces its files.
+      # Its title, notes, and pre-release setting are left as written on GitHub.
+      - name: Attach release artifacts
         uses: ncipollo/release-action@v1.21.0
         with:
+          tag: ${{ github.ref_name }}
           artifacts: "publish/*.exe,publish/*.msi"
-          allowUpdates: true
           artifactErrorsFailBuild: true
-          generateReleaseNotes: true
+          allowUpdates: true
+          removeArtifacts: true
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
