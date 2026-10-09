@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Media;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -55,7 +56,8 @@ public partial class MainWindow : Window
 
     private void MainWindow_OnMouseDown(object sender, MouseButtonEventArgs e)
     {
-        if (e.ChangedButton != MouseButton.Left)
+        // DragMove throws if the left button isn't down anymore, which can happen with touch or pen input, so check it first.
+        if (e.ChangedButton != MouseButton.Left || Mouse.LeftButton != MouseButtonState.Pressed)
             return;
 
         // Hold the displayed values while the window is grabbed so they don't change under the cursor.
@@ -120,17 +122,17 @@ public partial class MainWindow : Window
 
     private void MenuItemCopy_OnClick(object sender, RoutedEventArgs e)
     {
-        Clipboard.SetText(ViewModel.GetOverviewText());
+        CopyOverview();
     }
 
     private void MenuItemCheckForUpdates_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo { FileName = "https://github.com/danielchalmers/Network-Monitor/releases", UseShellExecute = true });
+        OpenUrl("https://github.com/danielchalmers/Network-Monitor/releases");
     }
 
     private void MenuItemGiveFeedback_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo { FileName = "https://github.com/danielchalmers/Network-Monitor/issues", UseShellExecute = true });
+        OpenUrl("https://github.com/danielchalmers/Network-Monitor/issues");
     }
 
     private void MenuItemExit_OnClick(object sender, RoutedEventArgs e)
@@ -159,6 +161,37 @@ public partial class MainWindow : Window
     private void Window_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (e.ChangedButton == MouseButton.Left)
+            CopyOverview();
+    }
+
+    /// <summary>
+    /// Copies every monitor's stats to the clipboard.
+    /// Another app can hold the clipboard open for a moment, such as a clipboard manager or a remote desktop session, so a failure beeps instead of closing the widget.
+    /// </summary>
+    private void CopyOverview()
+    {
+        try
+        {
             Clipboard.SetText(ViewModel.GetOverviewText());
+        }
+        catch
+        {
+            SystemSounds.Beep.Play();
+        }
+    }
+
+    /// <summary>
+    /// Opens a web page in the default browser, beeping instead of crashing if there's no browser to open it.
+    /// </summary>
+    private static void OpenUrl(string url)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
+        }
+        catch
+        {
+            SystemSounds.Beep.Play();
+        }
     }
 }
