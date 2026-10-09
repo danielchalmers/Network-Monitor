@@ -130,7 +130,16 @@ public static class NetworkAdapters
         return result == 0;
     }
 
-    private static int? GetIndex(NetworkInterface adapter, AddressFamily family)
+    /// <summary>
+    /// Returns the adapter among <paramref name="adapters" /> with the given interface index for an IP version, or null if there's none.
+    /// </summary>
+    public static NetworkInterface FindByIndex(IEnumerable<NetworkInterface> adapters, int index, AddressFamily family) =>
+        adapters.FirstOrDefault(x => GetIndex(x, family) == index);
+
+    /// <summary>
+    /// Returns an adapter's interface index for an IP version, or null if it doesn't use that version.
+    /// </summary>
+    public static int? GetIndex(NetworkInterface adapter, AddressFamily family)
     {
         try
         {
