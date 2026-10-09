@@ -25,7 +25,7 @@ Hover for a 60-second sparkline and the stats behind it: min/avg/max, jitter, pa
 - **Three live readings:** round-trip latency (ping), download speed, and upload speed, updated every second.
 - **Hover for history:** a 60-second sparkline with min/avg/max, jitter, packet loss, and session totals.
 - **Pick your adapter:** measure every network adapter combined, or single one out from the menu.
-- **Bits or bytes:** switch between Mb/s and MB/s; units auto-scale from K to T as traffic changes.
+- **Bits or bytes:** switch between Mbps and MB/s; units auto-scale from K to T as traffic changes.
 - **Vertical or horizontal:** a slim column or a wide strip, so it fits any edge of your screen.
 - **Light, dark, or auto:** pick a theme, or let Auto follow the Windows light/dark mode and accent color.
 - **Resize instantly:** drag the size slider, or hold **Ctrl** and scroll over the widget to scale it.

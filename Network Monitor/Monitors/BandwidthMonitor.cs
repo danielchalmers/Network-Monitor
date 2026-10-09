@@ -29,6 +29,7 @@ public abstract class BandwidthMonitor : Monitor
     private IReadOnlyList<NetworkInterface> _monitorableInterfaces = NetworkAdapters.GetMonitorable();
     private CounterReading _lastReading;
     private long _sessionBytes;
+    private DateTime _sessionStart = DateTime.Now;
     private string _lastSelection;
     private bool _skipNextSample;
 
@@ -90,6 +91,7 @@ public abstract class BandwidthMonitor : Monitor
         {
             _samples.Clear();
             _sessionBytes = 0;
+            _sessionStart = DateTime.Now;
             _lastSelection = selection;
         }
 
@@ -136,12 +138,12 @@ public abstract class BandwidthMonitor : Monitor
             var now = _samples.Last();
             var bits = Properties.Settings.Default.Bits;
 
-            // Both units on the primary line so the "Measure in bits" setting is never a commitment.
-            lines.Add($"Now: {RateFormatter.FormatRate(now, asBits: false)} ({RateFormatter.FormatRate(now, asBits: true)})");
+            // Both units on the primary line, the chosen one first, so the "Measure in bits" setting is never a commitment.
+            lines.Add($"Now: {RateFormatter.FormatRate(now, bits)} ({RateFormatter.FormatRate(now, !bits)})");
             lines.Add($"Avg / Peak: {RateFormatter.FormatRate(_samples.Average(), bits)} / {RateFormatter.FormatRate(_samples.Max(), bits)}");
         }
 
-        lines.Add($"This session: {RateFormatter.FormatSize(_sessionBytes)}");
+        lines.Add($"Total: {RateFormatter.FormatSize(_sessionBytes)} since {TimeText.FormatMoment(_sessionStart, DateTime.Now)}");
 
         return string.Join(Environment.NewLine, lines);
     }

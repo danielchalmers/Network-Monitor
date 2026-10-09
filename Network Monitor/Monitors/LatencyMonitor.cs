@@ -66,14 +66,14 @@ public class LatencyMonitor : Monitor
         var lines = new List<string>
         {
             header,
-            $"Now: {(last >= 0 ? $"{last} ms" : "Fail")}",
+            $"Now: {(last >= 0 ? $"{FormatRoundtrip(last)} ms" : "Fail")}",
         };
 
         if (successes.Length > 0)
-            lines.Add($"Min/Avg/Max: {successes.Min()} / {successes.Average():0} / {successes.Max()} ms");
+            lines.Add($"Min/Avg/Max: {FormatRoundtrip(successes.Min())} / {FormatRoundtrip((long)Math.Round(successes.Average(), MidpointRounding.AwayFromZero))} / {FormatRoundtrip(successes.Max())} ms");
 
         if (successes.Length > 1)
-            lines.Add($"Jitter: ±{LatencyMath.GetJitter(successes):0} ms");
+            lines.Add($"Jitter: {LatencyMath.GetJitter(successes):0} ms");
 
         lines.Add($"Packet loss: {(double)losses / samples.Length:0%} ({losses} of {samples.Length} pings)");
 
@@ -117,7 +117,7 @@ public class LatencyMonitor : Monitor
             var reply = await _ping.SendPingAsync(_host, _timeout).ConfigureAwait(false);
             var success = reply.Status == IPStatus.Success;
 
-            _lastResult = success ? reply.RoundtripTime.ToString() : "Fail";
+            _lastResult = success ? FormatRoundtrip(reply.RoundtripTime) : "Fail";
             RecordSample(success ? reply.RoundtripTime : -1);
         }
         catch
@@ -130,6 +130,11 @@ public class LatencyMonitor : Monitor
             Interlocked.Exchange(ref _pingInFlight, 0);
         }
     }
+
+    /// <summary>
+    /// Returns a round trip time in milliseconds, or "&lt;1" for a reply that came back within a millisecond, which ping reports as zero.
+    /// </summary>
+    public static string FormatRoundtrip(long roundtripTime) => roundtripTime > 0 ? roundtripTime.ToString() : "<1";
 
     private void RecordSample(long roundtripTime)
     {

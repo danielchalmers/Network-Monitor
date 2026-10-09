@@ -16,25 +16,41 @@ public class RateFormatterTests
         Assert.Equal(expected, RateFormatter.FormatCompactRate(bytesPerSecond, asBits));
     }
 
-    [Fact]
-    public void FormatCompactRate_Zero_ShowsOneDecimal()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void FormatCompactRate_Zero_IsAPlainZero(bool asBits)
     {
-        Assert.Equal("0.0b", RateFormatter.FormatCompactRate(0, asBits: true));
+        Assert.Equal("0", RateFormatter.FormatCompactRate(0, asBits));
     }
 
     [Theory]
-    [InlineData(999_600, false, "1000K")]
-    [InlineData(1_248_000, true, "10.0m")]
-    public void FormatCompactRate_JustBelowAUnit_RoundsUpToFiveCharacters(double bytesPerSecond, bool asBits, string expected)
+    [InlineData(999_600, false, "1.0M")]
+    [InlineData(1_248_000, true, "10m")]
+    [InlineData(124_900, true, "999k")]
+    [InlineData(124_950, true, "1.0m")]
+    public void FormatCompactRate_JustBelowAUnit_StaysWithinFourCharacters(double bytesPerSecond, bool asBits, string expected)
     {
         Assert.Equal(expected, RateFormatter.FormatCompactRate(bytesPerSecond, asBits));
+    }
+
+    [Fact]
+    public void FormatCompactRate_IsNeverLongerThanFourCharacters()
+    {
+        for (var value = 0.001; value < 1e18; value *= 1.0007)
+        {
+            Assert.True(RateFormatter.FormatCompactRate(value, asBits: false).Length <= 4, $"{value} B/s");
+            Assert.True(RateFormatter.FormatCompactRate(value, asBits: true).Length <= 4, $"{value} B/s in bits");
+        }
     }
 
     [Theory]
     [InlineData(11_000, false, "11 KB/s")]
     [InlineData(11_000, true, "88 kbps")]
     [InlineData(5_600_000, true, "45 Mbps")]
-    [InlineData(0, true, "0.0 bps")]
+    [InlineData(0, true, "0 bps")]
+    [InlineData(1_244_000, false, "1.2 MB/s")]
+    [InlineData(999_600, false, "1.0 MB/s")]
     public void FormatRate_ShouldUseFullUnitNames(double bytesPerSecond, bool asBits, string expected)
     {
         Assert.Equal(expected, RateFormatter.FormatRate(bytesPerSecond, asBits));
