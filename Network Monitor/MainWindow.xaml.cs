@@ -193,6 +193,16 @@ public partial class MainWindow : Window
         return item;
     }
 
+    private void MenuItemPingAddress_OnClick(object sender, RoutedEventArgs e)
+    {
+        // Owned by the widget, so it stays in front of it when the widget is always on top.
+        var dialog = new PingAddressDialog(Settings.Default.PingHost) { Owner = this };
+
+        // The latency reading moves to it on the next tick.
+        if (dialog.ShowDialog() == true)
+            Settings.Default.PingHost = dialog.Address;
+    }
+
     private void MenuItemCopy_OnClick(object sender, RoutedEventArgs e)
     {
         CopyOverview();
