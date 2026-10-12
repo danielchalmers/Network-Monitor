@@ -56,6 +56,8 @@ public static class NetworkStatus
     /// </summary>
     private static volatile NetworkId[] _currentNetwork = Array.Empty<NetworkId>();
 
+    private static volatile NetworkId _router;
+
     private static (int Index, AddressFamily Family)? _internetRoute;
 
     /// <summary>
@@ -104,6 +106,12 @@ public static class NetworkStatus
             return _hasGateway && connected != 0 && Stopwatch.GetTimestamp() - connected < ReconnectingTicks;
         }
     }
+
+    /// <summary>
+    /// The router to ping when the internet stops answering, to tell a drop on your own network from one past it: the IPv4 router of the adapter internet traffic leaves through.
+    /// Null when there isn't one, like with no route to the internet or on some mobile broadband, and while a VPN carries the traffic, since a VPN's gateway is out on the internet.
+    /// </summary>
+    public static NetworkId Router => _router;
 
     /// <summary>
     /// Whether a ping to <paramref name="address" /> has ever come back through the network internet traffic leaves through now.
@@ -197,6 +205,7 @@ public static class NetworkStatus
 
             _internetRoute = route;
             _currentNetwork = internetAdapter != null ? GetNetwork(internetAdapter) : Array.Empty<NetworkId>();
+            _router = internetAdapter != null && !NetworkAdapters.IsTunnel(internetAdapter) ? _currentNetwork.FirstOrDefault(x => x.IsIPv4) : null;
             _hasGateway = hasGateway;
             _hasRefreshed = true;
         }
