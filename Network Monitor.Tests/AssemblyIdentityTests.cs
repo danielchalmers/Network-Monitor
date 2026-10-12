@@ -3,8 +3,8 @@ using System.Reflection;
 namespace Network_Monitor.Tests;
 
 /// <summary>
-/// .NET keeps each user's settings in %LOCALAPPDATA%\Network_Monitor\&lt;exe&gt;_Url_&lt;hash&gt;\&lt;version&gt;, a folder named after the company and the exe.
-/// Renaming the assembly or the company would silently reset everyone's settings; a new version is fine because Settings.Upgrade carries them over.
+/// 4.x kept each user's settings in %LOCALAPPDATA%\Network_Monitor\&lt;exe&gt;_Url_&lt;hash&gt;\&lt;version&gt;, a folder named after the company and the exe, which 5.0 reads once to bring them in.
+/// Renaming the assembly or the company would lose them, and the installer and the release workflow pick up "Network Monitor.exe".
 /// </summary>
 public class AssemblyIdentityTests
 {

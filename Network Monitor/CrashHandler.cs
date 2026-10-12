@@ -50,24 +50,12 @@ public static class CrashHandler
         ThreadPool.GetMaxThreads(out _, out var completionPortThreads);
         ThreadPool.SetMaxThreads(Environment.ProcessorCount, completionPortThreads);
 
-        TrySaveSettings();
+        Settings.TrySaveIfLoaded();
         var logPath = TryWriteLog(exception);
         ShowMessage(logPath);
 
         // Staying open in an unknown state could leave a widget that looks fine but has stopped updating, so always close.
         Environment.Exit(1);
-    }
-
-    private static void TrySaveSettings()
-    {
-        try
-        {
-            Settings.Default.Save();
-        }
-        catch
-        {
-            // The settings themselves may be what failed.
-        }
     }
 
     /// <summary>
