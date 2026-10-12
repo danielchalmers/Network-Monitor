@@ -49,6 +49,7 @@ public sealed class SettingsTests : IDisposable
         original.Bits = false;
         original.InterfaceId = "{4D36E972-E325-11CE-BFC1-08002BE10318}";
         original.Topmost = false;
+        original.HideWhenFullscreen = false;
         original.ShowInTaskbar = false;
         original.Horizontal = true;
         original.Theme = AppTheme.Dark;
@@ -62,6 +63,7 @@ public sealed class SettingsTests : IDisposable
         Assert.False(loaded.Bits);
         Assert.Equal("{4D36E972-E325-11CE-BFC1-08002BE10318}", loaded.InterfaceId);
         Assert.False(loaded.Topmost);
+        Assert.False(loaded.HideWhenFullscreen);
         Assert.False(loaded.ShowInTaskbar);
         Assert.True(loaded.Horizontal);
         Assert.Equal(AppTheme.Dark, loaded.Theme);
@@ -93,6 +95,7 @@ public sealed class SettingsTests : IDisposable
         Assert.True(settings.Bits);
         Assert.Equal(string.Empty, settings.InterfaceId);
         Assert.True(settings.Topmost);
+        Assert.True(settings.HideWhenFullscreen);
         Assert.True(settings.ShowInTaskbar);
         Assert.False(settings.Horizontal);
         Assert.Equal(AppTheme.Auto, settings.Theme);
@@ -172,6 +175,15 @@ public sealed class SettingsTests : IDisposable
         Assert.Equal(AppTheme.Auto, settings.Theme);
         Assert.Equal(96, settings.Size);
         Assert.Equal(default, settings.Placement);
+    }
+
+    [Fact]
+    public void Load_AFileSavedBeforeHideWhenFullscreen_TurnsItOn()
+    {
+        // It's on by default, for a copy that's been running without it too.
+        File.WriteAllText(FilePath, """{ "Topmost": false }""");
+
+        Assert.True(Load().HideWhenFullscreen);
     }
 
     [Fact]
