@@ -1,0 +1,443 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:root="clr-namespace:Network_Monitor">
+	<!--  The Windows 11 look for the menu, the tooltips, and the Ping address box, from DesktopClock's FluentTheme.xaml, with only the parts Network Monitor uses.  -->
+	<!--  The colors come from whichever palette ThemeService has put in place, so these only name them. Each part names its own, rather than passing one along, so each gets its own brush in high contrast (see HighContrastPalette.xaml).  -->
+
+	<CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>
+	<CornerRadius x:Key="MenuCornerRadius">8</CornerRadius>
+
+	<!--  Windows 11's own font. Windows 10 doesn't have it, and uses Segoe UI.  -->
+	<FontFamily x:Key="FluentFontFamily">Segoe UI Variable Text, Segoe UI</FontFamily>
+
+	<!--  The menu.  -->
+	<Style TargetType="{x:Type ContextMenu}">
+		<!--  Windows 11's menus use the same size of text as the rest of it, rather than the smaller one menus used before.  -->
+		<Setter Property="FontFamily" Value="{StaticResource FluentFontFamily}" />
+		<Setter Property="FontSize" Value="14" />
+		<Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+		<Setter Property="Grid.IsSharedSizeScope" Value="True" />
+		<Setter Property="SnapsToDevicePixels" Value="True" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type ContextMenu}">
+					<!--  The space around the menu leaves room for its shadow.  -->
+					<Grid Margin="8">
+						<!--  The shadow has a layer of its own, so the items aren't drawn through the effect, which would cost their text its ClearType.  -->
+						<Border x:Name="Shadow"
+						        Background="{DynamicResource MenuBackgroundBrush}"
+						        CornerRadius="{StaticResource MenuCornerRadius}">
+							<Border.Effect>
+								<DropShadowEffect BlurRadius="16"
+								                  Direction="270"
+								                  Opacity="0.14"
+								                  ShadowDepth="4"
+								                  Color="#000000" />
+							</Border.Effect>
+						</Border>
+
+						<Border Padding="2,4"
+						        Background="{DynamicResource MenuBackgroundBrush}"
+						        BorderBrush="{DynamicResource MenuBorderBrush}"
+						        BorderThickness="1"
+						        CornerRadius="{StaticResource MenuCornerRadius}">
+							<!--  Scrolls with arrows, as the menus Windows draws for WPF do, on a screen too short for it.  -->
+							<ScrollViewer Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
+								<!--  The menu is see-through around its rounded corners, so WPF only uses ClearType for its text where it's told the background is solid.  -->
+								<Grid Background="{DynamicResource MenuBackgroundBrush}" RenderOptions.ClearTypeHint="Enabled">
+									<ItemsPresenter KeyboardNavigation.DirectionalNavigation="Cycle" />
+								</Grid>
+							</ScrollViewer>
+						</Border>
+					</Grid>
+
+					<ControlTemplate.Triggers>
+						<!--  Windows can be set not to show shadows, and a high contrast theme has none.  -->
+						<Trigger Property="HasDropShadow" Value="False">
+							<Setter TargetName="Shadow" Property="Visibility" Value="Collapsed" />
+						</Trigger>
+						<DataTrigger Binding="{Binding IsHighContrast, Source={x:Static root:ThemeService.Instance}}" Value="True">
+							<Setter TargetName="Shadow" Property="Visibility" Value="Collapsed" />
+						</DataTrigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!--  Each item in the menu and its submenus, and in the menu of the Ping address box.  -->
+	<Style TargetType="{x:Type MenuItem}">
+		<Setter Property="OverridesDefaultStyle" Value="True" />
+		<Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+		<!--  The highlight already shows which item the keyboard is on.  -->
+		<Setter Property="FocusVisualStyle" Value="{x:Null}" />
+		<Setter Property="SnapsToDevicePixels" Value="True" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type MenuItem}">
+					<Border x:Name="Highlight"
+					        Margin="2,1"
+					        Padding="10,7"
+					        Background="Transparent"
+					        CornerRadius="{StaticResource ControlCornerRadius}">
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"
+								                  MinWidth="24"
+								                  SharedSizeGroup="MenuCheckColumn" />
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" SharedSizeGroup="MenuGestureColumn" />
+								<ColumnDefinition Width="Auto" />
+							</Grid.ColumnDefinitions>
+
+							<Path x:Name="CheckMark"
+							      Grid.Column="0"
+							      Margin="0,0,6,0"
+							      VerticalAlignment="Center"
+							      Data="M 2,5 L 5,8.5 L 11,1"
+							      Stroke="{DynamicResource AccentBrush}"
+							      StrokeEndLineCap="Round"
+							      StrokeLineJoin="Round"
+							      StrokeStartLineCap="Round"
+							      StrokeThickness="1.5"
+							      Visibility="Collapsed" />
+
+							<ContentPresenter Grid.Column="1"
+							                  VerticalAlignment="Center"
+							                  ContentSource="Header"
+							                  RecognizesAccessKey="True" />
+
+							<!--  Like Ctrl+C, in the menu of the Ping address box.  -->
+							<TextBlock x:Name="GestureText"
+							           Grid.Column="2"
+							           Margin="24,0,0,0"
+							           VerticalAlignment="Center"
+							           Foreground="{DynamicResource TextSecondaryBrush}"
+							           Text="{TemplateBinding InputGestureText}" />
+
+							<!--  Shows there's a submenu.  -->
+							<Path x:Name="Chevron"
+							      Grid.Column="3"
+							      Margin="24,0,0,0"
+							      VerticalAlignment="Center"
+							      Data="M 0,0 L 4,4 L 0,8"
+							      Stroke="{DynamicResource TextPrimaryBrush}"
+							      StrokeEndLineCap="Round"
+							      StrokeLineJoin="Round"
+							      StrokeStartLineCap="Round"
+							      StrokeThickness="1.5"
+							      Visibility="Collapsed" />
+
+							<!--  The submenu, beside the item's highlight. It's moved up by the room for its shadow, its border, and the space above its first item, so that item lines up with this one.  -->
+							<!--  WPF moves it to the other side when there's no room, and the room for its shadow keeps it as far from this menu on either side.  -->
+							<Popup x:Name="PART_Popup"
+							       AllowsTransparency="True"
+							       Focusable="False"
+							       IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
+							       Placement="Right"
+							       PlacementTarget="{Binding ElementName=Highlight}"
+							       PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}"
+							       VerticalOffset="-14">
+								<Grid Margin="8">
+									<Border x:Name="SubmenuShadow"
+									        Background="{DynamicResource MenuBackgroundBrush}"
+									        CornerRadius="{StaticResource MenuCornerRadius}">
+										<Border.Effect>
+											<DropShadowEffect BlurRadius="16"
+											                  Direction="270"
+											                  Opacity="0.14"
+											                  ShadowDepth="4"
+											                  Color="#000000" />
+										</Border.Effect>
+									</Border>
+
+									<Border Padding="2,4"
+									        Background="{DynamicResource MenuBackgroundBrush}"
+									        BorderBrush="{DynamicResource MenuBorderBrush}"
+									        BorderThickness="1"
+									        CornerRadius="{StaticResource MenuCornerRadius}">
+										<ScrollViewer Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
+											<Grid Background="{DynamicResource MenuBackgroundBrush}" RenderOptions.ClearTypeHint="Enabled">
+												<!--  The submenu's columns line up among themselves, apart from the menu's.  -->
+												<ItemsPresenter Grid.IsSharedSizeScope="True"
+												                KeyboardNavigation.DirectionalNavigation="Cycle"
+												                KeyboardNavigation.TabNavigation="Cycle" />
+											</Grid>
+										</ScrollViewer>
+									</Border>
+								</Grid>
+							</Popup>
+						</Grid>
+					</Border>
+
+					<ControlTemplate.Triggers>
+						<Trigger Property="Role" Value="SubmenuHeader">
+							<Setter TargetName="Chevron" Property="Visibility" Value="Visible" />
+						</Trigger>
+						<MultiTrigger>
+							<MultiTrigger.Conditions>
+								<Condition Property="IsCheckable" Value="True" />
+								<Condition Property="IsChecked" Value="True" />
+							</MultiTrigger.Conditions>
+							<Setter TargetName="CheckMark" Property="Visibility" Value="Visible" />
+						</MultiTrigger>
+						<Trigger Property="InputGestureText" Value="">
+							<Setter TargetName="GestureText" Property="Visibility" Value="Collapsed" />
+						</Trigger>
+						<!--  Windows can be set not to show shadows, and a high contrast theme has none.  -->
+						<DataTrigger Binding="{Binding Path=(SystemParameters.DropShadow)}" Value="False">
+							<Setter TargetName="SubmenuShadow" Property="Visibility" Value="Collapsed" />
+						</DataTrigger>
+						<DataTrigger Binding="{Binding IsHighContrast, Source={x:Static root:ThemeService.Instance}}" Value="True">
+							<Setter TargetName="SubmenuShadow" Property="Visibility" Value="Collapsed" />
+						</DataTrigger>
+						<Trigger Property="IsHighlighted" Value="True">
+							<Setter TargetName="Highlight" Property="Background" Value="{DynamicResource HoverBrush}" />
+							<Setter Property="Foreground" Value="{DynamicResource OnHoverTextBrush}" />
+							<Setter TargetName="CheckMark" Property="Stroke" Value="{DynamicResource OnHoverTextBrush}" />
+							<Setter TargetName="GestureText" Property="Foreground" Value="{DynamicResource OnHoverTextBrush}" />
+							<Setter TargetName="Chevron" Property="Stroke" Value="{DynamicResource OnHoverTextBrush}" />
+						</Trigger>
+						<Trigger Property="IsEnabled" Value="False">
+							<Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+							<Setter TargetName="CheckMark" Property="Stroke" Value="{DynamicResource TextSecondaryBrush}" />
+							<Setter TargetName="Chevron" Property="Stroke" Value="{DynamicResource TextSecondaryBrush}" />
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!--  Menus give their separators this style; one for all separators wouldn't reach them.  -->
+	<Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" TargetType="{x:Type Separator}">
+		<Setter Property="Margin" Value="6,4" />
+		<Setter Property="SnapsToDevicePixels" Value="True" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type Separator}">
+					<Border Height="1" Background="{DynamicResource SeparatorBrush}" />
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!--  The Size slider in the menu.  -->
+	<Style x:Key="SliderBar" TargetType="{x:Type RepeatButton}">
+		<Setter Property="OverridesDefaultStyle" Value="True" />
+		<Setter Property="Focusable" Value="False" />
+		<Setter Property="IsTabStop" Value="False" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type RepeatButton}">
+					<!--  As tall as the thumb, so it's easy to click, with a thin bar in the middle.  -->
+					<Border Height="18" Background="Transparent">
+						<Border Height="4"
+						        VerticalAlignment="Center"
+						        Background="{TemplateBinding Background}"
+						        CornerRadius="2" />
+					</Border>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<Style x:Key="SliderThumb" TargetType="{x:Type Thumb}">
+		<Setter Property="OverridesDefaultStyle" Value="True" />
+		<Setter Property="Focusable" Value="False" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type Thumb}">
+					<Grid Width="18" Height="18">
+						<Ellipse x:Name="Ring"
+						         Fill="{DynamicResource SliderThumbBackgroundBrush}"
+						         Stroke="{DynamicResource MenuBorderBrush}"
+						         StrokeThickness="1" />
+						<Ellipse x:Name="Dot"
+						         Width="10"
+						         Height="10"
+						         Fill="{DynamicResource AccentBrush}" />
+					</Grid>
+
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsMouseOver" Value="True">
+							<Setter TargetName="Dot" Property="Width" Value="12" />
+							<Setter TargetName="Dot" Property="Height" Value="12" />
+						</Trigger>
+						<Trigger Property="IsDragging" Value="True">
+							<Setter TargetName="Dot" Property="Width" Value="8" />
+							<Setter TargetName="Dot" Property="Height" Value="8" />
+						</Trigger>
+						<!--  In high contrast, a solid circle in the item's text color, which also stands out from the item's highlight.  -->
+						<DataTrigger Binding="{Binding IsHighContrast, Source={x:Static root:ThemeService.Instance}}" Value="True">
+							<Setter TargetName="Ring" Property="Fill" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
+							<Setter TargetName="Ring" Property="Stroke" Value="{x:Null}" />
+							<Setter TargetName="Dot" Property="Visibility" Value="Collapsed" />
+						</DataTrigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<Style TargetType="{x:Type root:SizeSlider}">
+		<!--  Without Windows' own style, which would give it a text color of its own rather than the item's, and the style needs that in high contrast.  -->
+		<Setter Property="OverridesDefaultStyle" Value="True" />
+		<!--  As Windows' own style has it, so dragging with a finger doesn't wait to see if it's a press and hold.  -->
+		<Setter Property="Stylus.IsPressAndHoldEnabled" Value="False" />
+		<Setter Property="MinHeight" Value="22" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type root:SizeSlider}">
+					<Grid VerticalAlignment="Center">
+						<!--  The rail, inset by about half the thumb, so it ends under the thumb at either end.  -->
+						<Border x:Name="Rail"
+						        Height="4"
+						        Margin="8,0"
+						        VerticalAlignment="Center"
+						        Background="{DynamicResource SliderTrackBrush}"
+						        CornerRadius="2" />
+
+						<Track x:Name="PART_Track">
+							<Track.DecreaseRepeatButton>
+								<RepeatButton x:Name="Fill"
+								              Background="{DynamicResource AccentBrush}"
+								              Command="{x:Static Slider.DecreaseLarge}"
+								              Style="{StaticResource SliderBar}" />
+							</Track.DecreaseRepeatButton>
+							<Track.IncreaseRepeatButton>
+								<RepeatButton Background="Transparent"
+								              Command="{x:Static Slider.IncreaseLarge}"
+								              Style="{StaticResource SliderBar}" />
+							</Track.IncreaseRepeatButton>
+							<Track.Thumb>
+								<Thumb Style="{StaticResource SliderThumb}" />
+							</Track.Thumb>
+						</Track>
+					</Grid>
+
+					<ControlTemplate.Triggers>
+						<!--  In high contrast, all in the item's text color, which also stands out from the item's highlight, where the selected color wouldn't.  -->
+						<DataTrigger Binding="{Binding IsHighContrast, Source={x:Static root:ThemeService.Instance}}" Value="True">
+							<Setter TargetName="Rail" Property="Background" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
+							<Setter TargetName="Fill" Property="Background" Value="{Binding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
+						</DataTrigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!--  The tooltips beside the readings.  -->
+	<Style TargetType="{x:Type ToolTip}">
+		<Setter Property="FontFamily" Value="{StaticResource FluentFontFamily}" />
+		<Setter Property="FontSize" Value="12" />
+		<!--  Every digit the same width, so numbers that change every second don't make the tooltip twitch.  -->
+		<Setter Property="Typography.NumeralAlignment" Value="Tabular" />
+		<Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+		<Setter Property="HasDropShadow" Value="False" />
+		<Setter Property="Padding" Value="8,5" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type ToolTip}">
+					<Border Padding="{TemplateBinding Padding}"
+					        Background="{DynamicResource MenuBackgroundBrush}"
+					        BorderBrush="{DynamicResource MenuBorderBrush}"
+					        BorderThickness="1"
+					        CornerRadius="{StaticResource ControlCornerRadius}"
+					        SnapsToDevicePixels="True">
+						<ContentPresenter />
+					</Border>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<!--  The Ping address box.  -->
+	<Style TargetType="{x:Type Label}">
+		<Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+	</Style>
+
+	<Style TargetType="{x:Type TextBox}">
+		<Setter Property="MinHeight" Value="28" />
+		<Setter Property="Padding" Value="6,4" />
+		<Setter Property="VerticalContentAlignment" Value="Center" />
+		<Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+		<Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}" />
+		<Setter Property="SelectionBrush" Value="{DynamicResource AccentBrush}" />
+		<Setter Property="SnapsToDevicePixels" Value="True" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type TextBox}">
+					<Border x:Name="Border"
+					        Padding="{TemplateBinding Padding}"
+					        Background="{DynamicResource ControlFillBrush}"
+					        BorderBrush="{DynamicResource ControlBorderBrush}"
+					        BorderThickness="1"
+					        CornerRadius="{StaticResource ControlCornerRadius}">
+						<ScrollViewer x:Name="PART_ContentHost"
+						              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+						              Focusable="False"
+						              HorizontalScrollBarVisibility="Hidden"
+						              VerticalScrollBarVisibility="Hidden" />
+					</Border>
+
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsMouseOver" Value="True">
+							<Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource SliderTrackBrush}" />
+						</Trigger>
+						<Trigger Property="IsKeyboardFocused" Value="True">
+							<Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<Style TargetType="{x:Type Button}">
+		<Setter Property="MinHeight" Value="28" />
+		<Setter Property="Padding" Value="8,4" />
+		<Setter Property="HorizontalContentAlignment" Value="Center" />
+		<Setter Property="VerticalContentAlignment" Value="Center" />
+		<Setter Property="Foreground" Value="{DynamicResource ButtonTextBrush}" />
+		<!--  The border shows which button the keyboard is on.  -->
+		<Setter Property="FocusVisualStyle" Value="{x:Null}" />
+		<Setter Property="SnapsToDevicePixels" Value="True" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type Button}">
+					<Border x:Name="Border"
+					        Padding="{TemplateBinding Padding}"
+					        Background="{DynamicResource ButtonBackgroundBrush}"
+					        BorderBrush="{DynamicResource ButtonBorderBrush}"
+					        BorderThickness="1"
+					        CornerRadius="{StaticResource ControlCornerRadius}">
+						<ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+						                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+						                  Focusable="False"
+						                  RecognizesAccessKey="True" />
+					</Border>
+
+					<ControlTemplate.Triggers>
+						<!--  OK, which Enter presses.  -->
+						<Trigger Property="IsDefaulted" Value="True">
+							<Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+						</Trigger>
+						<Trigger Property="IsMouseOver" Value="True">
+							<Setter TargetName="Border" Property="Background" Value="{DynamicResource HoverBrush}" />
+							<Setter Property="Foreground" Value="{DynamicResource OnHoverTextBrush}" />
+						</Trigger>
+						<Trigger Property="IsPressed" Value="True">
+							<Setter TargetName="Border" Property="Background" Value="{DynamicResource PressedBrush}" />
+							<Setter Property="Foreground" Value="{DynamicResource OnHoverTextBrush}" />
+						</Trigger>
+						<Trigger Property="IsKeyboardFocused" Value="True">
+							<Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+</ResourceDictionary>

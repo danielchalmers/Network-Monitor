@@ -47,6 +47,9 @@ public partial class App : Application
         // It's on this thread because the settings save on its dispatcher, and the window is created here rather than by StartupUri so nothing reads them sooner.
         _ = Settings.Default;
 
+        // The palette for the theme goes in before the window is created, so the widget never shows the light one first.
+        _ = ThemeService.Instance;
+
         RepairStartup();
 
         var window = new MainWindow();
