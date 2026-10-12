@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 using Network_Monitor.Monitors;
 using Network_Monitor.Properties;
 using WpfWindowPlacement;
@@ -52,10 +53,15 @@ public partial class MainWindow : Window
     }
 
     private const int WM_MOUSEWHEEL = 0x020A;
+    private const int WM_ENTERSIZEMOVE = 0x0231;
+    private const int WM_EXITSIZEMOVE = 0x0232;
+    private const int WM_DPICHANGED = 0x02E0;
     private const int MK_CONTROL = 0x0008;
 
     private double _pendingWheelSteps;
+    private Rect? _restoredBounds;
     private bool _hasRendered;
+    private bool _isBeingMoved;
     private ScreenEdges.FixedEdges? _fixedEdges;
     private bool _isRepositioning;
 
@@ -75,6 +81,18 @@ public partial class MainWindow : Window
                 handled = true;
             }
         }
+
+        // While the window is dragged, or moved with the keyboard, Windows moves it along with the pointer, and nothing else should move it.
+        if (msg == WM_ENTERSIZEMOVE)
+            _isBeingMoved = true;
+        else if (msg == WM_EXITSIZEMOVE)
+            _isBeingMoved = false;
+
+        // The window's scale changes when its monitor's does, or when it's moved onto a monitor with a different one, and WPF then resizes it to the bounds Windows suggests, which it reads after this.
+        // So the suggestion is changed first to keep the widget against its edges, except while it's dragged, when it should stay under the pointer.
+        // Nor while it first appears, when its size isn't yet one WPF laid out at the old scale, such as the size it was saved at, and WPF sizes it to fit its readings anyway. It's put against its edges once it's appeared instead.
+        if (msg == WM_DPICHANGED && _hasRendered && !_isBeingMoved && WindowState == WindowState.Normal)
+            ScreenEdges.KeepEdgesForScaleChange(this, lParam);
 
         return IntPtr.Zero;
     }
@@ -104,17 +122,22 @@ public partial class MainWindow : Window
     /// </summary>
     public void Reveal()
     {
-        var bounds = new Rect(ScreenEdges.GetTopLeft(this), new Size(ActualWidth, ActualHeight));
-        var position = ScreenEdges.KeepOnScreen(bounds, ScreenEdges.GetScreenBounds(this));
+        if (ScreenEdges.GetScreenBounds(this) is Rect screen)
+            ScreenEdges.MoveTo(this, ScreenEdges.KeepOnScreen(ScreenEdges.GetBounds(this), screen));
 
-        Left = position.X;
-        Top = position.Y;
         Activate();
     }
 
     private void Window_ContentRendered(object sender, EventArgs e)
     {
         _hasRendered = true;
+
+        // The widget is laid out at its monitor's scale now, so it isn't the size it was saved at if that monitor's scaling has changed since, or if 4.x saved it on a monitor scaled differently from the main one.
+        // It changed size from its top-left corner, which could leave it past the monitor's edge, so it's put back against the edges it was parked near, and fully on the monitor, as when it's resized.
+        var size = ScreenEdges.GetBounds(this).Size;
+
+        if (_restoredBounds is Rect restored && size != restored.Size && ScreenEdges.GetScreenBounds(this) is Rect screen)
+            ScreenEdges.MoveTo(this, ScreenEdges.GetBoundsAfterScaleChange(restored, size, screen).TopLeft);
 
         // Say so, as DesktopClock does, rather than quietly losing every change when the widget closes.
         // It's usually a folder that needs admin rights, but the file can also be read-only, or kept busy by another app the whole time the widget was starting.
@@ -129,19 +152,23 @@ public partial class MainWindow : Window
     private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         // Sizing while the window first appears isn't a resize, and moving it then would undo its restored position.
-        if (!_hasRendered || e.PreviousSize.Width <= 0 || e.PreviousSize.Height <= 0)
+        // Nor is the small change in size when it's dragged onto a monitor with a different scale, when it should stay under the pointer.
+        if (!_hasRendered || _isBeingMoved || e.PreviousSize.Width <= 0 || e.PreviousSize.Height <= 0)
             return;
 
-        var oldBounds = new Rect(ScreenEdges.GetTopLeft(this), e.PreviousSize);
-        var screen = ScreenEdges.GetScreenBounds(this);
+        if (ScreenEdges.GetScreenBounds(this) is not Rect screen)
+            return;
+
+        // The sizes are in WPF units, so they're measured in device pixels like the screen, at the window's scale now.
+        var dpi = VisualTreeHelper.GetDpi(this);
+        var oldBounds = new Rect(ScreenEdges.GetBounds(this).TopLeft, ScreenEdges.ToDevicePixels(e.PreviousSize, dpi));
         _fixedEdges ??= ScreenEdges.GetFixedEdges(oldBounds, screen);
-        var position = ScreenEdges.GetPositionAfterResize(oldBounds, e.NewSize, screen, _fixedEdges.Value);
+        var position = ScreenEdges.GetPositionAfterResize(oldBounds, ScreenEdges.ToDevicePixels(e.NewSize, dpi), screen, _fixedEdges.Value);
 
         _isRepositioning = true;
         try
         {
-            Left = position.X;
-            Top = position.Y;
+            ScreenEdges.MoveTo(this, position);
         }
         finally
         {
@@ -259,7 +286,16 @@ public partial class MainWindow : Window
     private void Window_SourceInitialized(object sender, EventArgs e)
     {
         HwndSource.FromHwnd(new WindowInteropHelper(this).Handle)?.AddHook(WndProc);
-        WindowPlacementFunctions.SetPlacement(this, Settings.Default.Placement);
+
+        var placement = Settings.Default.Placement;
+        WindowPlacementFunctions.SetPlacement(this, placement);
+
+        // Where it was put back, at the size it was saved at, so once it's laid out it can tell whether that changed. A placement with no size, like the first time, has nothing to compare.
+        // The position is read from the window because a placement's is measured from the work area, which starts beside the taskbar when that's at the top or left.
+        var saved = placement.NormalBounds;
+
+        if (saved.Right > saved.Left && saved.Bottom > saved.Top)
+            _restoredBounds = new Rect(ScreenEdges.GetBounds(this).TopLeft, new Size(saved.Right - saved.Left, saved.Bottom - saved.Top));
     }
 
     private void Window_LocationChanged(object sender, EventArgs e)
