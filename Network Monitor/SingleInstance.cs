@@ -55,7 +55,7 @@ public static class SingleInstance
     }
 
     /// <summary>
-    /// Gives up the claim so a new process of this exe can take over, as when restarting to load repaired settings.
+    /// Gives up the claim so a new process of this exe can take over.
     /// Only valid before <see cref="ListenForShowRequests" />, which holds on to the claim.
     /// </summary>
     public static void Release()
