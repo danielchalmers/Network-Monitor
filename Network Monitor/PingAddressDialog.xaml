@@ -7,6 +7,11 @@
         ShowInTaskbar="False"
         WindowStartupLocation="CenterScreen"
         UseLayoutRounding="True"
+        FontFamily="{StaticResource FluentFontFamily}"
+        FontSize="14"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        SourceInitialized="Window_SourceInitialized"
         Loaded="Window_Loaded">
 	<StackPanel Width="320" Margin="12">
 		<Label Content="_Address to ping:"
@@ -15,7 +20,16 @@
 
 		<TextBox x:Name="AddressBox"
 		         AutomationProperties.Name="Address to ping"
-		         AutomationProperties.HelpText="{Binding Text, ElementName=MessageText}" />
+		         AutomationProperties.HelpText="{Binding Text, ElementName=MessageText}">
+			<!--  Its own Cut, Copy, and Paste, since the menu WPF makes for a text box is a kind of menu of its own, which the styles in FluentTheme.xaml don't reach, so it would stay Windows' old light one. The commands give each item its shortcut, and gray it out when there's nothing to cut, copy, or paste.  -->
+			<TextBox.ContextMenu>
+				<ContextMenu>
+					<MenuItem Header="Cu_t" Command="ApplicationCommands.Cut" />
+					<MenuItem Header="_Copy" Command="ApplicationCommands.Copy" />
+					<MenuItem Header="_Paste" Command="ApplicationCommands.Paste" />
+				</ContextMenu>
+			</TextBox.ContextMenu>
+		</TextBox>
 
 		<!--  Says what can be typed, and why when something else was. Screen readers read it with the box, and out loud when it changes.  -->
 		<TextBlock x:Name="MessageText"

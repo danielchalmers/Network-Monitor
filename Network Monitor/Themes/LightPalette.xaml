@@ -1,0 +1,36 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<!--  Windows 11's light colors, from DesktopClock's LightPalette.xaml. ThemeService checks the accent against the backgrounds here, so a change to one keeps it readable.  -->
+
+	<!--  The widget, a little see-through so the desktop shows through it.  -->
+	<SolidColorBrush x:Key="WidgetBackgroundBrush"
+	                 Opacity="0.90"
+	                 Color="#F3F3F3" />
+	<SolidColorBrush x:Key="WidgetTextBrush" Color="#242424" />
+
+	<!--  The Ping address box.  -->
+	<SolidColorBrush x:Key="WindowBackgroundBrush" Color="#F3F3F3" />
+	<SolidColorBrush x:Key="TextPrimaryBrush" Color="#1A1A1A" />
+	<SolidColorBrush x:Key="TextSecondaryBrush" Color="#5D5D5D" />
+	<SolidColorBrush x:Key="ErrorTextBrush" Color="#C42B1C" />
+	<SolidColorBrush x:Key="ButtonBackgroundBrush" Color="#FBFBFB" />
+	<SolidColorBrush x:Key="ButtonBorderBrush" Color="#E0E0E0" />
+	<SolidColorBrush x:Key="ButtonTextBrush" Color="#1A1A1A" />
+	<SolidColorBrush x:Key="ControlFillBrush" Color="#FFFFFF" />
+	<SolidColorBrush x:Key="ControlBorderBrush" Color="#DADADA" />
+
+	<!--  The menu and the tooltips.  -->
+	<SolidColorBrush x:Key="MenuBackgroundBrush" Color="#F9F9F9" />
+	<SolidColorBrush x:Key="MenuBorderBrush" Color="#E5E5E5" />
+	<SolidColorBrush x:Key="SeparatorBrush" Color="#E5E5E5" />
+	<SolidColorBrush x:Key="SliderTrackBrush" Color="#8A8A8A" />
+	<SolidColorBrush x:Key="SliderThumbBackgroundBrush" Color="#FFFFFF" />
+
+	<!--  An item under the pointer or the keyboard, and a button being pressed.  -->
+	<SolidColorBrush x:Key="HoverBrush" Color="#EAEAEA" />
+	<SolidColorBrush x:Key="OnHoverTextBrush" Color="#1A1A1A" />
+	<SolidColorBrush x:Key="PressedBrush" Color="#E0E0E0" />
+
+	<!--  Windows' own blue, for Light and Dark. In Auto, ThemeService puts the system accent over it.  -->
+	<SolidColorBrush x:Key="AccentBrush" Color="#0067C0" />
+</ResourceDictionary>

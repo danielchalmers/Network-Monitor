@@ -1,7 +1,8 @@
+using System;
 using System.Media;
 using System.Windows;
 using System.Windows.Automation.Peers;
-using System.Windows.Media;
+using System.Windows.Controls;
 using Network_Monitor.Monitors;
 
 namespace Network_Monitor;
@@ -24,6 +25,11 @@ public partial class PingAddressDialog : Window
     /// </summary>
     public string Address { get; private set; }
 
+    private void Window_SourceInitialized(object sender, EventArgs e)
+    {
+        ThemeService.Instance.ApplyToWindow(this);
+    }
+
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
         // Selected, so a new address can be typed straight over it.
@@ -44,9 +50,8 @@ public partial class PingAddressDialog : Window
         // What was typed stays, so a typo can be put right, and the message names what often comes along with a pasted address, like the %12 that ipconfig shows after a router's IPv6 address.
         MessageText.Text = "That isn't a plain IP address of one device. Type one like 8.8.8.8 or 2001:4860:4860::8888, without a name like google.com, a zone like %12, a port, or leading zeros.";
 
-        // Red, as Windows marks an error, except in a high contrast theme, where only its own colors are sure to be readable.
-        if (!SystemParameters.HighContrast)
-            MessageText.Foreground = new SolidColorBrush(Color.FromRgb(0xC4, 0x2B, 0x1C));
+        // Red, as Windows marks an error, in a shade that can be read in the dark theme too, and the text color in a high contrast theme, where only its own colors are sure to be readable.
+        MessageText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorTextBrush");
 
         UIElementAutomationPeer.CreatePeerForElement(MessageText)?.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
         SystemSounds.Beep.Play();

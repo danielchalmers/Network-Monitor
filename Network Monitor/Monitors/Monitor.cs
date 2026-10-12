@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Media;
-using Network_Monitor.Properties;
 
 namespace Network_Monitor.Monitors;
 
@@ -70,20 +69,20 @@ public abstract class Monitor : ObservableObject
 
     /// <summary>
     /// Icon color for the active theme.
-    /// Light and Dark use the fixed Fluent palette (darker shades in light mode, lighter tints in dark mode); Auto follows the system accent color instead.
+    /// Light and Dark use the fixed Fluent palette (darker shades in light mode, lighter tints in dark mode); Auto follows the system accent color instead, in a shade that stands out from the widget.
+    /// A high contrast theme's own text color takes the place of both (see MonitorView).
     /// </summary>
-    public Brush IconBrush =>
-        Settings.Default.Theme == AppTheme.Auto && ThemeService.Instance.AccentBrush is Brush accent
-            ? accent
-            : ThemeService.Instance.IsDark ? _darkIconBrush : _lightIconBrush;
+    public Brush IconBrush => ThemeService.Instance.WidgetAccentBrush ?? ThemeBrush;
 
     /// <summary>
-    /// Color for the graph in the tooltip, which stays light whatever the widget's theme: the accent in Auto, otherwise the light theme's darker shade, which can be seen against it.
+    /// Color for the graph in the tooltip, whose background follows the theme like the widget's: the accent in Auto, in a shade that stands out from the tooltip, otherwise the theme's own shade.
     /// </summary>
-    public Brush TooltipBrush =>
-        Settings.Default.Theme == AppTheme.Auto && ThemeService.Instance.AccentBrush is Brush accent
-            ? accent
-            : _lightIconBrush;
+    public Brush TooltipBrush => ThemeService.Instance.ToolTipAccentBrush ?? ThemeBrush;
+
+    /// <summary>
+    /// The monitor's own color in the shade for the theme.
+    /// </summary>
+    private Brush ThemeBrush => ThemeService.Instance.IsDark ? _darkIconBrush : _lightIconBrush;
 
     /// <summary>
     /// User-friendly text to show in the UI.

@@ -1,0 +1,75 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<!--  A high contrast theme's own colors, from DesktopClock's HighContrastPalette.xaml, which are the only ones sure to be readable in it.  -->
+	<!--  Only the colors a Windows 11 contrast theme lets people choose are used: the background and text, selected text, inactive text, and buttons. Like Windows 11's own menus and tooltips, they're drawn in the background and text colors.  -->
+	<!--  Each use gets a brush of its own, which WPF can then keep up to date when the colors change. A brush that's shared can't tell where it's used, so it would keep the colors it started with.  -->
+
+	<!--  The widget, solid, since anything showing through could make it harder to read.  -->
+	<SolidColorBrush x:Key="WidgetBackgroundBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+	<SolidColorBrush x:Key="WidgetTextBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+
+	<!--  The Ping address box.  -->
+	<SolidColorBrush x:Key="WindowBackgroundBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+	<SolidColorBrush x:Key="TextPrimaryBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+	<SolidColorBrush x:Key="TextSecondaryBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.GrayTextColorKey}}" />
+	<SolidColorBrush x:Key="ErrorTextBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+	<SolidColorBrush x:Key="ButtonBackgroundBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
+	<SolidColorBrush x:Key="ButtonBorderBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}" />
+	<SolidColorBrush x:Key="ButtonTextBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}" />
+	<SolidColorBrush x:Key="ControlFillBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+	<SolidColorBrush x:Key="ControlBorderBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+
+	<!--  The menu and the tooltips.  -->
+	<SolidColorBrush x:Key="MenuBackgroundBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+	<SolidColorBrush x:Key="MenuBorderBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+	<SolidColorBrush x:Key="SeparatorBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+	<SolidColorBrush x:Key="SliderTrackBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+	<SolidColorBrush x:Key="SliderThumbBackgroundBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+
+	<!--  An item under the pointer or the keyboard, and a button being pressed, in the selected text colors, since a subtle shade could be lost.  -->
+	<SolidColorBrush x:Key="HoverBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+	<SolidColorBrush x:Key="OnHoverTextBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.HighlightTextColorKey}}" />
+	<SolidColorBrush x:Key="PressedBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+
+	<SolidColorBrush x:Key="AccentBrush"
+	                 x:Shared="False"
+	                 Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+</ResourceDictionary>
