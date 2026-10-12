@@ -115,6 +115,15 @@ public partial class MainWindow : Window
     private void Window_ContentRendered(object sender, EventArgs e)
     {
         _hasRendered = true;
+
+        // Say so, as DesktopClock does, rather than quietly losing every change when the widget closes.
+        // It's usually a folder that needs admin rights, but the file can also be read-only, or kept busy by another app the whole time the widget was starting.
+        if (!Settings.Default.CanBeSaved)
+        {
+            MessageBox.Show(this,
+                "Network Monitor can't save its settings right now, so changes won't be kept.\n\nIf this keeps happening, move it to a folder that doesn't need admin rights.",
+                "Network Monitor", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
     }
 
     private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -240,15 +249,7 @@ public partial class MainWindow : Window
     private void Window_SourceInitialized(object sender, EventArgs e)
     {
         HwndSource.FromHwnd(new WindowInteropHelper(this).Handle)?.AddHook(WndProc);
-
-        try
-        {
-            WindowPlacementFunctions.SetPlacement(this, Settings.Default.Placement);
-        }
-        catch
-        {
-            // System.Configuration doesn't like the WindowPlacement struct sometimes.
-        }
+        WindowPlacementFunctions.SetPlacement(this, Settings.Default.Placement);
     }
 
     private void Window_LocationChanged(object sender, EventArgs e)
@@ -266,7 +267,9 @@ public partial class MainWindow : Window
     private void Window_Closing(object sender, CancelEventArgs e)
     {
         Settings.Default.Placement = WindowPlacementFunctions.GetPlacement(this);
-        SettingsSaver.SaveNow();
+
+        if (Settings.Default.CanBeSaved)
+            Settings.Default.Save();
     }
 
     private void Window_MouseDoubleClick(object sender, MouseButtonEventArgs e)

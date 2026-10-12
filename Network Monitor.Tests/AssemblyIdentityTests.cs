@@ -3,8 +3,8 @@ using System.Reflection;
 namespace Network_Monitor.Tests;
 
 /// <summary>
-/// .NET keeps each user's settings in %LOCALAPPDATA%\Network_Monitor\&lt;exe&gt;_Url_&lt;hash&gt;\&lt;version&gt;, a folder named after the company and the exe.
-/// Renaming the assembly or the company would silently reset everyone's settings; a new version is fine because Settings.Upgrade carries them over.
+/// The installer and the release workflow pick up "Network Monitor.exe", and an installed copy's settings file is named after it.
+/// A copy that's running is recognized by its product name, so a new copy bringing in 4.x's settings doesn't open on top of it.
 /// </summary>
 public class AssemblyIdentityTests
 {
@@ -17,9 +17,9 @@ public class AssemblyIdentityTests
     }
 
     [Fact]
-    public void Company_ShouldStayTheSame()
+    public void Product_ShouldStayTheSame()
     {
-        Assert.Equal("Network Monitor", AppAssembly.GetCustomAttribute<AssemblyCompanyAttribute>()?.Company);
+        Assert.Equal("Network Monitor", AppAssembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product);
     }
 
     // The version is shown to users, so it should read "4.1.0" rather than carry a commit hash.
