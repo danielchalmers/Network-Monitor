@@ -23,8 +23,19 @@
 					                 Margin="0,2,0,6"
 					                 Values="{Binding History}"
 					                 MinimumTop="{Binding HistoryMinimumTop}"
-					                 Stroke="{Binding TooltipBrush}"
-					                 StrokeThickness="1.5" />
+					                 StrokeThickness="1.5">
+						<local:Sparkline.Style>
+							<Style TargetType="local:Sparkline">
+								<Setter Property="Stroke" Value="{Binding TooltipBrush}" />
+								<Style.Triggers>
+									<!--  In high contrast, the theme's text color, like the text under it, since only its own colors are sure to be readable. It's the system's own brush, which WPF keeps up to date, as the graph draws with a frozen pen, and the palette's brushes for high contrast can't be frozen.  -->
+									<DataTrigger Binding="{Binding IsHighContrast, Source={x:Static local:ThemeService.Instance}}" Value="True">
+										<Setter Property="Stroke" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</local:Sparkline.Style>
+					</local:Sparkline>
 
 					<TextBlock Text="{Binding Details}" />
 				</StackPanel>
@@ -37,9 +48,20 @@
 
 		<TextBlock Grid.Column="0"
 		           Text="{Binding Icon}"
-		           Foreground="{Binding IconBrush}"
 		           FontWeight="DemiBold"
-		           TextAlignment="Center" />
+		           TextAlignment="Center">
+			<TextBlock.Style>
+				<Style TargetType="TextBlock">
+					<Setter Property="Foreground" Value="{Binding IconBrush}" />
+					<Style.Triggers>
+						<!--  In high contrast, the theme's text color, like the reading beside it, since only its own colors are sure to be readable.  -->
+						<DataTrigger Binding="{Binding IsHighContrast, Source={x:Static local:ThemeService.Instance}}" Value="True">
+							<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</TextBlock.Style>
+		</TextBlock>
 
 		<Viewbox Grid.Column="1"
 		         StretchDirection="DownOnly"
@@ -52,6 +74,16 @@
 							<DataTrigger Binding="{Binding IsStale}" Value="True">
 								<Setter Property="Opacity" Value="0.55" />
 							</DataTrigger>
+
+							<!--  A high contrast theme has a color of its own for dimmed text, which is sure to be readable, where fading the text could make it too faint.  -->
+							<MultiDataTrigger>
+								<MultiDataTrigger.Conditions>
+									<Condition Binding="{Binding IsStale}" Value="True" />
+									<Condition Binding="{Binding IsHighContrast, Source={x:Static local:ThemeService.Instance}}" Value="True" />
+								</MultiDataTrigger.Conditions>
+								<Setter Property="Opacity" Value="1" />
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+							</MultiDataTrigger>
 						</Style.Triggers>
 					</Style>
 				</TextBlock.Style>

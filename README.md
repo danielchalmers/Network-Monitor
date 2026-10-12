@@ -28,7 +28,7 @@ Hover for a 60-second sparkline and the stats behind it: min/avg/max, jitter, pa
 - **Choose what to ping:** Google's `8.8.8.8` by default, or any IPv4 or IPv6 address, like Cloudflare's `1.1.1.1` or your router's.
 - **Bits or bytes:** switch between Mbps and MB/s; units auto-scale from K to T as traffic changes.
 - **Vertical or horizontal:** a slim column or a wide strip, so it fits any edge of your screen.
-- **Light, dark, or auto:** pick a theme, or let Auto follow the Windows light/dark mode and accent color.
+- **Light, dark, or auto:** pick a theme, or let Auto follow the Windows light/dark mode and accent color, in a shade that's always easy to read. The menu and tooltips look like Windows 11's, and a high contrast theme's colors are used throughout while it's on.
 - **Resize instantly:** drag the size slider, or hold **Ctrl** and scroll over the widget to scale it.
 - **Stays where you want:** keep it on top of other windows, drag it anywhere, and it remembers where you left it.
 - **Out of the way of fullscreen apps:** it hides while a game, video, or slideshow fills its monitor, and comes back when that ends. On by default; turn it off with **Hide when fullscreen** in the menu.
