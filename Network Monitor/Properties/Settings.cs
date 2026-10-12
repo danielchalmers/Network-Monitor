@@ -30,6 +30,7 @@ public sealed class Settings : ObservableObject
     private readonly DispatcherTimer _saveTimer;
     private readonly object _fileLock = new();
 
+    private string _pingHost = "8.8.8.8";
     private bool _bits = true;
     private string _interfaceId = string.Empty;
     private bool _topmost = true;
@@ -77,14 +78,15 @@ public sealed class Settings : ObservableObject
     public bool CanBeSaved { get; private set; }
 
     /// <summary>
-    /// The address pinged to measure latency.
+    /// The address pinged to measure latency: a plain IPv4 or IPv6 address, as <see cref="Monitors.PingAddress" /> reads it, without spaces around it.
     /// </summary>
-    /// <remarks>
-    /// Not saved, so it can't be changed yet.
-    /// To make it a saved setting, give it a field and a public setter that calls <c>Set(ref _pingHost, value, checkEquality: false)</c> like the others, and add it to <see cref="Populate" /> and <see cref="ToJson" />.
-    /// Announcing each change is what saves it a second later and updates whatever shows it, which a plain <c>{ get; set; }</c> wouldn't do.
-    /// </remarks>
-    public string PingHost { get; } = "8.8.8.8";
+    public string PingHost
+    {
+        get => _pingHost;
+
+        // The menu only takes an address that can be pinged, but one edited by hand might be a name or a typo, which keeps the address before it, as other values that can't be used do.
+        set => Set(ref _pingHost, Monitors.PingAddress.TryParse(value, out _) ? value.Trim() : _pingHost, checkEquality: false);
+    }
 
     /// <summary>
     /// How long a ping waits for its reply.
@@ -211,6 +213,7 @@ public sealed class Settings : ObservableObject
     /// </summary>
     public void Populate(IDictionary<string, object> values)
     {
+        TrySet(values, nameof(PingHost), x => PingHost = (string)x);
         TrySet(values, nameof(Bits), x => Bits = ToBool(x));
         TrySet(values, nameof(InterfaceId), x => InterfaceId = (string)x ?? string.Empty);
         TrySet(values, nameof(Topmost), x => Topmost = ToBool(x));
@@ -296,6 +299,7 @@ public sealed class Settings : ObservableObject
     /// </summary>
     private Dictionary<string, object> ToJson() => new()
     {
+        [nameof(PingHost)] = PingHost,
         [nameof(Bits)] = Bits,
         [nameof(InterfaceId)] = InterfaceId,
         [nameof(Topmost)] = Topmost,

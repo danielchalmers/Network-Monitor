@@ -18,7 +18,7 @@ public class MainViewModel : ObservableObject
     {
         Monitors = new List<Monitor>
         {
-            new LatencyMonitor(Settings.Default.PingHost, Settings.Default.Timeout),
+            new LatencyMonitor(Settings.Default.Timeout),
             new DownloadMonitor(),
             new UploadMonitor()
         };

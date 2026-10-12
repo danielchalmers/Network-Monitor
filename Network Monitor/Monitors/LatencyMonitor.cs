@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.NetworkInformation;
 using System.Threading;
 
@@ -17,7 +18,6 @@ public class LatencyMonitor : Monitor
     /// </summary>
     private const int WindowSeconds = 60;
 
-    private readonly string _host;
     private readonly int _timeout;
 
     /// <summary>
@@ -35,6 +35,17 @@ public class LatencyMonitor : Monitor
     private int _pingsOut;
 
     /// <summary>
+    /// The address being pinged, as it was typed, which the tooltip shows.
+    /// </summary>
+    private string _host;
+
+    /// <summary>
+    /// The address being pinged.
+    /// It and <see cref="_host" /> are only touched from the clock tick, which moves them to the one picked in the menu.
+    /// </summary>
+    private IPAddress _address;
+
+    /// <summary>
     /// What the reading showed on the latest tick, which the tooltip and screen readers describe.
     /// </summary>
     private LatencyView _view = LatencyView.Note("Waiting for the first reply", "waiting for the first reply");
@@ -49,7 +60,7 @@ public class LatencyMonitor : Monitor
     /// </summary>
     private (DateTime Start, DateTime End)? _lastOutage;
 
-    public LatencyMonitor(string host, TimeSpan timeout) : base(true)
+    public LatencyMonitor(TimeSpan timeout) : base(true)
     {
         Name = "Latency";
         Icon = '⟳';
@@ -58,13 +69,14 @@ public class LatencyMonitor : Monitor
         // A healthy connection's few milliseconds of wobble should look like a wobble, not fill the graph's whole height like a real spike.
         HistoryMinimumTop = 50;
 
-        _host = host;
         _timeout = (int)timeout.TotalMilliseconds;
         _maxPingsOut = (int)Math.Ceiling(timeout.TotalSeconds) + 2;
     }
 
     protected override string GetDisplayValue()
     {
+        FollowPingHost();
+
         // Show the last second whose ping has finished, then send this second's.
         var snapshot = _history.GetSnapshot();
         var finished = LatencyHistory.GetFinished(snapshot.Slots);
@@ -80,7 +92,7 @@ public class LatencyMonitor : Monitor
             snapshot.LastReplyAt,
             now,
             NetworkStatus.IsReconnecting,
-            NetworkStatus.HasRepliedOnThisNetwork);
+            NetworkStatus.HasRepliedOnThisNetwork(_address));
 
         StartPing();
         RememberOutage(view, snapshot.LastReplyAt, now);
@@ -131,6 +143,32 @@ public class LatencyMonitor : Monitor
 
         // Time asleep isn't an outage.
         _outageStart = null;
+    }
+
+    /// <summary>
+    /// Moves to the address picked in the menu, from this tick on.
+    /// The last minute's stats, graph, and outage were measured against the old address, so they start fresh rather than being shown under the new one, as they do when another adapter is picked.
+    /// So, as after the PC wakes, there's no outage clock until the new address has replied once, even if it's one that replied before.
+    /// This is checked here on the clock tick, which owns the history, rather than when the setting changes.
+    /// </summary>
+    private void FollowPingHost()
+    {
+        var host = Properties.Settings.Default.PingHost;
+
+        // Most ticks it hasn't changed. The settings only keep an address that can be pinged, so it can always be read.
+        if (host == _host || !PingAddress.TryParse(host, out var address))
+            return;
+
+        // The first tick has nothing to start over from, and the same address written another way, like in capitals, only changes how it's shown.
+        if (_address != null && !address.Equals(_address))
+        {
+            _history.Reset();
+            _outageStart = null;
+            _lastOutage = null;
+        }
+
+        _host = host;
+        _address = address;
     }
 
     /// <summary>
@@ -190,21 +228,25 @@ public class LatencyMonitor : Monitor
             return;
         }
 
-        SendPing(ticket);
+        SendPing(ticket, _address);
     }
 
-    private async void SendPing(LatencyHistory.Ticket ticket)
+    /// <summary>
+    /// Sends one ping and files how it went.
+    /// The address is passed in rather than read when the reply comes back, so a reply that arrives after another address was picked counts for the one it came from.
+    /// </summary>
+    private async void SendPing(LatencyHistory.Ticket ticket, IPAddress address)
     {
         if (!_idlePings.TryTake(out var ping))
             ping = new Ping();
 
         try
         {
-            var reply = await ping.SendPingAsync(_host, _timeout).ConfigureAwait(false);
+            var reply = await ping.SendPingAsync(address, _timeout).ConfigureAwait(false);
             var success = reply.Status == IPStatus.Success;
 
             if (success)
-                NetworkStatus.ReportReply();
+                NetworkStatus.ReportReply(address);
 
             _history.Complete(ticket, success ? reply.RoundtripTime : null);
             _idlePings.Add(ping);

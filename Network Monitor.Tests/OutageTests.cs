@@ -141,7 +141,7 @@ public class OutageTests
         Assert.Equal("—", view.Value);
         Assert.False(view.IsOutage);
         Assert.True(view.IsBlockedNetwork);
-        Assert.Equal("No replies on this network yet. It may block ping.", view.NoteLine);
+        Assert.Equal("No replies on this network yet. It or the address may block ping.", view.NoteLine);
     }
 
     [Fact]
