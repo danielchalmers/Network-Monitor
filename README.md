@@ -32,7 +32,7 @@ Hover for a 60-second sparkline and the stats behind it: min/avg/max, jitter, pa
 - **Stays where you want:** keep it on top of other windows, drag it anywhere, and it remembers where you left it.
 - **Copy on demand:** double-click, or right-click → **Copy**, to grab the current numbers.
 - **Starts with Windows:** optionally launch on sign-in, and check for updates in one click from the menu.
-- **Honest numbers:** stale readings dim, lost pings show as gaps, and it recovers on its own after drops.
+- **Honest outages:** when pings stop, a clock counts the time since the last reply; hover for when it started.
 - **Light on resources:** one tiny reading per second, published exactly when the system clock ticks.
 
 ## 🚀 Install
