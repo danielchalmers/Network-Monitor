@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -23,6 +24,16 @@ public static class NetworkAdapters
     /// Nothing is sent to them.
     /// </summary>
     private static readonly IPAddress[] InternetAddresses = { IPAddress.Parse("8.8.8.8"), IPAddress.Parse("2001:4860:4860::8888") };
+
+    /// <summary>
+    /// Words in the names of VPN adapters that pass themselves off as Ethernet: OpenVPN's TAP adapter, which many VPN apps use, Cisco AnyConnect's, Palo Alto GlobalProtect's, and the many with "VPN" in the name.
+    /// </summary>
+    private static readonly string[] TunnelNames = { "VPN", "TAP-", "AnyConnect", "PANGP" };
+
+    /// <summary>
+    /// The kind of adapter WireGuard, Wintun, and the VPN apps built on them use, which .NET has no name for.
+    /// </summary>
+    private const NetworkInterfaceType PropVirtual = (NetworkInterfaceType)53;
 
     /// <summary>
     /// Returns the real, monitorable adapters: connected, non-loopback, and carrying an IP address.
@@ -96,6 +107,22 @@ public static class NetworkAdapters
             return internetAdapter != null ? $"Adapter: {internetAdapter.Name} (automatic)" : $"Adapters: all {adapters.Count} (automatic)";
 
         return $"Adapter: {adapters.FirstOrDefault(x => x.Id == interfaceId)?.Name ?? "Disconnected"}";
+    }
+
+    /// <summary>
+    /// Returns whether an adapter is a tunnel to somewhere else, like a VPN, rather than a network of its own, so its gateway, if it has one, is out on the internet rather than in the building.
+    /// Windows' own VPNs and most others use a kind of adapter of their own; the rest are told by their name, so one with an unusual name is missed.
+    /// </summary>
+    public static bool IsTunnel(NetworkInterface adapter)
+    {
+        var type = adapter.NetworkInterfaceType;
+
+        if (type is NetworkInterfaceType.Ppp or NetworkInterfaceType.Tunnel or PropVirtual)
+            return true;
+
+        var description = adapter.Description ?? string.Empty;
+
+        return TunnelNames.Any(x => description.IndexOf(x, StringComparison.OrdinalIgnoreCase) >= 0);
     }
 
     private static bool IsMonitorable(NetworkInterface adapter)

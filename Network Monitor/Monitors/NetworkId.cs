@@ -41,6 +41,13 @@ public sealed class NetworkId
     public bool Matches(NetworkId other) =>
         other != null &&
         string.Equals(AdapterId, other.AdapterId, StringComparison.OrdinalIgnoreCase) &&
+        HasSameRouter(other);
+
+    /// <summary>
+    /// Returns whether <paramref name="other" /> has the same router, whichever adapter reaches it, like Ethernet and Wi-Fi on the same network.
+    /// </summary>
+    public bool HasSameRouter(NetworkId other) =>
+        other != null &&
         string.Equals(Gateway, other.Gateway, StringComparison.OrdinalIgnoreCase) &&
         (GatewayHardwareAddress is null || other.GatewayHardwareAddress is null || string.Equals(GatewayHardwareAddress, other.GatewayHardwareAddress, StringComparison.OrdinalIgnoreCase));
 }

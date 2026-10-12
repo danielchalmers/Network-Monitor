@@ -35,7 +35,7 @@ Hover for a 60-second sparkline and the stats behind it: min/avg/max, jitter, pa
 - **Sharp on every monitor:** drawn at each monitor's own scale, so it stays crisp when it moves to one with different scaling.
 - **Copy on demand:** double-click, or right-click → **Copy**, to grab the current numbers.
 - **Starts with Windows:** optionally launch on sign-in, and check for updates in one click from the menu.
-- **Honest outages:** when pings stop, a clock counts the time since the last reply; hover for when it started.
+- **Honest outages:** when pings stop, a clock counts the time since the last reply; hover for when it started, and whether your router is still answering, which tells a drop on your own network from one past your router.
 - **Light on resources:** one tiny reading per second, published exactly when the system clock ticks.
 
 ## 🚀 Install

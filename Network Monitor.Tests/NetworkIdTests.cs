@@ -24,6 +24,14 @@ public class NetworkIdTests
     }
 
     [Fact]
+    public void HasSameRouter_WhicheverAdapterReachesIt()
+    {
+        // Like Ethernet and Wi-Fi on the same network, but not a hotel's router with the same address as the one at home.
+        Assert.True(new NetworkId("ethernet", "192.168.1.1", "AA-BB-CC-00-11-22").HasSameRouter(new NetworkId("wifi", "192.168.1.1", "aa-bb-cc-00-11-22")));
+        Assert.False(new NetworkId("ethernet", "192.168.1.1", "AA-BB-CC-00-11-22").HasSameRouter(new NetworkId("wifi", "192.168.1.1", "DD-EE-FF-33-44-55")));
+    }
+
+    [Fact]
     public void DoesntMatch_AVpnTunnelOverTheSameRouter()
     {
         Assert.False(new NetworkId("vpn", null, null).Matches(new NetworkId("wifi", "192.168.1.1", null)));

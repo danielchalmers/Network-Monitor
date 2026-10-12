@@ -56,6 +56,8 @@ public static class NetworkStatus
     /// </summary>
     private static volatile NetworkId[] _currentNetwork = Array.Empty<NetworkId>();
 
+    private static volatile Router[] _routers = Array.Empty<Router>();
+
     private static (int Index, AddressFamily Family)? _internetRoute;
 
     /// <summary>
@@ -104,6 +106,12 @@ public static class NetworkStatus
             return _hasGateway && connected != 0 && Stopwatch.GetTimestamp() - connected < ReconnectingTicks;
         }
     }
+
+    /// <summary>
+    /// The routers to ping when the internet stops answering, to tell a drop on your own network from one past it: those of the adapter internet traffic leaves through, or while a VPN carries it, those of the network the VPN runs over.
+    /// Empty when there's no route to the internet, no router to be found, like on some mobile broadband, or more than one network a VPN could run over.
+    /// </summary>
+    public static IReadOnlyList<Router> Routers => _routers;
 
     /// <summary>
     /// Whether a ping to <paramref name="address" /> has ever come back through the network internet traffic leaves through now.
@@ -191,12 +199,14 @@ public static class NetworkStatus
             var hasGateway = adapters.SelectMany(GetGatewayAddresses).Any(IsRealGateway);
             var route = NetworkAdapters.GetInternetRoute();
             var internetAdapter = route is (int index, AddressFamily family) ? NetworkAdapters.FindByIndex(adapters, index, family) : null;
+            var internetGateways = internetAdapter != null ? GetGateways(internetAdapter) : Array.Empty<(IPAddress Address, NetworkId Network)>();
 
             if (hasGateway && !_hasGateway && _hasRefreshed)
                 Interlocked.Exchange(ref _connectedTimestamp, Stopwatch.GetTimestamp());
 
             _internetRoute = route;
-            _currentNetwork = internetAdapter != null ? GetNetwork(internetAdapter) : Array.Empty<NetworkId>();
+            _currentNetwork = internetAdapter != null ? GetNetwork(internetAdapter, internetGateways) : Array.Empty<NetworkId>();
+            _routers = RouterCheck.ChooseRouters(adapters, internetAdapter, x => x == internetAdapter ? internetGateways : GetGateways(x));
             _hasGateway = hasGateway;
             _hasRefreshed = true;
         }
@@ -205,20 +215,28 @@ public static class NetworkStatus
     /// <summary>
     /// Returns what identifies the network an adapter reaches: one entry per real router, or just the adapter if it has none, like a VPN tunnel.
     /// </summary>
-    private static NetworkId[] GetNetwork(NetworkInterface adapter)
+    /// <param name="adapter">The adapter.</param>
+    /// <param name="gateways">The adapter's routers, from <see cref="GetGateways" />.</param>
+    private static NetworkId[] GetNetwork(NetworkInterface adapter, (IPAddress Address, NetworkId Network)[] gateways) =>
+        gateways.Length > 0 ? gateways.Select(x => x.Network).ToArray() : new[] { new NetworkId(adapter.Id, null, null) };
+
+    /// <summary>
+    /// Returns an adapter's real routers, each with what tells it apart from a router with the same address on another network.
+    /// </summary>
+    private static (IPAddress Address, NetworkId Network)[] GetGateways(NetworkInterface adapter)
     {
         var gateways = GetGatewayAddresses(adapter).Where(IsRealGateway).Distinct().ToArray();
 
         if (gateways.Length == 0)
-            return new[] { new NetworkId(adapter.Id, null, null) };
+            return Array.Empty<(IPAddress Address, NetworkId Network)>();
 
         var ipv4Index = NetworkAdapters.GetIndex(adapter, AddressFamily.InterNetwork);
 
         return gateways
-            .Select(x => new NetworkId(
+            .Select(x => (x, new NetworkId(
                 adapter.Id,
                 x.ToString(),
-                x.AddressFamily == AddressFamily.InterNetwork && ipv4Index is int index ? GetHardwareAddress(x, index) : null))
+                x.AddressFamily == AddressFamily.InterNetwork && ipv4Index is int index ? GetHardwareAddress(x, index) : null)))
             .ToArray();
     }
 

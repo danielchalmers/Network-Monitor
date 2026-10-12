@@ -32,6 +32,11 @@ public class LatencyMonitor : Monitor
     /// </summary>
     private readonly ConcurrentBag<Ping> _idlePings = new();
 
+    /// <summary>
+    /// Pings the router while the internet isn't answering, to tell whether an outage is on your own network or past it.
+    /// </summary>
+    private readonly RouterCheck _routerCheck;
+
     private int _pingsOut;
 
     /// <summary>
@@ -60,6 +65,11 @@ public class LatencyMonitor : Monitor
     /// </summary>
     private (DateTime Start, DateTime End)? _lastOutage;
 
+    /// <summary>
+    /// What the latest tick found out about the router, said along with the outage clock, or null.
+    /// </summary>
+    private (string Note, string Spoken)? _routerNote;
+
     public LatencyMonitor(TimeSpan timeout) : base(true)
     {
         Name = "Latency";
@@ -71,6 +81,7 @@ public class LatencyMonitor : Monitor
 
         _timeout = (int)timeout.TotalMilliseconds;
         _maxPingsOut = (int)Math.Ceiling(timeout.TotalSeconds) + 2;
+        _routerCheck = new RouterCheck(timeout);
     }
 
     protected override string GetDisplayValue()
@@ -97,6 +108,7 @@ public class LatencyMonitor : Monitor
         StartPing();
         RememberOutage(view, snapshot.LastReplyAt, now);
 
+        _routerNote = CheckRouter(view, snapshot.SecondsSinceReply);
         _view = view;
         IsStale = view.IsStale;
         return view.Value;
@@ -118,6 +130,9 @@ public class LatencyMonitor : Monitor
 
         if (view.NoteLine is not null)
             lines.Add(view.NoteLine);
+
+        if (_routerNote is var (routerNote, _))
+            lines.Add(routerNote);
 
         if (successes.Length > 0)
             lines.Add($"Min/Avg/Max: {FormatRoundtrip(successes.Min())} / {FormatRoundtrip((long)Math.Round(successes.Average(), MidpointRounding.AwayFromZero))} / {FormatRoundtrip(successes.Max())} ms");
@@ -195,6 +210,25 @@ public class LatencyMonitor : Monitor
         }
     }
 
+    /// <summary>
+    /// Pings the router while replies from the internet are missing, and returns what it showed once the outage clock is up.
+    /// </summary>
+    /// <param name="view">What the reading shows this tick.</param>
+    /// <param name="secondsSinceReply">Whole seconds since the newest second whose ping got a reply, as of the snapshot the view came from.</param>
+    private (string Note, string Spoken)? CheckRouter(LatencyView view, long? secondsSinceReply)
+    {
+        if (!RouterCheck.IsNeeded(view, secondsSinceReply))
+        {
+            _routerCheck.Stop();
+            return null;
+        }
+
+        _routerCheck.Check(NetworkStatus.Routers, _address);
+
+        var (reply, hasAnswered) = _routerCheck.GetState();
+        return RouterCheck.Describe(reply, hasAnswered, view.IsOutage);
+    }
+
     protected override IReadOnlyList<double?> GetHistory() =>
         LatencyHistory.GetFinished(_history.GetSnapshot().Slots).Select(s => s >= 0 ? (double?)s : null).ToArray();
 
@@ -263,8 +297,13 @@ public class LatencyMonitor : Monitor
         }
     }
 
-    protected override string GetSpokenValue(string displayValue) =>
-        displayValue == _view.Value ? $"{Name}, {_view.Spoken}" : base.GetSpokenValue(displayValue);
+    protected override string GetSpokenValue(string displayValue)
+    {
+        if (displayValue != _view.Value)
+            return base.GetSpokenValue(displayValue);
+
+        return _routerNote is var (_, routerSpoken) ? $"{Name}, {_view.Spoken}, {routerSpoken}" : $"{Name}, {_view.Spoken}";
+    }
 
     /// <summary>
     /// Returns a latency reading as a screen reader should say it.
