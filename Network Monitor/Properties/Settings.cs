@@ -39,6 +39,7 @@ public sealed class Settings : ObservableObject
     private bool _bits = true;
     private string _interfaceId = string.Empty;
     private bool _topmost = true;
+    private bool _hideWhenFullscreen = true;
     private bool _showInTaskbar = true;
     private bool _horizontal;
     private AppTheme _theme = AppTheme.Auto;
@@ -123,6 +124,15 @@ public sealed class Settings : ObservableObject
     {
         get => _topmost;
         set => Set(ref _topmost, value, checkEquality: false);
+    }
+
+    /// <summary>
+    /// Whether the widget hides while a fullscreen app, like a game, a video, or a slideshow, fills the monitor it's on.
+    /// </summary>
+    public bool HideWhenFullscreen
+    {
+        get => _hideWhenFullscreen;
+        set => Set(ref _hideWhenFullscreen, value, checkEquality: false);
     }
 
     /// <summary>

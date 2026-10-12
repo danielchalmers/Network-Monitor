@@ -79,6 +79,10 @@
 			          IsCheckable="True"
 			          IsChecked="{Binding Topmost, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
 
+			<MenuItem Header="Hi_de when fullscreen"
+			          IsCheckable="True"
+			          IsChecked="{Binding HideWhenFullscreen, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
+
 			<MenuItem Header="_Show in taskbar"
 			          IsCheckable="True"
 			          IsChecked="{Binding ShowInTaskbar, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />

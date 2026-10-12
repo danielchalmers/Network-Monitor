@@ -31,6 +31,7 @@ Hover for a 60-second sparkline and the stats behind it: min/avg/max, jitter, pa
 - **Light, dark, or auto:** pick a theme, or let Auto follow the Windows light/dark mode and accent color.
 - **Resize instantly:** drag the size slider, or hold **Ctrl** and scroll over the widget to scale it.
 - **Stays where you want:** keep it on top of other windows, drag it anywhere, and it remembers where you left it.
+- **Out of the way of fullscreen apps:** it hides while a game, video, or slideshow fills its monitor, and comes back when that ends. On by default; turn it off with **Hide when fullscreen** in the menu.
 - **Sharp on every monitor:** drawn at each monitor's own scale, so it stays crisp when it moves to one with different scaling.
 - **Copy on demand:** double-click, or right-click → **Copy**, to grab the current numbers.
 - **Starts with Windows:** optionally launch on sign-in, and check for updates in one click from the menu.
