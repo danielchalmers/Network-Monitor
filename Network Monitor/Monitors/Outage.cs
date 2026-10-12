@@ -89,7 +89,7 @@ public static class Outage
     /// <param name="lastReplyAt">When the last reply arrived, in UTC, or null if none has.</param>
     /// <param name="now">The current time, in UTC.</param>
     /// <param name="isReconnecting">Whether the PC only just got its connection back, when pings often fail for a few seconds.</param>
-    /// <param name="hasRepliedOnThisNetwork">Whether a ping has ever come back through this network's router.</param>
+    /// <param name="hasRepliedOnThisNetwork">Whether a ping to this address has ever come back through this network's router.</param>
     public static LatencyView Decide(long? newestFinished, bool isWaiting, long? lastRoundtrip, long? secondsSinceReply, DateTime? lastReplyAt, DateTime now, bool isReconnecting, bool hasRepliedOnThisNetwork)
     {
         if (newestFinished is long roundtrip && roundtrip >= 0 && !isWaiting)
@@ -101,7 +101,7 @@ public static class Outage
         if (isReconnecting)
             return LatencyView.Note("Reconnecting…", "reconnecting");
 
-        // Some networks, like many public Wi-Fi and work networks, block ping; a clock counting up there would only ever cry wolf.
+        // Some networks, like many public Wi-Fi and work networks, block ping, and so do some addresses; a clock counting up there would only ever cry wolf.
         if (!hasRepliedOnThisNetwork && (newestFinished == LatencyHistory.Lost || secondsSinceReply >= ClockAfterSeconds))
             return LatencyView.BlockedNetwork();
 
@@ -156,7 +156,7 @@ public readonly struct LatencyView
     public bool IsOutage { get; }
 
     /// <summary>
-    /// Whether the network seems to block ping, so time on it isn't an outage.
+    /// Whether the network or the address seems to block ping, so time without replies isn't an outage.
     /// </summary>
     public bool IsBlockedNetwork { get; }
 
@@ -174,7 +174,7 @@ public readonly struct LatencyView
     public static LatencyView Note(string note, string spoken) => new("—", false, note, spoken, false);
 
     public static LatencyView BlockedNetwork() =>
-        new("—", false, "No replies on this network yet. It may block ping.", "no replies on this network", false, true);
+        new("—", false, "No replies on this network yet. It or the address may block ping.", "no replies on this network", false, true);
 
     /// <param name="outage">How long since the last reply.</param>
     /// <param name="lastReplyAt">When the last reply arrived, in UTC.</param>

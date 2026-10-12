@@ -44,6 +44,7 @@ public sealed class SettingsTests : IDisposable
     public void Save_ThenLoad_KeepsEverySetting()
     {
         var original = Load();
+        original.PingHost = "2606:4700:4700::1111";
         original.Bits = false;
         original.InterfaceId = "{4D36E972-E325-11CE-BFC1-08002BE10318}";
         original.Topmost = false;
@@ -56,6 +57,7 @@ public sealed class SettingsTests : IDisposable
         Assert.True(original.Save());
 
         var loaded = Load();
+        Assert.Equal("2606:4700:4700::1111", loaded.PingHost);
         Assert.False(loaded.Bits);
         Assert.Equal("{4D36E972-E325-11CE-BFC1-08002BE10318}", loaded.InterfaceId);
         Assert.False(loaded.Topmost);
@@ -164,6 +166,7 @@ public sealed class SettingsTests : IDisposable
     {
         File.WriteAllText(FilePath, """
             {
+              "PingHost": "google.com",
               "Bits": "maybe",
               "InterfaceId": 7,
               "Topmost": false,
@@ -177,6 +180,7 @@ public sealed class SettingsTests : IDisposable
 
         var settings = Load();
 
+        Assert.Equal("8.8.8.8", settings.PingHost);
         Assert.True(settings.Bits);
         Assert.Equal(string.Empty, settings.InterfaceId);
         Assert.False(settings.Topmost);
@@ -230,6 +234,41 @@ public sealed class SettingsTests : IDisposable
         File.WriteAllText(FilePath, $$"""{ "Size": {{size}} }""");
 
         Assert.Equal(expected, Load().Size);
+    }
+
+    [Fact]
+    public void Load_ReadsAPingAddressEditedByHand()
+    {
+        File.WriteAllText(FilePath, """{ "PingHost": " 1.1.1.1 " }""");
+
+        Assert.Equal("1.1.1.1", Load().PingHost);
+    }
+
+    [Theory]
+    [InlineData("\"one.one.one.one\"")]
+    [InlineData("\"1.1.1\"")]
+    [InlineData("\"255.255.255.255\"")]
+    [InlineData("\"\"")]
+    [InlineData("null")]
+    [InlineData("1")]
+    public void Load_WithAPingAddressThatCantBePinged_KeepsTheDefault(string pingHost)
+    {
+        File.WriteAllText(FilePath, $$"""{ "PingHost": {{pingHost}} }""");
+
+        Assert.Equal("8.8.8.8", Load().PingHost);
+    }
+
+    [Fact]
+    public void PingHost_GivenOneThatCantBePinged_KeepsTheAddressBefore()
+    {
+        var settings = Load();
+        settings.PingHost = "192.168.1.1";
+
+        settings.PingHost = "router.local";
+        Assert.Equal("192.168.1.1", settings.PingHost);
+
+        settings.PingHost = null;
+        Assert.Equal("192.168.1.1", settings.PingHost);
     }
 
     [Fact]

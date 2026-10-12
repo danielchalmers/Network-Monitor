@@ -25,6 +25,7 @@ Hover for a 60-second sparkline and the stats behind it: min/avg/max, jitter, pa
 - **Three live readings:** round-trip latency (ping), download speed, and upload speed, updated every second.
 - **Hover for history:** a 60-second sparkline with min/avg/max, jitter, packet loss, and session totals.
 - **Pick your adapter:** Automatic follows whichever adapter reaches the internet, or pick one, or all of them.
+- **Choose what to ping:** Google's `8.8.8.8` by default, or any IPv4 or IPv6 address, like Cloudflare's `1.1.1.1` or your router's.
 - **Bits or bytes:** switch between Mbps and MB/s; units auto-scale from K to T as traffic changes.
 - **Vertical or horizontal:** a slim column or a wide strip, so it fits any edge of your screen.
 - **Light, dark, or auto:** pick a theme, or let Auto follow the Windows light/dark mode and accent color.
@@ -53,5 +54,6 @@ Hover for a 60-second sparkline and the stats behind it: min/avg/max, jitter, pa
 - **Resize it:** hold **Ctrl** and scroll over it, or use the **Size** slider in the menu.
 - **Hover it:** hold the cursor over any reading for a sparkline and detailed stats from the last minute.
 - **Lost it?** Start Network Monitor again and the running widget comes back into view.
-- **Options:** right-click for network adapter, bits/bytes, orientation, theme, always on top, etc.
-- Latency is measured by pinging `8.8.8.8` (Google DNS); download and upload follow your internet adapter.
+- **Options:** right-click for network adapter, ping address, bits/bytes, orientation, theme, always on top, etc.
+- Latency is measured by pinging `8.8.8.8` (Google DNS) unless you pick another address under **Ping address**; download and upload follow your internet adapter.
+- Lowercase means bits and uppercase means bytes: `45m` is 45 Mbps, and `45M` is 45 MB/s.
