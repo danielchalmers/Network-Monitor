@@ -29,3 +29,38 @@ jobs:
           path: |
             publish/*.exe
             publish/*.msi
+
+  # The same build and tests, natively on Arm64.
+  build-test-arm64:
+    name: Build and test arm64
+    runs-on: windows-11-arm
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/build-and-test
+
+  smoke-test:
+    name: Smoke test ${{ matrix.arch }}
+    needs: build
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            runner: windows-latest
+          - arch: arm64
+            runner: windows-11-arm
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: network-monitor
+          path: artifact
+
+      - uses: ./.github/actions/smoke-test
+        with:
+          msi: artifact/Network-Monitor-0.0.0-${{ matrix.arch }}.msi
+          exe: '%LOCALAPPDATA%\Network Monitor\Network Monitor.exe'
+          logs: '%LOCALAPPDATA%\Network Monitor\*.log'
