@@ -29,6 +29,7 @@ Hover for a 60-second sparkline and the stats behind it: min/avg/max, jitter, pa
 - **Bits or bytes:** switch between Mbps and MB/s; units auto-scale from K to T as traffic changes.
 - **Vertical or horizontal:** a slim column or a wide strip, so it fits any edge of your screen.
 - **Light, dark, or auto:** pick a theme, or let Auto follow the Windows light/dark mode and accent color.
+- **Fits in on Windows 11:** Fluent menus and tooltips, readable accent shades, and high contrast support.
 - **Resize instantly:** drag the size slider, or hold **Ctrl** and scroll over the widget to scale it.
 - **Stays where you want:** keep it on top of other windows, drag it anywhere, and it remembers where you left it.
 - **Hides for fullscreen apps:** steps aside while a game, video, or slideshow fills its monitor (on by default).

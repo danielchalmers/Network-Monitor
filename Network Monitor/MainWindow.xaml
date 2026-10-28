@@ -17,6 +17,7 @@
         Background="Transparent"
         UseLayoutRounding="True"
         FontFamily="Consolas"
+        Foreground="{DynamicResource WidgetTextBrush}"
         MouseDown="MainWindow_OnMouseDown"
         SizeChanged="Window_SizeChanged"
         ContentRendered="Window_ContentRendered"
@@ -27,27 +28,6 @@
 	<Window.Resources>
 		<root:EnumToBooleanConverter x:Key="EnumToBoolean" />
 	</Window.Resources>
-	<Window.Style>
-		<Style TargetType="Window">
-			<Setter Property="Foreground">
-				<Setter.Value>
-					<SolidColorBrush Color="#242424" />
-				</Setter.Value>
-			</Setter>
-
-			<Style.Triggers>
-				<DataTrigger Binding="{Binding IsDark, Source={x:Static root:ThemeService.Instance}}" Value="True">
-					<DataTrigger.Setters>
-						<Setter Property="Foreground">
-							<Setter.Value>
-								<SolidColorBrush Color="#FFFFFF" />
-							</Setter.Value>
-						</Setter>
-					</DataTrigger.Setters>
-				</DataTrigger>
-			</Style.Triggers>
-		</Style>
-	</Window.Style>
 	<Window.ContextMenu>
 		<ContextMenu Opened="ContextMenu_OnOpened">
 			<!--  Shows which version is running, as in DesktopClock.  -->
@@ -141,29 +121,8 @@
 		</ContextMenu>
 	</Window.ContextMenu>
 
-	<Grid Grid.IsSharedSizeScope="True">
-		<Grid.Style>
-			<Style TargetType="Grid">
-				<Setter Property="Background">
-					<Setter.Value>
-						<SolidColorBrush Color="#F3F3F3" Opacity="0.90" />
-					</Setter.Value>
-				</Setter>
-
-				<Style.Triggers>
-					<DataTrigger Binding="{Binding IsDark, Source={x:Static root:ThemeService.Instance}}" Value="True">
-						<DataTrigger.Setters>
-							<Setter Property="Background">
-								<Setter.Value>
-									<SolidColorBrush Color="#202020" Opacity="0.90" />
-								</Setter.Value>
-							</Setter>
-						</DataTrigger.Setters>
-					</DataTrigger>
-				</Style.Triggers>
-			</Style>
-		</Grid.Style>
-
+	<!--  The colors come from the theme's palette in Themes, which ThemeService puts in place.  -->
+	<Grid Background="{DynamicResource WidgetBackgroundBrush}" Grid.IsSharedSizeScope="True">
 		<Grid.Resources>
 			<Style TargetType="root:MonitorView">
 				<Setter Property="Template">

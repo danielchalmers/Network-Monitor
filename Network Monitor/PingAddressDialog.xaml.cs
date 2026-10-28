@@ -1,6 +1,7 @@
+using System;
 using System.Windows;
 using System.Windows.Automation.Peers;
-using System.Windows.Media;
+using System.Windows.Controls;
 using Network_Monitor.Monitors;
 
 namespace Network_Monitor;
@@ -23,6 +24,11 @@ public partial class PingAddressDialog : Window
     /// </summary>
     public string Address { get; private set; }
 
+    private void Window_SourceInitialized(object sender, EventArgs e)
+    {
+        ThemeService.Instance.ApplyToWindow(this);
+    }
+
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
         // Selected, so a new address can be typed straight over it.
@@ -42,9 +48,8 @@ public partial class PingAddressDialog : Window
         // Say why rather than closing and quietly keeping the old address, and leave what was typed so a typo can be put right.
         MessageText.Text = "Type an IP address like 8.8.8.8 or 2001:4860:4860::8888.";
 
-        // Red, as Windows marks an error, except in a high contrast theme, where only its own colors are sure to be readable.
-        if (!SystemParameters.HighContrast)
-            MessageText.Foreground = new SolidColorBrush(Color.FromRgb(0xC4, 0x2B, 0x1C));
+        // Red, as Windows marks an error, in a shade that can be read in the dark theme too, and the text color in a high contrast theme, where only its own colors are sure to be readable.
+        MessageText.SetResourceReference(TextBlock.ForegroundProperty, "ErrorTextBrush");
 
         UIElementAutomationPeer.CreatePeerForElement(MessageText)?.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
         AddressBox.Focus();
