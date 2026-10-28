@@ -29,3 +29,11 @@ jobs:
           path: |
             publish/*.exe
             publish/*.msi
+
+  build-test-arm64:
+    name: Build and test arm64
+    runs-on: windows-11-arm
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/build-and-test
