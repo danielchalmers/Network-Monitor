@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
+using Network_Monitor.Properties;
 
 namespace Network_Monitor;
 
@@ -38,14 +39,10 @@ public partial class App : Application
             return;
         }
 
-        // The window is created here rather than by StartupUri so the settings are ready before anything reads them.
-        if (!SettingsStartup.Prepare(e.Args))
-        {
-            Shutdown();
-            return;
-        }
+        // The settings are read here, once this is known to be the widget that stays, so a copy that only brings the running one into view never writes the file.
+        // It's on this thread because the settings save on its dispatcher, and the window is created here rather than by StartupUri so nothing reads them sooner.
+        _ = Settings.Default;
 
-        SettingsSaver.Start();
         RepairStartup();
 
         var window = new MainWindow();
