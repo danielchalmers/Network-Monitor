@@ -36,10 +36,11 @@ public static class NetworkStatus
     private static readonly long ReconnectingTicks = 5 * Stopwatch.Frequency;
 
     /// <summary>
-    /// The networks a ping has come back through, which tells a network having an outage from one that blocks ping.
+    /// The networks a ping has come back through, for each address pinged, which tells a network having an outage from one that blocks ping.
+    /// Kept for each address, so after replies from the one pinged before, a new one that never answers, like a typo or a server that ignores ping, says it may block ping rather than waiting for a reply for good.
     /// Only kept while the app runs.
     /// </summary>
-    private static readonly List<NetworkId> RepliedNetworks = new();
+    private static readonly Dictionary<IPAddress, List<NetworkId>> RepliedNetworks = new();
 
     /// <summary>
     /// Keeps a network-change event, the recheck timer, and the clock tick from refreshing at the same time and leaving an older result behind.
@@ -105,29 +106,26 @@ public static class NetworkStatus
     }
 
     /// <summary>
-    /// Whether a ping has ever come back through the network internet traffic leaves through now.
-    /// If so, failing pings are an outage; if not, the network may just block ping, like many work VPNs and public Wi-Fi.
-    /// It's remembered per router, so a router that restarts still counts, and only a different network starts over.
+    /// Whether a ping to <paramref name="address" /> has ever come back through the network internet traffic leaves through now.
+    /// If so, failing pings are an outage; if not, the network may just block ping, like many work VPNs and public Wi-Fi, or the address may not answer.
+    /// It's remembered per router, so a router that restarts still counts, and only a different network or address starts over.
     /// </summary>
-    public static bool HasRepliedOnThisNetwork
+    public static bool HasRepliedOnThisNetwork(IPAddress address)
     {
-        get
-        {
-            var network = _currentNetwork;
+        var network = _currentNetwork;
 
-            // Without a route there's no network to tell apart.
-            if (network.Length == 0)
-                return true;
+        // Without a route there's no network to tell apart.
+        if (network.Length == 0)
+            return true;
 
-            lock (RepliedNetworks)
-                return GetComparable(network).Any(x => RepliedNetworks.Any(x.Matches));
-        }
+        lock (RepliedNetworks)
+            return RepliedNetworks.TryGetValue(address, out var replied) && GetComparable(network).Any(x => replied.Any(x.Matches));
     }
 
     /// <summary>
-    /// Records that a ping came back, and through which network.
+    /// Records that a ping to <paramref name="address" /> came back, and through which network.
     /// </summary>
-    public static void ReportReply()
+    public static void ReportReply(IPAddress address)
     {
         Interlocked.Exchange(ref _lastReplyTimestamp, Stopwatch.GetTimestamp());
 
@@ -135,14 +133,17 @@ public static class NetworkStatus
 
         lock (RepliedNetworks)
         {
+            if (!RepliedNetworks.TryGetValue(address, out var replied))
+                RepliedNetworks[address] = replied = new List<NetworkId>();
+
             foreach (var id in network)
             {
-                var known = RepliedNetworks.FindIndex(x => x.Matches(id));
+                var known = replied.FindIndex(x => x.Matches(id));
 
                 if (known < 0)
-                    RepliedNetworks.Add(id);
-                else if (RepliedNetworks[known].GatewayHardwareAddress is null && id.GatewayHardwareAddress != null)
-                    RepliedNetworks[known] = id;
+                    replied.Add(id);
+                else if (replied[known].GatewayHardwareAddress is null && id.GatewayHardwareAddress != null)
+                    replied[known] = id;
             }
         }
     }

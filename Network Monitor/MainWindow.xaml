@@ -72,6 +72,9 @@
 				<MenuItem Header="(loading)" />
 			</MenuItem>
 
+			<!--  Asks in a small dialog rather than a box in the menu, so typing can't set off the menu's access keys, and Enter and Escape work as in any dialog.  -->
+			<MenuItem Header="_Ping address…" Click="MenuItemPingAddress_OnClick" />
+
 			<MenuItem Header="Always on _top"
 			          IsCheckable="True"
 			          IsChecked="{Binding Topmost, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
