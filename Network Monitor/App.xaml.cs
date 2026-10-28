@@ -31,6 +31,10 @@ public partial class App : Application
         // Three numbers gain nothing from the graphics card, and drawing them in software saves about 10 MB of memory with no visible difference.
         RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
 
+        // app.manifest has Windows leave each monitor's scale to the app, and this has WPF draw the widget again at the new scale when it changes, rather than keep the old one.
+        // It's in App.config too, as Microsoft documents it, but the download is just the exe, without that file. It has to be set before the first window is created.
+        AppContext.SetSwitch("Switch.System.Windows.DoNotScaleForDpiChanges", false);
+
         base.OnStartup(e);
 
         if (!SingleInstance.TryClaim(ExePath))

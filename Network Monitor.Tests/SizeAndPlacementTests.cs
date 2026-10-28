@@ -119,6 +119,83 @@ public class SizeAndPlacementTests
         Assert.Equal(new Point(2432, 0), ScreenEdges.KeepOnScreen(new Rect(2500, -20, 128, 138), Screen));
     }
 
+    [Fact]
+    public void GetPositionAfterResize_InTheBottomRightAt150Percent_StaysInTheCorner()
+    {
+        // At 150%, a widget of 128 by 138 units is 192 by 207 pixels, and it grows to 160 by 172.67 units, which WPF lays out in whole pixels.
+        var dpi = new DpiScale(1.5, 1.5);
+        var oldBounds = new Rect(new Point(2368, 1233), ScreenEdges.ToDevicePixels(new Size(128, 138), dpi));
+
+        var position = Resize(oldBounds, ScreenEdges.ToDevicePixels(new Size(160, 259 / 1.5), dpi));
+
+        Assert.Equal(new Point(2320, 1181), position);
+    }
+
+    [Theory]
+    [InlineData(1.0, 128, 138)]
+    [InlineData(1.5, 192, 207)]
+    [InlineData(2.0, 256, 276)]
+    public void ToDevicePixels_ScalesTheSize(double scale, double width, double height)
+    {
+        Assert.Equal(new Size(width, height), ScreenEdges.ToDevicePixels(new Size(128, 138), new DpiScale(scale, scale)));
+    }
+
+    [Fact]
+    public void ToDevicePixels_AtAScaleThatDoesNotDivideEvenly_GivesWholePixels()
+    {
+        // At 175%, 115 pixels is about 65.71 units, which multiplies back to 114.99999999999999.
+        var size = ScreenEdges.ToDevicePixels(new Size(115 / 1.75, 122 / 1.75), new DpiScale(1.75, 1.75));
+
+        Assert.Equal(new Size(115, 122), size);
+    }
+
+    [Fact]
+    public void GetBoundsAfterScaleChange_InTheBottomRight_StaysInTheCorner()
+    {
+        // The monitor's scale goes from 100% to 150%.
+        var bounds = ScreenEdges.GetBoundsAfterScaleChange(new Rect(2432, 1302, 128, 138), new Size(192, 207), Screen);
+
+        Assert.Equal(new Rect(2368, 1233, 192, 207), bounds);
+    }
+
+    [Fact]
+    public void GetBoundsAfterScaleChange_InTheTopLeft_KeepsItsTopLeftCorner()
+    {
+        var bounds = ScreenEdges.GetBoundsAfterScaleChange(new Rect(100, 100, 128, 138), new Size(192, 207), Screen);
+
+        Assert.Equal(new Rect(100, 100, 192, 207), bounds);
+    }
+
+    [Fact]
+    public void GetBoundsAfterScaleChange_OnAMonitorLeftOfTheMainOne_StaysInTheCorner()
+    {
+        // A monitor to the left of the main one has negative coordinates. Its scale goes from 150% to 100%, so the widget shrinks.
+        var monitor = new Rect(-1920, 0, 1920, 1080);
+
+        var bounds = ScreenEdges.GetBoundsAfterScaleChange(new Rect(-192, 873, 192, 207), new Size(128, 138), monitor);
+
+        Assert.Equal(new Rect(-128, 942, 128, 138), bounds);
+    }
+
+    [Fact]
+    public void GetBoundsAfterScaleChange_PartlyOffTheMonitor_ComesFullyOntoIt()
+    {
+        var bounds = ScreenEdges.GetBoundsAfterScaleChange(new Rect(2500, 600, 128, 138), new Size(256, 276), Screen);
+
+        Assert.Equal(new Rect(2304, 600, 256, 276), bounds);
+    }
+
+    [Fact]
+    public void GetBoundsAfterScaleChange_PastTheEdgeOfAMonitorScaledLowerThanTheMainOne_ComesFullyOntoIt()
+    {
+        // 4.x saved positions at the main monitor's scale, 150% here, which stretched this 100% monitor to half again its size, so its widget could be saved past its right edge.
+        var monitor = new Rect(2880, 0, 1920, 1080);
+
+        var bounds = ScreenEdges.GetBoundsAfterScaleChange(new Rect(4700, 900, 192, 207), new Size(128, 138), monitor);
+
+        Assert.Equal(new Rect(4672, 942, 128, 138), bounds);
+    }
+
     private static Point Resize(Rect oldBounds, Size newSize) =>
         ScreenEdges.GetPositionAfterResize(oldBounds, newSize, Screen, ScreenEdges.GetFixedEdges(oldBounds, Screen));
 }
