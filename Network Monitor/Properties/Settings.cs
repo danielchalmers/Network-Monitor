@@ -34,6 +34,7 @@ public sealed class Settings : ObservableObject
     private bool _bits = true;
     private string _interfaceId = string.Empty;
     private bool _topmost = true;
+    private bool _hideWhenFullscreen = true;
     private bool _showInTaskbar = true;
     private bool _horizontal;
     private AppTheme _theme = AppTheme.Auto;
@@ -118,6 +119,15 @@ public sealed class Settings : ObservableObject
     {
         get => _topmost;
         set => Set(ref _topmost, value, checkEquality: false);
+    }
+
+    /// <summary>
+    /// Whether the widget hides while a fullscreen app, like a game, a video, or a slideshow, fills the monitor it's on.
+    /// </summary>
+    public bool HideWhenFullscreen
+    {
+        get => _hideWhenFullscreen;
+        set => Set(ref _hideWhenFullscreen, value, checkEquality: false);
     }
 
     /// <summary>
@@ -217,6 +227,7 @@ public sealed class Settings : ObservableObject
         TrySet(values, nameof(Bits), x => Bits = ToBool(x));
         TrySet(values, nameof(InterfaceId), x => InterfaceId = (string)x ?? string.Empty);
         TrySet(values, nameof(Topmost), x => Topmost = ToBool(x));
+        TrySet(values, nameof(HideWhenFullscreen), x => HideWhenFullscreen = ToBool(x));
         TrySet(values, nameof(ShowInTaskbar), x => ShowInTaskbar = ToBool(x));
         TrySet(values, nameof(Horizontal), x => Horizontal = ToBool(x));
         TrySet(values, nameof(Theme), x => Theme = ToEnum<AppTheme>(x));
@@ -303,6 +314,7 @@ public sealed class Settings : ObservableObject
         [nameof(Bits)] = Bits,
         [nameof(InterfaceId)] = InterfaceId,
         [nameof(Topmost)] = Topmost,
+        [nameof(HideWhenFullscreen)] = HideWhenFullscreen,
         [nameof(ShowInTaskbar)] = ShowInTaskbar,
         [nameof(Horizontal)] = Horizontal,
         [nameof(Theme)] = Theme.ToString(),
