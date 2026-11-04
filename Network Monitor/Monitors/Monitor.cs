@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Media;
-using Network_Monitor.Properties;
 
 namespace Network_Monitor.Monitors;
 
@@ -41,11 +41,7 @@ public abstract class Monitor : ObservableObject
         if (updatesEverySecond)
             ClockTimer.SecondChanged += (_, _) => Update();
 
-        ThemeService.Instance.PropertyChanged += (_, _) =>
-        {
-            RaisePropertyChanged(nameof(IconBrush));
-            RaisePropertyChanged(nameof(TooltipBrush));
-        };
+        ThemeService.Instance.PropertyChanged += (_, _) => RaisePropertyChanged(nameof(IconBrush));
     }
 
     /// <summary>
@@ -69,21 +65,17 @@ public abstract class Monitor : ObservableObject
     public char Icon { get; protected set; }
 
     /// <summary>
-    /// Icon color for the active theme.
+    /// Color for the icon and the graph in the tooltip, in the active theme.
     /// Light and Dark use the fixed Fluent palette (darker shades in light mode, lighter tints in dark mode); Auto follows the system accent color instead.
+    /// A high contrast theme's own text color takes the place of both, since only its own colors are sure to be readable.
     /// </summary>
+    /// <remarks>
+    /// The graph draws with a frozen pen, which needs a brush that can be frozen, so high contrast uses the system's own brush rather than the palette's.
+    /// </remarks>
     public Brush IconBrush =>
-        Settings.Default.Theme == AppTheme.Auto && ThemeService.Instance.AccentBrush is Brush accent
-            ? accent
-            : ThemeService.Instance.IsDark ? _darkIconBrush : _lightIconBrush;
-
-    /// <summary>
-    /// Color for the graph in the tooltip, which stays light whatever the widget's theme: the accent in Auto, otherwise the light theme's darker shade, which can be seen against it.
-    /// </summary>
-    public Brush TooltipBrush =>
-        Settings.Default.Theme == AppTheme.Auto && ThemeService.Instance.AccentBrush is Brush accent
-            ? accent
-            : _lightIconBrush;
+        ThemeService.Instance.IsHighContrast
+            ? SystemColors.WindowTextBrush
+            : ThemeService.Instance.AccentBrush ?? (ThemeService.Instance.IsDark ? _darkIconBrush : _lightIconBrush);
 
     /// <summary>
     /// User-friendly text to show in the UI.
@@ -295,7 +287,6 @@ public abstract class Monitor : ObservableObject
         _lightIconBrush = CreateFrozenBrush(lightHexColor);
         _darkIconBrush = CreateFrozenBrush(darkHexColor);
         RaisePropertyChanged(nameof(IconBrush));
-        RaisePropertyChanged(nameof(TooltipBrush));
     }
 
     private static Brush CreateFrozenBrush(string hexColor)

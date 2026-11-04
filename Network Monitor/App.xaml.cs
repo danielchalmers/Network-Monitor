@@ -50,6 +50,10 @@ public partial class App : Application
         }
 
         SettingsSaver.Start();
+
+        // The palette for the theme goes in before the window is created, so the widget never shows the light one first.
+        _ = ThemeService.Instance;
+
         RepairStartup();
 
         var window = new MainWindow();
