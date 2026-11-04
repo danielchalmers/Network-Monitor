@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 using Network_Monitor.Monitors;
 using Network_Monitor.Properties;
 using WpfWindowPlacement;
@@ -52,10 +53,13 @@ public partial class MainWindow : Window
     }
 
     private const int WM_MOUSEWHEEL = 0x020A;
+    private const int WM_ENTERSIZEMOVE = 0x0231;
+    private const int WM_EXITSIZEMOVE = 0x0232;
     private const int MK_CONTROL = 0x0008;
 
     private double _pendingWheelSteps;
     private bool _hasRendered;
+    private bool _isBeingMoved;
     private ScreenEdges.FixedEdges? _fixedEdges;
     private bool _isRepositioning;
 
@@ -69,12 +73,18 @@ public partial class MainWindow : Window
             var point = lParam.ToInt64();
 
             // Windows can send the wheel to the active window wherever the pointer is, so only resize when it's over the widget.
-            if ((data & MK_CONTROL) != 0 && ScreenEdges.IsOverWindow(this, (short)(point & 0xFFFF), (short)((point >> 16) & 0xFFFF)))
+            if ((data & MK_CONTROL) != 0 && ScreenEdges.GetBounds(this).Contains((short)(point & 0xFFFF), (short)((point >> 16) & 0xFFFF)))
             {
                 ResizeByWheel((short)((data >> 16) & 0xFFFF));
                 handled = true;
             }
         }
+
+        // While the window is dragged, or moved with the keyboard, Windows moves it along with the pointer, and nothing else should move it.
+        if (msg == WM_ENTERSIZEMOVE)
+            _isBeingMoved = true;
+        else if (msg == WM_EXITSIZEMOVE)
+            _isBeingMoved = false;
 
         return IntPtr.Zero;
     }
@@ -104,11 +114,8 @@ public partial class MainWindow : Window
     /// </summary>
     public void Reveal()
     {
-        var bounds = new Rect(ScreenEdges.GetTopLeft(this), new Size(ActualWidth, ActualHeight));
-        var position = ScreenEdges.KeepOnScreen(bounds, ScreenEdges.GetScreenBounds(this));
+        ScreenEdges.MoveTo(this, ScreenEdges.KeepOnScreen(ScreenEdges.GetBounds(this), ScreenEdges.GetScreenBounds(this)));
 
-        Left = position.X;
-        Top = position.Y;
         Activate();
     }
 
@@ -120,19 +127,21 @@ public partial class MainWindow : Window
     private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         // Sizing while the window first appears isn't a resize, and moving it then would undo its restored position.
-        if (!_hasRendered || e.PreviousSize.Width <= 0 || e.PreviousSize.Height <= 0)
+        // Nor is the small change in size when it's dragged onto a monitor with a different scale, when it should stay under the pointer.
+        if (!_hasRendered || _isBeingMoved || e.PreviousSize.Width <= 0 || e.PreviousSize.Height <= 0)
             return;
 
-        var oldBounds = new Rect(ScreenEdges.GetTopLeft(this), e.PreviousSize);
+        // The sizes are in WPF units, so they're measured in device pixels like the screen, at the window's scale now.
+        var dpi = VisualTreeHelper.GetDpi(this);
+        var oldBounds = new Rect(ScreenEdges.GetBounds(this).TopLeft, ScreenEdges.ToDevicePixels(e.PreviousSize, dpi));
         var screen = ScreenEdges.GetScreenBounds(this);
         _fixedEdges ??= ScreenEdges.GetFixedEdges(oldBounds, screen);
-        var position = ScreenEdges.GetPositionAfterResize(oldBounds, e.NewSize, screen, _fixedEdges.Value);
+        var position = ScreenEdges.GetPositionAfterResize(oldBounds, ScreenEdges.ToDevicePixels(e.NewSize, dpi), screen, _fixedEdges.Value);
 
         _isRepositioning = true;
         try
         {
-            Left = position.X;
-            Top = position.Y;
+            ScreenEdges.MoveTo(this, position);
         }
         finally
         {
