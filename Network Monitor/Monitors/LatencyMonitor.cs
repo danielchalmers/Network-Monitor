@@ -32,6 +32,11 @@ public class LatencyMonitor : Monitor
     /// </summary>
     private readonly ConcurrentBag<Ping> _idlePings = new();
 
+    /// <summary>
+    /// Pings the router while the internet isn't answering, to tell whether an outage is on your own network or past it.
+    /// </summary>
+    private readonly RouterCheck _routerCheck;
+
     private int _pingsOut;
 
     /// <summary>
@@ -49,6 +54,11 @@ public class LatencyMonitor : Monitor
     /// </summary>
     private (DateTime Start, DateTime End)? _lastOutage;
 
+    /// <summary>
+    /// What the latest tick found out about the router, said along with the outage clock, or null.
+    /// </summary>
+    private (string Note, string Spoken)? _routerNote;
+
     public LatencyMonitor(string host, TimeSpan timeout) : base(true)
     {
         Name = "Latency";
@@ -61,6 +71,7 @@ public class LatencyMonitor : Monitor
         _host = host;
         _timeout = (int)timeout.TotalMilliseconds;
         _maxPingsOut = (int)Math.Ceiling(timeout.TotalSeconds) + 2;
+        _routerCheck = new RouterCheck(timeout);
     }
 
     protected override string GetDisplayValue()
@@ -85,6 +96,7 @@ public class LatencyMonitor : Monitor
         StartPing();
         RememberOutage(view, snapshot.LastReplyAt, now);
 
+        _routerNote = CheckRouter(view);
         _view = view;
         IsStale = view.IsStale;
         return view.Value;
@@ -106,6 +118,9 @@ public class LatencyMonitor : Monitor
 
         if (view.NoteLine is not null)
             lines.Add(view.NoteLine);
+
+        if (_routerNote is var (routerNote, _))
+            lines.Add(routerNote);
 
         if (successes.Length > 0)
             lines.Add($"Min/Avg/Max: {FormatRoundtrip(successes.Min())} / {FormatRoundtrip((long)Math.Round(successes.Average(), MidpointRounding.AwayFromZero))} / {FormatRoundtrip(successes.Max())} ms");
@@ -155,6 +170,21 @@ public class LatencyMonitor : Monitor
             _lastOutage = (start, lastReplyAt ?? now);
             _outageStart = null;
         }
+    }
+
+    /// <summary>
+    /// Pings the router while the outage clock is up, and returns what it showed.
+    /// Not on a network that seems to block ping, where the internet never answers and the router would be pinged for good.
+    /// </summary>
+    private (string Note, string Spoken)? CheckRouter(LatencyView view)
+    {
+        if (!view.IsOutage)
+        {
+            _routerCheck.Stop();
+            return null;
+        }
+
+        return _routerCheck.Check(NetworkStatus.Router);
     }
 
     protected override IReadOnlyList<double?> GetHistory() =>
@@ -221,8 +251,13 @@ public class LatencyMonitor : Monitor
         }
     }
 
-    protected override string GetSpokenValue(string displayValue) =>
-        displayValue == _view.Value ? $"{Name}, {_view.Spoken}" : base.GetSpokenValue(displayValue);
+    protected override string GetSpokenValue(string displayValue)
+    {
+        if (displayValue != _view.Value)
+            return base.GetSpokenValue(displayValue);
+
+        return _routerNote is var (_, routerSpoken) ? $"{Name}, {_view.Spoken}, {routerSpoken}" : $"{Name}, {_view.Spoken}";
+    }
 
     /// <summary>
     /// Returns a latency reading as a screen reader should say it.
