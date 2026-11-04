@@ -105,6 +105,12 @@ public static class NetworkStatus
     }
 
     /// <summary>
+    /// The IPv4 address of the router to ping when the internet stops answering, to tell a drop on your own network from one past it: the router of the adapter internet traffic leaves through.
+    /// Null when there isn't one, like with no route to the internet or on some mobile broadband.
+    /// </summary>
+    public static string Router => _currentNetwork.FirstOrDefault(x => x.IsIPv4)?.Gateway;
+
+    /// <summary>
     /// Whether a ping has ever come back through the network internet traffic leaves through now.
     /// If so, failing pings are an outage; if not, the network may just block ping, like many work VPNs and public Wi-Fi.
     /// It's remembered per router, so a router that restarts still counts, and only a different network starts over.
