@@ -119,6 +119,15 @@ public class SizeAndPlacementTests
         Assert.Equal(new Point(2432, 0), ScreenEdges.KeepOnScreen(new Rect(2500, -20, 128, 138), Screen));
     }
 
+    [Fact]
+    public void ToDevicePixels_AtAScaleThatDoesNotDivideEvenly_GivesWholePixels()
+    {
+        // At 175%, 115 pixels is about 65.71 units, which multiplies back to 114.99999999999999.
+        var size = ScreenEdges.ToDevicePixels(new Size(115 / 1.75, 122 / 1.75), new DpiScale(1.75, 1.75));
+
+        Assert.Equal(new Size(115, 122), size);
+    }
+
     private static Point Resize(Rect oldBounds, Size newSize) =>
         ScreenEdges.GetPositionAfterResize(oldBounds, newSize, Screen, ScreenEdges.GetFixedEdges(oldBounds, Screen));
 }

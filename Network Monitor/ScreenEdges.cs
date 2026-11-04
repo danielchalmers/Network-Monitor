@@ -2,7 +2,6 @@ using System;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
-using System.Windows.Media;
 
 namespace Network_Monitor;
 
@@ -10,6 +9,10 @@ namespace Network_Monitor;
 /// Keeps the widget against the screen edges it's parked near when its size changes, and on its monitor.
 /// Windows grow from their top-left corner, so a widget parked in a bottom or right corner would otherwise spill off the screen whenever it got bigger.
 /// </summary>
+/// <remarks>
+/// Places on the screen are in device pixels, as Windows gives them, rather than in WPF's units.
+/// Each monitor can have its own scale, and a window's <see cref="Window.Left" /> and <see cref="Window.Top" /> are in the units of whichever monitor it's on at the time, so they don't line up from one monitor to the next.
+/// </remarks>
 public static class ScreenEdges
 {
     /// <summary>
@@ -64,28 +67,38 @@ public static class ScreenEdges
     }
 
     /// <summary>
-    /// Returns where the window actually is on screen, in the window's own units.
+    /// Returns how big <paramref name="size" />, in WPF units, is in device pixels at the scale <paramref name="dpi" />.
+    /// It's rounded to whole pixels, which is all a window can measure.
+    /// </summary>
+    public static Size ToDevicePixels(Size size, DpiScale dpi) =>
+        new(Math.Round(size.Width * dpi.DpiScaleX), Math.Round(size.Height * dpi.DpiScaleY));
+
+    /// <summary>
+    /// Returns where the window actually is on screen, in device pixels.
     /// This is read from the window itself because <see cref="Window.Left" /> and <see cref="Window.Top" /> can lag behind a position restored straight onto the window.
     /// </summary>
-    public static Point GetTopLeft(Window window)
+    public static Rect GetBounds(Window window)
     {
         NativeMethods.GetWindowRect(new WindowInteropHelper(window).Handle, out var rect);
-        return GetFromDevice(window).Transform(new Point(rect.Left, rect.Top));
+        return ToRect(rect);
     }
 
     /// <summary>
-    /// Returns whether a point on the screen, in device pixels, is over the window.
+    /// Moves the window's top-left corner to <paramref name="position" />, in device pixels, without resizing or activating it.
+    /// It's moved in one step, because setting <see cref="Window.Left" /> and then <see cref="Window.Top" /> could take it across another monitor on the way and change its scale partway.
     /// </summary>
-    public static bool IsOverWindow(Window window, int x, int y)
-    {
-        if (!NativeMethods.GetWindowRect(new WindowInteropHelper(window).Handle, out var rect))
-            return false;
-
-        return x >= rect.Left && x < rect.Right && y >= rect.Top && y < rect.Bottom;
-    }
+    public static void MoveTo(Window window, Point position) =>
+        NativeMethods.SetWindowPos(
+            new WindowInteropHelper(window).Handle,
+            IntPtr.Zero,
+            (int)Math.Round(position.X),
+            (int)Math.Round(position.Y),
+            0,
+            0,
+            NativeMethods.SWP_NOSIZE | NativeMethods.SWP_NOZORDER | NativeMethods.SWP_NOACTIVATE);
 
     /// <summary>
-    /// Returns the bounds of the monitor the window is on (or nearest to), in the window's own units.
+    /// Returns the bounds of the monitor the window is on (or nearest to), in device pixels.
     /// The whole monitor is used rather than the area above the taskbar, so a widget parked on the taskbar can stay there.
     /// </summary>
     public static Rect GetScreenBounds(Window window)
@@ -94,22 +107,19 @@ public static class ScreenEdges
         var monitor = NativeMethods.MonitorFromWindow(handle, NativeMethods.MONITOR_DEFAULTTONEAREST);
         var info = new NativeMethods.MONITORINFO { cbSize = Marshal.SizeOf(typeof(NativeMethods.MONITORINFO)) };
 
-        if (!NativeMethods.GetMonitorInfo(monitor, ref info))
-            return SystemParameters.WorkArea;
-
-        var fromDevice = GetFromDevice(window);
-        var topLeft = fromDevice.Transform(new Point(info.rcMonitor.Left, info.rcMonitor.Top));
-        var bottomRight = fromDevice.Transform(new Point(info.rcMonitor.Right, info.rcMonitor.Bottom));
-
-        return new Rect(topLeft, bottomRight);
+        NativeMethods.GetMonitorInfo(monitor, ref info);
+        return ToRect(info.rcMonitor);
     }
 
-    private static Matrix GetFromDevice(Window window) =>
-        PresentationSource.FromVisual(window)?.CompositionTarget?.TransformFromDevice ?? Matrix.Identity;
+    private static Rect ToRect(NativeMethods.RECT rect) =>
+        new(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
 
     private static class NativeMethods
     {
         public const uint MONITOR_DEFAULTTONEAREST = 2;
+        public const uint SWP_NOSIZE = 0x0001;
+        public const uint SWP_NOZORDER = 0x0004;
+        public const uint SWP_NOACTIVATE = 0x0010;
 
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
@@ -134,5 +144,8 @@ public static class ScreenEdges
 
         [DllImport("user32.dll")]
         public static extern bool GetWindowRect(IntPtr hwnd, out RECT rect);
+
+        [DllImport("user32.dll")]
+        public static extern bool SetWindowPos(IntPtr hwnd, IntPtr insertAfter, int x, int y, int cx, int cy, uint flags);
     }
 }
