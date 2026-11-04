@@ -23,7 +23,7 @@
 					                 Margin="0,2,0,6"
 					                 Values="{Binding History}"
 					                 MinimumTop="{Binding HistoryMinimumTop}"
-					                 Stroke="{Binding TooltipBrush}"
+					                 Stroke="{Binding IconBrush}"
 					                 StrokeThickness="1.5" />
 
 					<TextBlock Text="{Binding Details}" />
