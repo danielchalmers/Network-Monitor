@@ -49,6 +49,16 @@ public abstract class Monitor : ObservableObject
     }
 
     /// <summary>
+    /// Occurs on each tick of the clock that updates the monitors, on a thread pool thread.
+    /// Anything else that's checked once a second can keep in step with them this way, rather than wake the app at moments of its own.
+    /// </summary>
+    public static event EventHandler ClockTicked
+    {
+        add => ClockTimer.SecondChanged += value;
+        remove => ClockTimer.SecondChanged -= value;
+    }
+
+    /// <summary>
     /// Name of the monitor.
     /// </summary>
     public string Name { get; protected set; }

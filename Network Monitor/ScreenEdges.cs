@@ -77,9 +77,14 @@ public static class ScreenEdges
     /// Returns where the window actually is on screen, in device pixels.
     /// This is read from the window itself because <see cref="Window.Left" /> and <see cref="Window.Top" /> can lag behind a position restored straight onto the window.
     /// </summary>
-    public static Rect GetBounds(Window window)
+    public static Rect GetBounds(Window window) => GetBounds(new WindowInteropHelper(window).Handle);
+
+    /// <summary>
+    /// Returns where the window with <paramref name="handle" />, such as another app's, is on screen, in device pixels.
+    /// </summary>
+    public static Rect GetBounds(IntPtr handle)
     {
-        NativeMethods.GetWindowRect(new WindowInteropHelper(window).Handle, out var rect);
+        NativeMethods.GetWindowRect(handle, out var rect);
         return ToRect(rect);
     }
 
@@ -101,9 +106,13 @@ public static class ScreenEdges
     /// Returns the bounds of the monitor the window is on (or nearest to), in device pixels.
     /// The whole monitor is used rather than the area above the taskbar, so a widget parked on the taskbar can stay there.
     /// </summary>
-    public static Rect GetScreenBounds(Window window)
+    public static Rect GetScreenBounds(Window window) => GetScreenBounds(new WindowInteropHelper(window).Handle);
+
+    /// <summary>
+    /// Returns the bounds of the monitor the window with <paramref name="handle" />, such as another app's, is on (or nearest to), in device pixels.
+    /// </summary>
+    public static Rect GetScreenBounds(IntPtr handle)
     {
-        var handle = new WindowInteropHelper(window).Handle;
         var monitor = NativeMethods.MonitorFromWindow(handle, NativeMethods.MONITOR_DEFAULTTONEAREST);
         var info = new NativeMethods.MONITORINFO { cbSize = Marshal.SizeOf(typeof(NativeMethods.MONITORINFO)) };
 
