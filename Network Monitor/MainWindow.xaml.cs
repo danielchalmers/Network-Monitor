@@ -62,6 +62,7 @@ public partial class MainWindow : Window
     private bool _isBeingMoved;
     private ScreenEdges.FixedEdges? _fixedEdges;
     private bool _isRepositioning;
+    private FullscreenHideManager _fullscreenHideManager;
 
     private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
@@ -110,10 +111,12 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// Brings the widget into view when its exe is started again: in front of other windows, and fully back on a screen if it was partly off one.
+    /// Brings the widget into view when its exe is started again: in front of other windows, even a fullscreen app it's hidden for, and fully back on a screen if it was partly off one.
     /// </summary>
     public void Reveal()
     {
+        _fullscreenHideManager?.ShowNow();
+
         ScreenEdges.MoveTo(this, ScreenEdges.KeepOnScreen(ScreenEdges.GetBounds(this), ScreenEdges.GetScreenBounds(this)));
 
         Activate();
@@ -258,6 +261,9 @@ public partial class MainWindow : Window
         {
             // System.Configuration doesn't like the WindowPlacement struct sometimes.
         }
+
+        // Started once the window has a handle and has been put back on its monitor, which is the one that's watched.
+        _fullscreenHideManager = new FullscreenHideManager(this);
     }
 
     private void Window_LocationChanged(object sender, EventArgs e)
@@ -274,6 +280,9 @@ public partial class MainWindow : Window
 
     private void Window_Closing(object sender, CancelEventArgs e)
     {
+        // Nothing should hide or show the widget while it closes.
+        _fullscreenHideManager?.Dispose();
+
         Settings.Default.Placement = WindowPlacementFunctions.GetPlacement(this);
         SettingsSaver.SaveNow();
     }

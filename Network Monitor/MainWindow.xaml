@@ -10,6 +10,7 @@
         Title="Network Monitor"
         Topmost="{Binding Topmost, Source={x:Static p:Settings.Default}, Mode=TwoWay}"
         ShowInTaskbar="{Binding ShowInTaskbar, Source={x:Static p:Settings.Default}, Mode=TwoWay}"
+        ShowActivated="False"
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
         WindowStyle="None"
@@ -75,6 +76,10 @@
 			<MenuItem Header="Always on _top"
 			          IsCheckable="True"
 			          IsChecked="{Binding Topmost, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
+
+			<MenuItem Header="Hi_de when fullscreen"
+			          IsCheckable="True"
+			          IsChecked="{Binding HideWhenFullscreen, Source={x:Static p:Settings.Default}, Mode=TwoWay}" />
 
 			<MenuItem Header="_Show in taskbar"
 			          IsCheckable="True"
