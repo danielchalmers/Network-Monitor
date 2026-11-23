@@ -2,7 +2,7 @@
 
 [![Release](https://img.shields.io/github/release/danielchalmers/Network-Monitor?include_prereleases)](https://github.com/danielchalmers/Network-Monitor/releases/latest) [![License](https://img.shields.io/github/license/danielchalmers/Network-Monitor)](LICENSE)
 
-Network Monitor is a free, open-source desktop widget for Windows 10 and 11 that shows your live ping (latency), download speed, and upload speed.
+Network Monitor is a free, open-source desktop widget for Windows that shows your live ping (latency), download speed, and upload speed.
 
 <img width="300" alt="Network Monitor ticking through live latency, download, and upload" src="https://github.com/user-attachments/assets/a2fb99f1-b749-4275-8f4d-1805bf2bfc83" />
 
