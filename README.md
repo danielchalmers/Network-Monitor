@@ -2,7 +2,7 @@
 
 [![Release](https://img.shields.io/github/release/danielchalmers/Network-Monitor?include_prereleases)](https://github.com/danielchalmers/Network-Monitor/releases/latest) [![License](https://img.shields.io/github/license/danielchalmers/Network-Monitor)](LICENSE)
 
-A small widget for Windows that keeps your live latency, download, and upload speeds on the desktop.
+Network Monitor is a free, open-source desktop widget for Windows 10 and 11 that shows your live ping (latency), download speed, and upload speed.
 
 <img width="300" alt="Network Monitor ticking through live latency, download, and upload" src="https://github.com/user-attachments/assets/a2fb99f1-b749-4275-8f4d-1805bf2bfc83" />
 
@@ -58,3 +58,8 @@ Hover for a 60-second sparkline and the stats behind it: min/avg/max, jitter, pa
 - **Lost it?** Start Network Monitor again and the running widget comes back into view.
 - **Options:** right-click for network adapter, bits/bytes, orientation, theme, always on top, etc.
 - Latency is measured by pinging `8.8.8.8` (Google DNS); download and upload follow your internet adapter.
+
+## 🧰 More Windows tools
+
+- [DesktopClock](https://github.com/danielchalmers/DesktopClock): a customizable clock for your desktop, with countdowns and time zones.
+- [Radial Actions](https://github.com/danielchalmers/RadialActions): a pie menu that launches apps, files, and shortcuts from a global hotkey.
